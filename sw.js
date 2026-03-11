@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v21';
+const CACHE_APP   = 'boucle-app-v22';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -376,6 +376,9 @@ self.addEventListener('activate', event => {
 // ── Fetch ─────────────────────────────────────────────
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+
+  // PMTiles — laisser passer directement (Range requests nécessaires)
+  if (url.pathname.endsWith('.pmtiles')) return;
 
   const isTile = url.hostname.includes('tile.openstreetmap.org')
               || url.hostname.includes('tile-cyclosm.openstreetmap.fr')
