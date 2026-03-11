@@ -6,7 +6,8 @@
 
 // Points par défaut (prépopulés si aucune donnée)
 const POINTS_DEFAUT = [
-  { id:1, nom:"Forêt des Ardennes — myrtilles & faînes", type:'champignon', lat:49.90, lng:4.95, quantite:'abondant', saison:'ete', mois:8, note:"Hêtraies monumentales ardennaises. Myrtilles en landes acides au pic mi-août. Faînes abondantes fin août. Cèpes après orages. Zéro cueilleur.", timestamp: new Date().toISOString() },
+  { id:1, nom:"Artemps — départ & arrivée", type:'halte', lat:49.65, lng:3.27, quantite:'moyen', saison:'printemps', mois:5, note:"Point de départ et d'arrivée de la Boucle Sauvage. Village de l'Aisne, bord de Somme.", timestamp: new Date().toISOString() },
+  { id:2, nom:"Forêt des Ardennes — myrtilles & faînes", type:'champignon', lat:49.90, lng:4.95, quantite:'abondant', saison:'ete', mois:8, note:"Hêtraies monumentales ardennaises. Myrtilles en landes acides au pic mi-août. Faînes abondantes fin août. Cèpes après orages. Zéro cueilleur.", timestamp: new Date().toISOString() },
   { id:2, nom:"Lac des Settons — Morvan central", type:'champignon', lat:47.22, lng:4.04, quantite:'abondant', saison:'automne', mois:9, note:"Meilleure zone champignons du Morvan. Cèpes, chanterelles, trompettes. Faînes et noisettes. Prévoir 2 jours de transformation sur place.", timestamp: new Date().toISOString() },
   { id:3, nom:"Bergerac — Périgord Noir, noix", type:'cueillette', lat:44.85, lng:0.48, quantite:'abondant', saison:'automne', mois:10, note:"Noyeraies immenses en bord de Dordogne. Ramassage au sol octobre-novembre, entièrement légal. Trompettes dans les chênaies.", timestamp: new Date().toISOString() },
   { id:4, nom:"Bassin d'Arcachon — huîtres & palourdes", type:'peche', lat:44.65, lng:-1.17, quantite:'abondant', saison:'printemps', mois:4, note:"Zones non-concédées à marée basse. Huîtres sur rochers affleurants, palourdes dans le sable. Salicorne très tendre en avril (retour).", timestamp: new Date().toISOString() },

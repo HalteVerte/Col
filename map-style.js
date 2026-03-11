@@ -112,7 +112,6 @@ function mlStyle() {
           'text-field':['coalesce',['get','name:fr'],['get','name'],''],
           'text-size':['interpolate',['linear'],['zoom'],4,9,8,13,12,16],
           'text-font':['Noto Sans Regular'],
-          'text-anchor':'center'
         },
         paint:{'text-color':'#1a1410','text-halo-color':'rgba(255,255,255,0.95)','text-halo-width':1.5} },
 
@@ -123,7 +122,6 @@ function mlStyle() {
           'text-field':['coalesce',['get','name:fr'],['get','name'],''],
           'text-size':['interpolate',['linear'],['zoom'],9,9,12,12,14,14],
           'text-font':['Noto Sans Regular'],
-          'text-anchor':'center'
         },
         paint:{'text-color':'#3a3020','text-halo-color':'rgba(255,255,255,0.95)','text-halo-width':1.2} },
     ]
