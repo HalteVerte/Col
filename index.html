@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="La Boucle Sauvage — ~10 000 km à vélo, alimentation 100% sauvage, nomadisme permanent. Guide complet : recettes, carte terrain, carnet de quêtes."/>
+  <meta name="theme-color" content="#2c3e1a"/>
+  <title>La Boucle Sauvage — Alimentation Sauvage & Nomadisme</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="main.css"/>
+  <link rel="stylesheet" href="map.css"/>
+
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ HEADER -->
+<header>
+  <div class="hdr-left">
+    <span class="hdr-leaf">🌿</span>
+    <div class="site-title">
+      La Boucle Sauvage
+      <small>ALIMENTATION SAUVAGE · NOMADISME PERMANENT</small>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="badge badge-year">France · Portugal</span>
+    <span class="badge badge-online" id="netBadge">⬤ ONLINE</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════ BOTTOM NAV MOBILE -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Navigation mobile">
+  <div class="bottom-nav-inner">
+    <button class="bottom-nav-btn active" id="bn-accueil"   onclick="showSection('accueil')">
+      <span class="bn-icon">🏕️</span><span>Accueil</span>
+    </button>
+    <button class="bottom-nav-btn" id="bn-terrain"   onclick="showSection('terrain')">
+      <span class="bn-icon">🌿</span><span>Terrain</span>
+    </button>
+    <button class="bottom-nav-btn" id="bn-laboucle"   onclick="showSection('laboucle')">
+      <span class="bn-icon">🔁</span><span>Boucle</span>
+    </button>
+    <button class="bottom-nav-btn" id="bn-carnet"     onclick="showSection('carnet')">
+      <span class="bn-icon">📖</span><span>Carnet</span>
+    </button>
+  </div>
+</nav>
+
+
+
+<main>
+
+<!-- ══════════════════════════════════════ ACCUEIL -->
+<section id="accueil" class="section active">
+  <div class="page-head">
+    <h1 class="page-title">La Boucle Sauvage</h1>
+    <p class="page-subtitle">~10 000 km à vélo · Alimentation sauvage · Émancipation · Santé profonde</p>
+  </div>
+
+  <div class="synopsis-hero">
+    <h1>Le projet</h1>
+    <p class="hero-sub">FRANCE · ESPAGNE · PORTUGAL · MI-AOÛT → PRINTEMPS</p>
+    <p>Une boucle à vélo électrique en autonomie alimentaire maximale — se nourrir de ce que la route offre, sans dépendre d'aucun commerce, d'aucune infrastructure, d'aucun système. Pas une performance sportive. Une réorientation profonde.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">~10 000</div><div class="stat-label">km parcourus</div></div>
+    <div class="stat-card"><div class="stat-val">8</div><div class="stat-label">phases aller</div></div>
+    <div class="stat-card"><div class="stat-val">0€</div><div class="stat-label">budget nourriture visé</div></div>
+    <div class="stat-card"><div class="stat-val">↓</div><div class="stat-label">cortisol, inflammation, SOPK</div></div>
+    <div class="stat-card"><div class="stat-val">↑</div><div class="stat-label">clarté, équilibre, énergie</div></div>
+    <div class="stat-card"><div class="stat-val">30k</div><div class="stat-label">plantes sauvages comestibles dans le monde</div></div>
+  </div>
+
+  <div class="regions-list">
+    <h3>🗺️ Les grandes zones du trajet</h3>
+    <div class="region-item"><span class="region-dot">🌲</span><div><div class="region-name">Ardennes &amp; Lorraine</div><div class="region-detail">Myrtilles, faînes, noisettes, mirabelles — forêts immenses, zéro trafic</div></div></div>
+    <div class="region-item"><span class="region-dot">🍄</span><div><div class="region-name">Morvan &amp; Bourgogne</div><div class="region-detail">Cèpes, chanterelles, faînes — halte de constitution des stocks hivernaux</div></div></div>
+    <div class="region-item"><span class="region-dot">🌰</span><div><div class="region-name">Cévennes &amp; Périgord</div><div class="region-detail">Châtaignes, noix, trompettes — stocks lourds pour l'hiver</div></div></div>
+    <div class="region-item"><span class="region-dot">🦪</span><div><div class="region-name">Arcachon &amp; Côte cantabrique</div><div class="region-detail">Huîtres, moules, percebes, oursins — protéines animales continues</div></div></div>
+    <div class="region-item"><span class="region-dot">🌊</span><div><div class="region-name">Galice &amp; Portugal</div><div class="region-detail">Rías Baixas, Serra da Gardunha, Algarve — l'hiver le plus riche du trajet</div></div></div>
+    <div class="region-item"><span class="region-dot">🌿</span><div><div class="region-name">Retour atlantique</div><div class="region-detail">Bretagne, Baie de Somme — algues, aster maritime, moules jusqu'à Artemps</div></div></div>
+  </div>
+
+  <div class="quote-block">
+    <span class="qt-icon">💬</span> Subvenir à ce besoin vital sans dépendre du monde capitaliste, c'est vraiment émancipateur.
+  </div>
+
+  <div class="acc-item open">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">🩺</span>
+      <span class="acc-title">Santé — Ce que l'alimentation sauvage transforme</span>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p class="body-p">L'alimentation industrielle moderne est pro-inflammatoire, hyperglycémique et hormonalement perturbatrice. L'alimentation sauvage agit à l'opposé exact — densité micronutritionnelle maximale, charge glycémique basse, acides gras équilibrés, zéro perturbateurs endocriniens.</p>
+      <div class="effects-grid">
+        <div class="effect-card">
+          <div class="effect-card-title">⚖️ Poids &amp; métabolisme</div>
+          <ul>
+            <li>Satiété rapide malgré de petits volumes — densité nutritionnelle réelle</li>
+            <li>Perte de masse grasse naturelle sans restriction calorique</li>
+            <li>Stabilisation glycémique — plus de pics d'insuline</li>
+            <li>Relance du métabolisme de base par l'effort physique continu</li>
+          </ul>
+        </div>
+        <div class="effect-card">
+          <div class="effect-card-title">⚗️ Équilibre hormonal & SOPK</div>
+          <ul>
+            <li>SOPK = résistance à l'insuline + inflammation chronique + androgènes élevés — l'alimentation sauvage agit sur les 3 leviers simultanément</li>
+            <li>Charge glycémique quasi nulle (pas de céréales raffinées, pas de sucres industriels) — régulation insuline directe, premier levier du SOPK</li>
+            <li>Zinc ★★★ (huîtres, palourdes) — réduit l'hyperandrogénie, régule LH/FSH, améliore la qualité ovocytaire</li>
+            <li>Oméga 3 (noix, moules, poissons gras) — réduction de l'inflammation ovarienne, précurseurs des prostaglandines anti-inflammatoires</li>
+            <li>Magnésium (ortie, noisettes, algues) — sensibilité à l'insuline, régulation cortisol, qualité du sommeil</li>
+            <li>Iode (algues, coquillages) — fonction thyroïdienne optimale (hypothyroïdie fréquemment associée au SOPK)</li>
+            <li>Effort physique quotidien (vélo) — sensibilité à l'insuline musculaire, régulation de l'axe hypothalamo-hypophysaire</li>
+          </ul>
+        </div>
+        <div class="effect-card">
+          <div class="effect-card-title">🧠 Clarté mentale</div>
+          <ul>
+            <li>Suppression des additifs, colorants et édulcorants — le cerveau se recalibre</li>
+            <li>DHA et EPA (coquillages, poissons gras) — fluidité membranaire neuronale</li>
+            <li>Vitamine B12 (fruits de mer) — synthèse des neurotransmetteurs</li>
+            <li>Effort physique quotidien — BDNF et neuroplasticité augmentés</li>
+          </ul>
+        </div>
+        <div class="effect-card">
+          <div class="effect-card-title">🌿 Baisse du cortisol</div>
+          <ul>
+            <li>Rythme imposé par la nature — pas de notifications, pas d'urgences artificielles</li>
+            <li>Magnésium et adaptogènes sauvages — réponse au stress modulée</li>
+            <li>Cohérence entre besoin et action — le corps fait ce pour quoi il est fait</li>
+            <li>Suppression du bruit ambiant consumériste</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip">💡 Les plantes sauvages contiennent en moyenne <strong>3 à 10× plus de micronutriments</strong> que leurs équivalents cultivés. L'ortie dépasse les épinards en fer. La palourde est l'aliment le plus riche en fer au monde. <strong>Pour le SOPK :</strong> supprimer les sucres industriels et les perturbateurs endocriniens (pesticides, emballages plastiques) tout en apportant zinc, magnésium et oméga 3 quotidiennement — l'alimentation sauvage est structurellement anti-SOPK.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">✊</span>
+      <span class="acc-title">Émancipation — Se sortir du système</span>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p class="body-p">Se nourrir sans payer, sans supermarché, sans marque, sans packaging — c'est sortir de la dépendance la plus fondamentale que le capitalisme a construite. La nourriture est le premier levier de contrôle social. La reprendre, c'est retrouver une liberté concrète, immédiate, non négociable.</p>
+      <div class="effects-grid">
+        <div class="effect-card">
+          <div class="effect-card-title">💸 Désengagement économique</div>
+          <ul>
+            <li>Budget alimentaire proche de zéro sur la durée du trajet</li>
+            <li>Rupture avec la logique de consommation compulsive</li>
+            <li>Redécouverte de la valeur réelle des choses — le travail de récolte donne une autre relation à la nourriture</li>
+          </ul>
+        </div>
+        <div class="effect-card">
+          <div class="effect-card-title">🌍 Alignement profond</div>
+          <ul>
+            <li>Le corps fait ce pour quoi il est biologiquement conçu</li>
+            <li>Suppression de la dissonance entre valeurs et actes</li>
+            <li>Sentiment de légitimité sur la terre — on n'est pas de trop, on participe</li>
+            <li>Réduction de l'empreinte écologique réelle</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip">🌱 Sur 5 000 plantes consommées au Paléolithique, seulement 300 sont cultivées aujourd'hui. 30 000 plantes sauvages comestibles existent dans le monde — le système nous a fait oublier 29 700 d'entre elles.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ NUTRITION -->
+<section id="terrain" class="section">
+  <div class="page-head">
+    <h1 class="page-title">🌿 Terrain & Ressources</h1>
+    <p class="page-subtitle">Nutrition sauvage · Techniques de terrain · Recettes · Logistique</p>
+  </div>
+
+  <!-- Onglets internes -->
+  <div class="terrain-tabs">
+    <button class="terrain-tab active" id="ttab-nutrition"  onclick="switchTerrain('nutrition', this)">🔬 Nutrition & Saisons</button>
+    <button class="terrain-tab"        id="ttab-techniques" onclick="switchTerrain('techniques', this)">🔥 Techniques & Recettes</button>
+  </div>
+
+  <!-- Panneau Nutrition -->
+  <div id="tpanel-nutrition" class="terrain-panel">
+<div class="acc-item open">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">2.1</span><span class="acc-title">Glucides — Le carburant principal</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Aliment</th><th>Ou le trouver</th><th>Interet nutritionnel</th></tr>
+        <tr><td class="td-key">Fruits sauvages (9 mois/an)</td><td class="td-src">Pruniers, vigne, pommiers, figuiers sauvages</td><td>Sucres simples, antioxydants, vitamines</td></tr>
+        <tr><td class="td-key">Farine de gland</td><td class="td-src">Chenes, automne, partout en foret</td><td>2x plus absorbant que farine de ble</td></tr>
+        <tr><td class="td-key">Chataignes</td><td class="td-src">Chataigniers, automne</td><td>Base alimentaire historique, glucides complexes</td></tr>
+        <tr><td class="td-key">Racines &amp; tubercules</td><td class="td-src">Bardane, carotte sauvage, panicaut</td><td>Source hivernale de glucides complexes</td></tr>
+        <tr><td class="td-key">Algues</td><td class="td-src">Bord de mer, automne-hiver</td><td>Glucides + iode + mineraux</td></tr>
+        <tr><td class="td-key">Caroube &amp; figues de Barbarie</td><td class="td-src">Zone mediterraneenne, Portugal</td><td>Tres sucres, riches en fibres</td></tr>
+      </table></div>
+      <div class="tip">🌰 La farine de gland absorbe 2x plus d'eau que la farine de ble — tres rassasiante.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">2.2</span><span class="acc-title">Lipides — L'équilibre hormonal</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Aliment</th><th>Source / Lieu</th><th>Apport nutritionnel</th></tr>
+        <tr><td class="td-key">Noix</td><td class="td-src">Noyers, automne-hiver</td><td>Omega 3, phosphore, cuivre</td></tr>
+        <tr><td class="td-key">Noisettes</td><td class="td-src">Noisetiers, automne</td><td>Vitamine E, omega 9, calcium</td></tr>
+        <tr><td class="td-key">Amandes</td><td class="td-src">Amandiers mediterraneens</td><td>Magnesium, omega 9, calcium</td></tr>
+        <tr><td class="td-key">Pignons de pin</td><td class="td-src">Pin parasol, Camargue, Bretagne, Portugal</td><td>Zinc, omega 6, phosphore</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">2.3</span><span class="acc-title">Proteines — Vegetales &amp; Animales</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Aliment</th><th>Type</th><th>Qualite protéique</th><th>Micronutriments</th></tr>
+        <tr><td class="td-key">Ortie (feuilles+graines)</td><td>Vegetal</td><td>Auto-complementaire</td><td>Cuivre, vit. K, fer</td></tr>
+        <tr><td class="td-key">Chenopode blanc</td><td>Vegetal</td><td>Quasi-completes (proche quinoa)</td><td>Vit. K, magnesium, potassium</td></tr>
+        <tr><td class="td-key">Huîtres</td><td>Animal — coquillage</td><td>Proteines completes, sans materiel</td><td>Zinc, B12, iode</td></tr>
+        <tr><td class="td-key">Moules</td><td>Animal — coquillage</td><td>Proteines completes, sans materiel</td><td>Fer, B12, choline, selenium</td></tr>
+        <tr><td class="td-key">Palourdes</td><td>Animal — coquillage</td><td>Proteines completes</td><td>Fer n°1 mondial, zinc, selenium</td></tr>
+        <tr><td class="td-key">Éperlans</td><td>Animal — poisson</td><td>Proteines completes + omega 3</td><td>Vit. D, E, selenium</td></tr>
+      </table></div>
+      <p class="sub-h">Combinaisons vegetales completes</p>
+      <div style="margin-top:.8rem">
+        <div class="combo-row"><span>Ortie feuilles</span><span class="combo-arrow">+</span><span>Glands</span><span class="combo-arrow">→</span><span class="combo-result">Proteine quasi-complete</span></div>
+        <div class="combo-row"><span>Feuilles de vesse</span><span class="combo-arrow">+</span><span>Noisettes</span><span class="combo-arrow">→</span><span class="combo-result">Acides amines complets</span></div>
+        <div class="combo-row"><span>Chenopode blanc</span><span class="combo-arrow">→</span><span class="combo-result">Deja quasi-complet, seul suffit</span></div>
+      </div>
+      <div class="tip">🦪 La peche a pied (huîtres, moules, palourdes) est la source la plus simple de proteines completes : sans materiel, uniquement a maree basse.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">3</span><span class="acc-title">Micronutrition — Le moteur invisible</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="tip">💡 Les feuilles de mauve contiennent <strong>2x plus de calcium que le lait</strong>. La palourde surpasse tous les aliments en teneur en fer — 100g couvrent 150% des besoins journaliers.</div>
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Nutriment</th><th>Source sauvage</th><th>Role</th></tr>
+        <tr><td class="td-key">Vitamine C</td><td class="td-src">Cynorrhodons (imbattables !), fruits sauvages</td><td>Immunite, anti-fatigue</td></tr>
+        <tr><td class="td-key">Vitamine B12</td><td class="td-src">Palourdes, huîtres, moules, crustaces</td><td>Cerveau, nerfs, globules rouges</td></tr>
+        <tr><td class="td-key">Vitamine D</td><td class="td-src">Éperlans, champignons seches au soleil</td><td>Solidite des os, immunite</td></tr>
+        <tr><td class="td-key">Vitamine K</td><td class="td-src">Orties, chenopode blanc, blette maritime</td><td>Coagulation, solidite des os</td></tr>
+        <tr><td class="td-key">Calcium</td><td class="td-src">Mauve (2x le lait !), tilleul, amandes</td><td>Solidite des os</td></tr>
+        <tr><td class="td-key">Fer</td><td class="td-src">Palourde (n°1 mondial !), chenopode, ortie</td><td>Transport d'oxygene, prevention fatigue</td></tr>
+        <tr><td class="td-key">Zinc</td><td class="td-src">Huîtres (n°1 mondial !), pignons</td><td>Immunite, cicatrisation</td></tr>
+        <tr><td class="td-key">Iode</td><td class="td-src">Algues (n°1 mondial !), palourdes, oursins</td><td>Thyroïde, équilibre hormonal</td></tr>
+        <tr><td class="td-key">Omega 3</td><td class="td-src">Éperlans, noix, pourpier, mâche</td><td>Cerveau, coeur, vision</td></tr>
+      </table></div>
+      <div class="tip">🏆 Huîtres = n°1 zinc. Palourdes = n°1 fer. Algues = n°1 iode. Ces aliments sont gratuits au bord de la mer.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">🔄</span>
+      <span class="acc-title">Vie nomade inter-boucles — Protéines &amp; Iode en continu</span>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p class="body-p">La boucle se referme à Artemps en mai. Repartir immédiatement sur une deuxième grande boucle casse le calendrier saisonnier. La solution : <strong>3 mois de nomadisme libre côtier</strong> (mai → mi-août) avant de recaler le départ sur la même logique saisonnière.</p>
+
+      <p class="sub-h">La règle permanente — ne jamais s'éloigner de plus de 2-3 jours de la côte ou d'une rivière</p>
+      <p style="font-size:.88rem;color:var(--ink-mid);margin-bottom:1rem;line-height:1.6">À l'ouest d'une ligne Metz-Toulouse, c'est faisable presque partout en France. Somme, Seine, Loire, Garonne, Dordogne — protéines animales à la ligne en permanence, même à 200 km de la mer.</p>
+
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Période</th><th>Zone</th><th>Protéines animales</th><th>Iode</th></tr>
+        <tr>
+          <td class="td-key">Mai → juin</td>
+          <td class="td-src">Bretagne &amp; Normandie</td>
+          <td>Moules, araignées de mer, huîtres Cancale, coquilles St-Jacques</td>
+          <td>⭐⭐⭐⭐⭐ Algues fraîches en masse (Laminaria, Porphyra, Chondrus) — constituer stocks poudre d'algues pour 1 an</td>
+        </tr>
+        <tr>
+          <td class="td-key">Juin → juillet</td>
+          <td class="td-src">Pays Basque ou Bretagne intérieure</td>
+          <td>Pêche rivière (truites, perches), escargots, grenouilles</td>
+          <td>⭐⭐ Cresson calcaire, orties — faible mais régulier</td>
+        </tr>
+        <tr>
+          <td class="td-key">Juillet → mi-août</td>
+          <td class="td-src">Remontée intérieure vers Artemps</td>
+          <td>Pêche canaux Somme (brochets, perches, anguilles), écrevisses</td>
+          <td>⭐⭐ Stocks algues séchées (Bretagne) — 1g poudre Laminaria/jour = besoins couverts</td>
+        </tr>
+      </table></div>
+
+      <p class="sub-h">Iode hors mer — la stratégie des stocks d'algues séchées</p>
+      <div class="tip">🌿 <strong>Laminaria digitata en poudre séchée : 1g/jour couvre les besoins thyroïdiens.</strong> Constituer 400-500g en Bretagne (mai-juin) = 14-16 mois d'autonomie en iode. Stocker en bocal hermétique dans les sacoches — poids négligeable, impact majeur sur le SOPK et la thyroïde.</div>
+
+      <p class="sub-h">Protéines animales hors mer — pêche en eau douce</p>
+      <ul style="padding-left:1.3rem;font-size:.88rem;color:var(--ink-light);line-height:2">
+        <li><strong>Anguille</strong> (Somme, canaux picards) — protéines complètes + oméga 3, pêche à la ligne simple</li>
+        <li><strong>Perche</strong> — facile à pêcher, chair ferme, présente dans tous les canaux de France</li>
+        <li><strong>Brochet</strong> — grosse prise, protéines pour 2-3 jours, leurre ou vif</li>
+        <li><strong>Écrevisses américaines</strong> — espèce invasive à éliminer légalement, protéines + zinc, piège simple (nasse ou bouteille percée)</li>
+        <li><strong>Escargots</strong> (après pluie) — zinc ★★★, protéines complètes, ramassage libre partout</li>
+      </ul>
+
+      <div class="tip">♻️ <strong>Logique du cycle :</strong> Boucle principale (mi-août → mai) → nomadisme côtier libre (mai → mi-août) → nouvelle grande boucle. Le calendrier saisonnier se recale parfaitement à chaque cycle. Les stocks d'algues bretonnes couvrent l'iode entre deux passages côtiers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ TECHNIQUES -->
+  </div>
+
+  <!-- Panneau Techniques -->
+  <div id="tpanel-techniques" class="terrain-panel" style="display:none">
+<div class="table-wrap" style="margin-bottom:1.5rem">
+    <table class="data-table">
+      <tr><th>Technique</th><th>Methode</th><th>Avantage / Resultat</th></tr>
+      <tr><td class="td-key">Farine de gland</td><td>Moudre a sec au moulin a cafe</td><td>Conservation en sac hermetique, tres rassasiante</td></tr>
+      <tr><td class="td-key">Lactofermentation</td><td>Fermentation sauvage en bocal</td><td>Probiotiques naturels, conservation longue duree</td></tr>
+      <tr><td class="td-key">Cuirs de fruits</td><td>Puree de fruit cru deshydratee (four bas)</td><td>Concentre micronutriments, ultra-leger, stable</td></tr>
+      <tr><td class="td-key">Champignons seches</td><td>Sechage naturel au soleil</td><td>Vitamine D activee par le soleil</td></tr>
+      <tr><td class="td-key">Sauce tomate au cynorrhodon</td><td>Cynorrhodons mixes + sterilisation bocal</td><td>Substitut de sauce tomate (meme sur pizza !)</td></tr>
+      <tr><td class="td-key">Lait &amp; creme de noisette</td><td>Trempage + mixage + filtrage</td><td>Creme vegetale pour cuissons en sauce</td></tr>
+    </table>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num"></span><span class="acc-title">Fiche detaillee — Farine de gland</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p class="sub-h">Procede de lixiviation</p>
+      <ol style="padding-left:1.3rem;font-size:.88rem;color:var(--ink-light)">
+        <li>Decortiquer les glands secs. Eliminer les perces et moisis.</li>
+        <li>Mixer ou concasser grossierement.</li>
+        <li>Tremper dans l'eau froide. Changer l'eau 2 a 3 fois par jour pendant 48 a 72h.</li>
+        <li>Gouter : doit etre doux, sans amertume tannique.</li>
+        <li>Secher au soleil ou pres du feu. Moudre finement.</li>
+        <li>Utiliser comme farine (galettes, bouillie, epaississant de soupe).</li>
+      </ol>
+      <div class="tip">La farine de gland n'a pas de gluten — associer avec une autre farine pour faire lever.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num"></span><span class="acc-title">Fiche detaillee — Lactofermentation sauvage</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ol style="padding-left:1.3rem;font-size:.88rem;color:var(--ink-light)">
+        <li>Couper finement les legumes/plantes (poireaux sauvages, ail des ours, plantain...).</li>
+        <li>Masser avec 2% de sel du poids total jusqu'a ce que l'eau sorte.</li>
+        <li>Tasser dans un bocal propre — le jus doit recouvrir les vegetaux.</li>
+        <li>Fermer le bocal, laisser a temperature ambiante 3 a 7 jours.</li>
+        <li>Gouter quotidiennement. Acide = pret. Refrigerer ou conserver au frais.</li>
+      </ol>
+      <div class="tip">La lactofermentation augmente la biodisponibilite des nutriments et cree des probiotiques naturels.</div>
+    </div>
+  </div>
+
+  <div class="divider">— CALENDRIER SAISONNIER —</div>
+  <div class="quote-block">📅 Les fruits sauvages sont disponibles frais de mai a decembre (9 mois sur 12).</div>
+  <div class="season-grid" style="margin-top:1.5rem">
+    <div class="season-card hiver">
+      <div class="season-name">❄️ Hiver</div><div class="season-period">Decembre — Fevrier</div>
+      <div class="season-foods">Racines (bardane, carotte sauvage), algues, blette maritime, poireaux sauvages, cynorrhodons, agrumes abandonnes (Portugal)</div>
+      <div class="season-note">Aller : vit sur les stocks. Retour (Portugal/Galice) : asperges sauvages, coquillages, agrumes — hiver riche côté atlantique.</div>
+    </div>
+    <div class="season-card printemps">
+      <div class="season-name">🌱 Printemps</div><div class="season-period">Mars — Mai</div>
+      <div class="season-foods">Jeunes pousses (bambou, roseau), orties, mâche, ail des ours, cardamine, gesse, pourpier</div>
+      <div class="season-note">Explosion de vegetaux tendres. Debut de peche.</div>
+    </div>
+    <div class="season-card ete">
+      <div class="season-name">☀️ Ete</div><div class="season-period">Juin — Aout</div>
+      <div class="season-foods">Fruits (raisin, figues, mures, mirabelles, fraises des bois), chenopode blanc, pourpier</div>
+      <div class="season-note">Abondance de fruits. Cueillette facile. Peche active.</div>
+    </div>
+    <div class="season-card automne">
+      <div class="season-name">🍂 Automne</div><div class="season-period">Septembre — Novembre</div>
+      <div class="season-foods">Chataignes, glands, noisettes, pignons, champignons, gesses, derniers fruits, cynorrhodons</div>
+      <div class="season-note">Saison de la recolte et des stocks. La plus riche de l'annee.</div>
+    </div>
+  </div>
+
+  <div class="divider">— — —</div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num"></span><span class="acc-title">Strategie de stockage annuel</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Aliment</th><th>Forme de stockage</th><th>Duree conservation</th></tr>
+        <tr><td class="td-key">Glands</td><td>Farine lixiviee sechee</td><td>6 a 12 mois</td></tr>
+        <tr><td class="td-key">Chataignes</td><td>Sechees ou en farine</td><td>1 an</td></tr>
+        <tr><td class="td-key">Noisettes / Noix</td><td>Entieres en coque, lieu sec</td><td>6 a 12 mois</td></tr>
+        <tr><td class="td-key">Cynorrhodons</td><td>Seches ou sauce sterilisee</td><td>1 an</td></tr>
+        <tr><td class="td-key">Fruits rouges</td><td>Cuirs de fruits deshydrates</td><td>3 a 6 mois</td></tr>
+        <tr><td class="td-key">Champignons</td><td>Seches au soleil</td><td>1 an (+ vit. D activee)</td></tr>
+        <tr><td class="td-key">Legumes sauvages</td><td>Lactofermentation en bocal</td><td>Plusieurs mois</td></tr>
+        <tr><td class="td-key">Faînes de hêtre</td><td>Torréfiées, bocal hermétique</td><td>6 mois</td></tr>
+        <tr><td class="td-key">Algues séchées</td><td>Séchées au vent, sachet hermétique</td><td>1 an</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="divider">— RECETTES SAUVAGES —</div>
+  <div class="recipes-filter">
+    <button class="filter-btn active" onclick="filterRecipes('all', this)">Toutes</button>
+    <button class="filter-btn" onclick="filterRecipes('printemps', this)">🌱 Printemps</button>
+    <button class="filter-btn" onclick="filterRecipes('ete', this)">☀️ Ete</button>
+    <button class="filter-btn" onclick="filterRecipes('automne', this)">🍂 Automne</button>
+    <button class="filter-btn" onclick="filterRecipes('hiver', this)">❄️ Hiver</button>
+    <button class="filter-btn" onclick="filterRecipes('mer', this)">🌊 Mer</button>
+    <button class="filter-btn" onclick="filterRecipes('conservation', this)">📦 Conservation</button>
+    <button class="filter-btn" onclick="filterRecipes('omnia', this)">🔥 Omnia / Cuiseur</button>
+  </div>
+  <div class="recipes-grid" id="recipesGrid"></div>
+
+  <div class="divider">— TERRAIN &amp; LOGISTIQUE —</div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">🌿</span><span class="acc-title">Plantes de berge — identification &amp; usage</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Plante</th><th>Habitat exact</th><th>Saison</th><th>Usage alimentaire</th><th>Attention</th></tr>
+        <tr><td class="td-key">Ortie (Urtica dioica)</td><td>Berges riches, lisieres humides</td><td>Mars-Oct</td><td>Soupe, farine, tisane</td><td>—</td></tr>
+        <tr><td class="td-key">Cresson de fontaine</td><td>Sources, ruisseaux a courant</td><td>Toute annee</td><td>Salade, soupe — riche en vit. C et fer</td><td>Cuire si source non certifiee (douves hepatiques)</td></tr>
+        <tr><td class="td-key">Massette / Quenouille (Typha latifolia)</td><td>Marges d'etangs, canaux</td><td>Toute annee</td><td>Turions crus ou cuits, pollen (beignets), rhizomes (farine)</td><td>—</td></tr>
+        <tr><td class="td-key">Salicorne (Salicornia europaea)</td><td>Bords sales, estuaires</td><td>Avr-Sept</td><td>Crue en salade, lactofermentee, substitute de sel</td><td>Zones non polluees uniquement</td></tr>
+        <tr><td class="td-key">Oseille sauvage (Rumex acetosa)</td><td>Prairies humides, berges</td><td>Mars-Oct</td><td>Soupe, salade, sauce acidulee</td><td>Riche en oxalates — ne pas consommer en exces</td></tr>
+        <tr><td class="td-key">Carotte sauvage (Daucus carota)</td><td>Bords de chemins, berges seches</td><td>Ete-Automne</td><td>Racine crue ou cuite, graines aromatiques</td><td>Confusion possible avec cigue (tiges tachetees de rouge)</td></tr>
+        <tr><td class="td-key">Pourpier (Portulaca oleracea)</td><td>Berges seches, chemins de halage</td><td>Juin-Sept</td><td>Salade, soupe — riche en omega 3</td><td>—</td></tr>
+        <tr><td class="td-key">Sureau noir (Sambucus nigra)</td><td>Berges, haies humides</td><td>Mai-Oct</td><td>Fleurs (beignets, sirop), baies cuites (sirop, gelee)</td><td>Feuilles, ecorce et baies crues : toxiques</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">💧</span><span class="acc-title">Eau potable — regles de terrain</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Source</th><th>Fiabilite</th><th>Traitement</th></tr>
+        <tr><td class="td-key">Fontaines de village</td><td style="color:var(--moss);font-weight:700">✔ Sure</td><td>Aucun</td></tr>
+        <tr><td class="td-key">Sources de resurgence (flanc de colline)</td><td style="color:var(--moss);font-weight:700">✔ Generalement sure</td><td>Ebullition par precaution</td></tr>
+        <tr><td class="td-key">Ruisseaux de montagne (amont de tout habitat)</td><td style="color:var(--ochre);font-weight:700">⚠ Conditionnelle</td><td>Ebullition 3 min ou filtre</td></tr>
+        <tr><td class="td-key">Eau de canal (eau stagnante ou lente)</td><td style="color:var(--rust);font-weight:700">✗ Non potable</td><td>Eviter — herbicides, carburants</td></tr>
+        <tr><td class="td-key">Eau de fleuve (Loire, Saone, Rhone...)</td><td style="color:var(--rust);font-weight:700">✗ Non potable</td><td>Eviter — pollutions agricoles/industrielles</td></tr>
+      </table></div>
+      <div class="tip">🚴 A velo : reperer les fontaines dans les villages tous les 15 a 25 km. OsmAnd permet de filtrer les fontaines publiques hors ligne.</div>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span class="acc-num">🚴</span><span class="acc-title">Logistique velo charge — conseils specifiques</span><span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="table-wrap"><table class="data-table">
+        <tr><th>Contrainte</th><th>Solution terrain</th></tr>
+        <tr><td class="td-key">Stocker les recoltes fragiles</td><td>Filet elastique sur sacoche avant, bocaux hermetiques pour baies et champignons</td></tr>
+        <tr><td class="td-key">Faire secher les plantes en roulant</td><td>Tresser en bouquets, accrocher au guidon (thym, plantain, orties)</td></tr>
+        <tr><td class="td-key">Cuisiner leger</td><td>Rechaud a alcool solide (Esbit) — leger, compact, fonctionne au vent</td></tr>
+        <tr><td class="td-key">Eau en autonomie</td><td>2 bidons + filtre Sawyer Squeeze (filtre les parasites, 45g)</td></tr>
+        <tr><td class="td-key">Etapes optimales</td><td>40 a 60 km/jour avec sacoches chargees — laisser 1 a 2h/jour pour la cueillette</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════ TRAJETS -->
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════ TRAJET COMPLET -->
+<section id="laboucle" class="section">
+  <div class="page-head">
+    <h1 class="page-title">🔁 La Boucle</h1>
+    <p class="page-subtitle">Artemps → Lagos → Artemps · Vélo chargé · Mi-août → Mai · ~10 000 km</p>
+  </div>
+
+  <!-- Indicateur chargement GPX -->
+  <div id="gpx-loading" style="display:none;text-align:center;padding:.75rem;font-family:var(--font-mono);font-size:.72rem;color:var(--mud-light);letter-spacing:.06em">
+    ⏳ Chargement des tracés GPX…
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="boucle-tabs">
+    <button class="boucle-tab active" id="tab-aller" onclick="switchBoucle('aller')">🗺️ Aller — Artemps → Lagos</button>
+    <button class="boucle-tab" id="tab-retour" onclick="switchBoucle('retour')">🔄 Retour — Lagos → Artemps</button>
+    <button class="boucle-tab" id="tab-inter" onclick="switchBoucle('inter')">🌿 Inter-boucles — Mai → Mi-août</button>
+  </div>
+
+  <!-- ALLER -->
+  <div id="boucle-aller">
+  <div class="page-head" style="padding-top:.5rem">
+    <p class="page-subtitle">Vélo chargé · Mi-août → Janvier · ~5 400 km · 8 phases · Constitution de stocks</p>
+  </div>
+
+  <div class="tc-stats-row">
+    <div class="tc-stat"><div class="tc-stat-val">~5 400</div><div class="tc-stat-label">KM TOTAL</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">8</div><div class="tc-stat-label">PHASES</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">3</div><div class="tc-stat-label">PAYS</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">~110</div><div class="tc-stat-label">JOURS ESTIMÉS</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">Mi-août → Jan</div><div class="tc-stat-label">PÉRIODE</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">3</div><div class="tc-stat-label">HALTES STOCKS</div></div>
+  </div>
+
+  <div class="tc-controls">
+    <div class="tc-controls-title">FILTRER PAR PHASE</div>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="1" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#5a8a3a"></span>Phase 1 — Picardie & Vallée de l'Oise</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="2" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#3a6e28"></span>Phase 2 — Détour Morvan ⭐ Stocks</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="3" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#9e3f20"></span>Phase 3 — Saône & Beaujolais</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="4" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#7a4a20"></span>Phase 4 — Cévennes & Périgord ⭐ Stocks lourds</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="5" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#2d6e7a"></span>Phase 5 — Gascogne & Arcachon 🦪 Protéines</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="6" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#c8882a"></span>Phase 6 — Espagne : Meseta</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="7" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#2d7a5c"></span>Phase 7 — Portugal Centre</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tc-phase-check" data-phase="8" checked onchange="renderTrajComplet()"><span class="tc-phase-dot" style="background:#2c5e2a"></span>Phase 8 — Alentejo & Algarve 🌸</label>
+    <div class="tc-ctrl-btns">
+      <button class="btn btn-secondary" onclick="tcToggleAll(true)">Tout</button>
+      <button class="btn btn-muted" onclick="tcToggleAll(false)">Aucun</button>
+      <button class="btn btn-primary" onclick="renderTrajComplet()">↻ Afficher</button>
+    </div>
+  </div>
+
+  <div id="tcMap" style="height:560px;border-radius:var(--radius);border:2px solid var(--forest);box-shadow:3px 3px 0 var(--ochre);margin-bottom:2rem;"></div>
+
+  <div id="tcList"></div>
+  </div><!-- fin boucle-aller -->
+
+  <!-- RETOUR -->
+  <div id="boucle-retour" style="display:none">
+  <div class="page-head" style="padding-top:.5rem">
+    <p class="page-subtitle">Retour côtier · Janvier → Mai · ~4 600 km · 6 phases · Frais au fil de l'eau</p>
+  </div>
+
+  <div class="tc-stats-row">
+    <div class="tc-stat"><div class="tc-stat-val">~4 600</div><div class="tc-stat-label">KM RETOUR</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">6</div><div class="tc-stat-label">PHASES</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">Jan → Mai</div><div class="tc-stat-label">PÉRIODE</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">~110</div><div class="tc-stat-label">JOURS ESTIMÉS</div></div>
+    <div class="tc-stat"><div class="tc-stat-val">Côtier</div><div class="tc-stat-label">AXE PRINCIPAL</div></div>
+  </div>
+
+  <div style="background:rgba(74,112,53,.15);border:1px solid rgba(154,191,106,.3);border-radius:var(--radius);padding:.8rem 1.2rem;margin-bottom:1.5rem;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;color:var(--cream)">
+    📦 5 MUST TOUJOURS EN SACOCHE : Faînes torréfiées · Champignons séchés · Cynorrhodons séchés · Farine de gland · Algues séchées
+  </div>
+
+  <div class="tc-controls">
+    <div class="tc-controls-title">FILTRER PAR PHASE</div>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="1" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#2c7a3a"></span>Phase R1 — Algarve & Côte Vicentine</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="2" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#1a6e8a"></span>Phase R2 — Galice 🦪</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="3" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#3a7a5a"></span>Phase R3 — Côte Basque & Landes</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="4" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#5a8a2a"></span>Phase R4 — Vendée & Marais Poitevin</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="5" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#1a5a8a"></span>Phase R5 — Bretagne 🌊</label>
+    <label class="tc-phase-toggle"><input type="checkbox" class="tr-phase-check" data-phase="6" checked onchange="renderTrajRetour()"><span class="tc-phase-dot" style="background:#5a6a3a"></span>Phase R6 — Normandie & Baie de Somme 🏁</label>
+    <div class="tc-ctrl-btns">
+      <button class="btn btn-secondary" onclick="trToggleAll(true)">Tout</button>
+      <button class="btn btn-muted" onclick="trToggleAll(false)">Aucun</button>
+      <button class="btn btn-primary" onclick="renderTrajRetour()">↻ Afficher</button>
+    </div>
+  </div>
+
+  <div id="trMap" style="height:560px;border-radius:var(--radius);border:2px solid var(--forest);box-shadow:3px 3px 0 var(--ochre);margin-bottom:2rem;"></div>
+  <div id="trList"></div>
+  </div><!-- fin boucle-retour -->
+
+  <!-- INTER-BOUCLES -->
+  <div id="boucle-inter" style="display:none">
+    <div class="page-head" style="padding-top:.5rem">
+      <p class="page-subtitle">Champagne → Creuse → Millevaches · Mi-mai → Mi-août · ~1 900 km · 95 jours</p>
+    </div>
+    <div class="tc-stats-row">
+      <div class="tc-stat"><div class="tc-stat-val">~1 900</div><div class="tc-stat-label">KM TOTAL</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">3</div><div class="tc-stat-label">SEGMENTS</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">~95</div><div class="tc-stat-label">JOURS</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">18</div><div class="tc-stat-label">POINTS TERRAIN</div></div>
+    </div>
+    <div id="interMap" style="height:560px;border-radius:var(--radius);border:2px solid var(--forest);box-shadow:3px 3px 0 var(--ochre);margin-bottom:2rem;"></div>
+    <div id="interContent"></div>
+  </div><!-- fin boucle-inter -->
+
+</section>
+
+<!-- ══════════════════════════════════════ CARNET RPG -->
+<section id="carnet" class="section">
+  <div class="page-head">
+    <h1 class="page-title">Carnet du Voyageur</h1>
+    <p class="page-subtitle">Quêtes · Inventaire · Journal de bord</p>
+  </div>
+  <iframe src="carnet.html"
+    style="width:100%;height:calc(100dvh - 130px - env(safe-area-inset-bottom, 0px));min-height:500px;border:none;border-radius:8px;display:block"
+    title="Carnet RPG">
+  </iframe>
+</section>
+
+<!-- ══════════════════════════════════════ A PROPOS -->
+
+</main>
+
+<!-- MODAL RECETTE -->
+<div class="modal-ov" id="recipeModal" onclick="closeModalOv(event)">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- SCRIPTS — ordre important : data avant app — defer = non-bloquant -->
+<script defer src="data.js"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
+<script defer src="terrain.js"></script>
+<script defer src="recettes.js"></script>
+<script defer src="trajets.js"></script>
+<!-- gpx.js chargé à la demande via loadGPX() dans app.js -->
+<script defer src="app.js"></script>
+
+</body>
+</html>

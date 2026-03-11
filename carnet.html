@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Carnet du Voyageur — La Boucle Sauvage</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@700&display=swap"/>
+    <link rel="stylesheet" href="main.css"/>
+  <link rel="stylesheet" href="carnet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
+</head>
+<body class="carnet-page">
+
+<!-- ── HEADER ── -->
+<header>
+  <span class="hdr-leaf">🌿</span>
+  <div class="hdr-title">
+    Carnet du Voyageur
+    <small>La Boucle Sauvage · Nomadisme Permanent</small>
+  </div>
+  <div class="xp-bar">
+    <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+    <span id="globalXpVal">0 / 58 quêtes</span>
+  </div>
+  <button class="export-agent-btn" onclick="BS.exportForAgent()" title="Exporter les données pour l'agent IA">⬇ Export</button>
+</header>
+
+<!-- ── TABS ── -->
+<nav class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('carte',this)">🗺️ Carte</button>
+  <button class="tab-btn" onclick="switchTab('zones',this)">🌲 Zones</button>
+  <button class="tab-btn" onclick="switchTab('quetes',this)">⚔️ Quêtes</button>
+  <button class="tab-btn" id="tab-observer" onclick="switchTab('observer',this)">📍 Observer</button>
+  <button class="tab-btn" onclick="switchTab('inventaire',this)">🎒 Stocks</button>
+  <button class="tab-btn" onclick="switchTab('journal',this)">📖 Journal</button>
+</nav>
+
+<!-- ══ PANEL CARTE ══ -->
+<div id="panel-carte" class="tab-panel active">
+  <div class="section-title">🗺️ La Boucle — ~10 000 km</div>
+  <div class="map-wrap" id="mapWrap"></div>
+  <div class="map-legend" id="mapLegend" style="display:none"></div>
+  <div class="spots-grid" id="spotsGrid"></div>
+</div>
+
+<!-- ══ PANEL ZONES ══ -->
+<div id="panel-zones" class="tab-panel">
+  <div class="section-title">🌲 Zones de la Boucle</div>
+  <div class="zone-focus" id="zoneFocus"></div>
+  <div class="zones-grid" id="zonesGrid"></div>
+</div>
+
+<!-- ══ PANEL QUÊTES ══ -->
+<div id="panel-quetes" class="tab-panel">
+  <div class="section-title">⚔️ Quêtes</div>
+  <!-- Cycle des saisons -->
+  <div id="cycleSaisons" class="cycle-saisons"></div>
+
+  <div class="quest-filters">
+    <button class="filter-btn active" onclick="filterQuests('all',this)">Toutes</button>
+    <button class="filter-btn" onclick="filterQuests('collecte',this)">🌿 Collecte</button>
+    <button class="filter-btn" onclick="filterQuests('survie',this)">⚔️ Survie</button>
+    <button class="filter-btn" onclick="filterQuests('exploration',this)">🗺️ Exploration</button>
+    <button class="filter-btn" onclick="filterQuests('quotidienne',this)">⚡ Journalière</button>
+      <button class="filter-btn" onclick="filterQuests('witch',this)">🧙 Sorcières</button>
+    <button class="filter-btn" onclick="filterQuests('done',this)">✓ Complétées</button>
+  </div>
+  <div id="questList"></div>
+</div>
+
+<!-- ══ PANEL INVENTAIRE ══ -->
+<!-- ══ PANEL OBSERVER ══ -->
+<div id="panel-observer" class="tab-panel">
+  <div class="section-title">📍 Observer un point</div>
+
+  <!-- Formulaire rapide 3 taps -->
+  <div class="quick-obs" id="quickObs">
+
+    <button class="quick-gps" id="quickGpsBtn" onclick="quickGPS()">
+      <span class="quick-gps-icon">📍</span>
+      <span class="quick-gps-label" id="quickGpsLabel">Capturer position</span>
+    </button>
+
+    <div class="quick-step2" id="quickStep2">
+      <div class="quick-types">
+        <button class="qt-btn active" data-type="cueillette" onclick="quickSetType(this)">🌿</button>
+        <button class="qt-btn" data-type="champignon"  onclick="quickSetType(this)">🍄</button>
+        <button class="qt-btn" data-type="peche"       onclick="quickSetType(this)">🎣</button>
+        <button class="qt-btn" data-type="eau"         onclick="quickSetType(this)">💧</button>
+        <button class="qt-btn" data-type="recharge"    onclick="quickSetType(this)">⚡</button>
+        <button class="qt-btn" data-type="bivouac"     onclick="quickSetType(this)">🏕️</button>
+        <button class="qt-btn" data-type="danger"      onclick="quickSetType(this)">⚠️</button>
+      </div>
+      <div class="quick-qty">
+        <button class="qq-btn" data-qty="absent"  onclick="quickSetQty(this)">vide</button>
+        <button class="qq-btn" data-qty="rare"    onclick="quickSetQty(this)">rare</button>
+        <button class="qq-btn active" data-qty="moyen" onclick="quickSetQty(this)">moyen</button>
+        <button class="qq-btn" data-qty="abondant" onclick="quickSetQty(this)">abondant</button>
+      </div>
+      <div class="quick-note-wrap">
+        <button class="quick-note-toggle" onclick="quickToggleNote()">+ note</button>
+        <textarea id="quickNote" class="quick-note" placeholder="Conditions, espèces, remarques…"></textarea>
+      </div>
+    </div>
+
+    <button class="quick-save" id="quickSave" onclick="quickSaveCarnet()" disabled>
+      ✓ Enregistrer l'observation
+    </button>
+  </div>
+
+  <!-- Fiche détaillée (repli) -->
+  <details class="obs-details-wrap">
+    <summary class="quick-detail-toggle">⋯ Fiche détaillée</summary>
+    <div class="add-form open" id="addPointForm">
+      <div>
+        <div class="form-label">Nom du point</div>
+        <div class="form-row"><input id="newName" placeholder="Ex: Source de la hêtraie"/></div>
+      </div>
+      <div>
+        <div class="form-label">Type</div>
+        <div class="form-row">
+          <select id="newType">
+            <option value="cueillette">🌿 Cueillette</option>
+            <option value="champignon">🍄 Champignons</option>
+            <option value="peche">🎣 Pêche &amp; Coquillages</option>
+            <option value="oeuf">🥚 Œufs frais</option>
+            <option value="eau">💧 Eau potable</option>
+            <option value="bivouac">🏕️ Bivouac</option>
+            <option value="abri">🛖 Abri / Halte</option>
+            <option value="ravitaillement">🛒 Ravitaillement</option>
+            <option value="recharge">⚡ Recharge vélo élec</option>
+            <option value="danger">⚠️ Danger / À éviter</option>
+            <option value="autre">📍 Autre</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">Coordonnées GPS</div>
+        <div class="form-row">
+          <input id="newLat" placeholder="Latitude" type="number" step="any"/>
+          <input id="newLng" placeholder="Longitude" type="number" step="any"/>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">Notes</div>
+        <div class="form-row"><textarea id="newDesc" placeholder="Description, période, accès…"></textarea></div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-primary" onclick="addPointCarnet()">✔ Enregistrer</button>
+      </div>
+    </div>
+  </details>
+
+  <!-- Observations récentes -->
+  <div class="section-title" style="margin-top:1.5rem">Observations récentes</div>
+  <div class="points-grid" id="obsGrid"></div>
+</div>
+
+<div id="panel-inventaire" class="tab-panel">
+  <div class="section-title">🎒 Stocks & Inventaire</div>
+  <div class="inventory-grid" id="inventoryGrid"></div>
+</div>
+
+<!-- ══ PANEL JOURNAL ══ -->
+<div id="panel-journal" class="tab-panel">
+  <div class="section-title">📖 Journal de Bord</div>
+  <div class="journal-compose">
+    <div class="journal-compose-top">
+      <input type="date" id="journalDate" class="journal-date-in"/>
+      <select id="journalZone" class="journal-zone-in">
+        <option value="">— Zone —</option>
+      </select>
+    </div>
+    <textarea id="journalText" class="journal-text" placeholder="Entrée du jour — observations, ressources, état du corps..."></textarea>
+    <button class="journal-submit" onclick="saveJournalEntry()">+ Ajouter au journal</button>
+  </div>
+  <div id="journalList"></div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
+<script defer src="data.js"></script>
+<script defer src="terrain.js"></script>
+<script>
+
+/* ═══════════════════════════════════════════════
+   DONNÉES RPG — générées depuis les phases du trajet
+═══════════════════════════════════════════════ */
+const ZONES_RPG = [
+  {
+    id:1, phase:"PHASE 1", pays:"🇫🇷",
+    name:"Les Grandes Forêts du Nord",
+    subtitle:"Ardennes · Meuse · Moselle · Voie Bleue",
+    period:"Mi-août → fin août",
+    color:"#5a8a3a",
+    lore:"Les hêtraies monumentales des Ardennes gardent leurs secrets depuis des siècles. Peu de voyageurs s'aventurent dans ces forêts — les fruits y sont abondants, les champignons généreux, et les rivières poissonneuses.",
+    quests_ids:[1,2,3,4,5,6],
+    stocks:["Myrtilles séchées","Faînes torréfiées","Noisettes","Cuirs de mûres"],
+    unlocked:true
+  },
+  {
+    id:2, phase:"PHASE 2", pays:"🇫🇷",
+    name:"Le Sanctuaire du Morvan",
+    subtitle:"Vézelay · Lac des Settons · Château-Chinon",
+    period:"Début septembre",
+    color:"#3a6e28",
+    lore:"Au cœur du granit bourguignon, le Morvan cache les plus grandes hêtraies de France centrale. C'est ici que les voyageurs avisés font halte pour constituer leurs réserves hivernales.",
+    quests_ids:[7,8,9],
+    stocks:["Faînes torréfiées","Farine de gland","Champignons séchés","Noisettes"],
+    unlocked:true
+  },
+  {
+    id:3, phase:"PHASE 3", pays:"🇫🇷",
+    name:"La Vallée d'Or & le Pilat",
+    subtitle:"Saône · Beaujolais · Lyon · Parc du Pilat",
+    period:"Fin septembre → mi-octobre",
+    color:"#9e3f20",
+    lore:"Le tournant de la boucle. L'été se ferme ici — les dernières mûres, les premiers noyers qui lâchent, les pleurotes sur les peupliers morts. À Lyon, le rythme change. Puis le Pilat : un massif forestier dense à deux heures de pédalage, avec ses châtaigneraies et ses cèpes d'octobre. C'est ici que se constituent les premiers stocks lourds avant la descente vers les Cévennes.",
+    quests_ids:[10,11,12,13,14],
+    stocks:["Noix","Raisin séché","Pleurotes séchés","Châtaignes Pilat","Cèpes séchés Pilat"],
+    unlocked:true
+  },
+  {
+    id:4, phase:"PHASE 4", pays:"🇫🇷",
+    name:"Les Terres Sombres",
+    subtitle:"Cévennes · Ardèche · Périgord Noir",
+    period:"Octobre",
+    color:"#7a4a20",
+    lore:"Les Cévennes en octobre : châtaigniers centenaires, trompettes de la mort dans les chênaies, noix à profusion dans le Périgord. C'est la grande halte de transformation — on remplit les sacoches pour l'hiver.",
+    quests_ids:[15,16,17],
+    stocks:["Châtaignes séchées","Trompettes séchées","Noix","Farine de châtaigne"],
+    unlocked:false
+  },
+  {
+    id:5, phase:"PHASE 5", pays:"🇫🇷",
+    name:"La Côte des Huîtres",
+    subtitle:"Gascogne · Arcachon · Côte Basque",
+    period:"Fin octobre → début novembre",
+    color:"#2d6e7a",
+    lore:"Avant d'affronter les Pyrénées, le voyageur doit faire le plein de protéines. Le Bassin d'Arcachon offre à marée basse ce que nulle forêt ne peut donner.",
+    quests_ids:[18,19],
+    stocks:["Algues séchées","Huîtres (frais)","Moules (frais)"],
+    unlocked:false
+  },
+  {
+    id:6, phase:"PHASE 6", pays:"🇪🇸",
+    name:"La Côte des Tempêtes",
+    subtitle:"Cantabrique · Asturies · Galice",
+    period:"Novembre",
+    color:"#2d5c7a",
+    lore:"La côte cantabrique en novembre : vent dans le dos, mer démontée, rochers couverts de percebes et de moules géantes. Les Asturies cachent les dernières châtaignes et les meilleurs champignons d'automne tardif.",
+    quests_ids:[20,21,22],
+    stocks:["Algues Porphyra séchées","Châtaignes asturiennes","Percebes séchés"],
+    unlocked:false
+  },
+  {
+    id:7, phase:"PHASE 7", pays:"🇵🇹",
+    name:"Le Royaume Vert",
+    subtitle:"Porto · Aveiro · Serra da Gardunha · Lisbonne",
+    period:"Fin novembre → mi-décembre",
+    color:"#2d7a5c",
+    lore:"Le Portugal côtier en décembre : orangers abandonnés, palourdes dans les rias, et le détour vers la Serra da Gardunha pour le jackpot de pignons. La terre devient plus généreuse à mesure qu'on descend.",
+    quests_ids:[23,24,25],
+    stocks:["Pignons torréfiés","Zestes d'orange séchés","Algues séchées","Kaki séché"],
+    unlocked:false
+  },
+  {
+    id:8, phase:"PHASE 8", pays:"🇵🇹",
+    name:"Le Bout du Monde",
+    subtitle:"Alentejo · Côte Vicentine · Lagos",
+    period:"Mi-décembre → mi-janvier",
+    color:"#2c5e2a",
+    lore:"Lagos en janvier : amandiers en fleurs, palourdes dans la Ria de Alvor, soleil de 14 heures. Le voyage touche à sa première moitié. Le mode slow s'installe. La boucle commence à se refermer en pensée.",
+    quests_ids:[26,27,28],
+    stocks:["Caroube","Algues Laminaria séchées","Percebes séchés","Asperges sauvages"],
+    unlocked:false
+  },
+  // ══ RETOUR ══
+  {
+    id:9, phase:"PHASE R1", pays:"🇵🇹",
+    name:"Le Chemin du Retour",
+    subtitle:"Côte Vicentine · Lisbonne · Porto · Galice",
+    period:"Mi-janvier → mi-février",
+    color:"#2d7a7a",
+    lore:"Le retour commence à Lagos. La Côte Vicentine en janvier est la plus sauvage d'Europe. En remontant vers Porto, les rías galiciennes offrent leurs trésors. Les asperges sauvages surgissent dans l'Alentejo dès février.",
+    quests_ids:[29,30,31],
+    stocks:["Asperges sauvages","Percebes séchés","Algues Porphyra"],
+    unlocked:false
+  },
+  {
+    id:10, phase:"PHASE R2", pays:"🇪🇸",
+    name:"Les Rías du Retour",
+    subtitle:"Galice · Cantabrique · Pays Basque",
+    period:"Mi-février → mi-mars",
+    color:"#2d5c8a",
+    lore:"La Galice en février : oursins au pic, moules géantes, ail des ours dans les forêts humides. La côte cantabrique vers l'est avec le vent dans le dos — la traversée la plus douce du retour.",
+    quests_ids:[32,33,34],
+    stocks:["Ail des ours","Orties séchées","Algues séchées"],
+    unlocked:false
+  },
+  {
+    id:11, phase:"PHASE R3", pays:"🇫🇷",
+    name:"La Côte des Vents",
+    subtitle:"Landes · Arcachon · Gironde · Vendée",
+    period:"Mi-mars → début avril",
+    color:"#2d6e5a",
+    lore:"Retour en France. Les Landes en mars : premières orties, ail des ours dans les sous-bois de pins. Arcachon pour les dernières huîtres. La salicorne commence à pointer dans les marais charentais.",
+    quests_ids:[35,36],
+    stocks:["Salicorne","Huîtres (frais)","Ail des ours"],
+    unlocked:false
+  },
+  {
+    id:12, phase:"PHASE R4", pays:"🇫🇷",
+    name:"Les Marais Verts",
+    subtitle:"Vendée · Marais Poitevin · Loire-Atlantique",
+    period:"Avril",
+    color:"#3a7a3a",
+    lore:"Avril en Vendée et Marais Poitevin : explosion du printemps. Cresson dans les canaux, oseille sauvage, ail des ours à son pic. Les bouchots de Noirmoutier et les huîtres de Marennes : meilleures protéines du retour français.",
+    quests_ids:[37,38],
+    stocks:["Cresson","Oseille","Salicorne confite"],
+    unlocked:false
+  },
+  {
+    id:13, phase:"PHASE R5", pays:"🇫🇷",
+    name:"L'Apogée Bretonne",
+    subtitle:"Quiberon · Finistère · Brest · Saint-Malo",
+    period:"Fin avril → début mai",
+    color:"#2a4a6a",
+    lore:"La Bretagne en mai : l'apogée absolue de la boucle. Criste marine sur les falaises, algues en masse, moules et araignées de mer. Les forêts résonnent d'ail des ours. La plus belle étape du retour.",
+    quests_ids:[39,40,41],
+    stocks:["Criste marine séchée","Algues Bretagne","Ail des ours"],
+    unlocked:false
+  },
+  {
+    id:14, phase:"PHASE R6", pays:"🇫🇷",
+    name:"Le Retour aux Sources",
+    subtitle:"Normandie · Baie de Somme · Artemps",
+    period:"Mai",
+    color:"#4a6a3a",
+    lore:"Les derniers kilomètres. L'aster maritime de la Baie de Somme en mai. Les orties et les fleurs de sureau des haies picardes. Artemps au loin. La boucle se referme.",
+    quests_ids:[42,43],
+    stocks:["Fleurs de sureau","Aster maritime","Orties"],
+    unlocked:false
+  },
+  // ══ INTER-BOUCLES ══
+    {
+    id:15, phase:"INTER", pays:"🇫🇷",
+    name:"L'Inter-Boucles",
+    subtitle:"Bretagne · Suisse Normande · Marquenterre · Somme",
+    period:"Mai → mi-août (entre deux boucles)",
+    color:"#6a5a2a",
+    lore:"La boucle est bouclée — mais le nomade ne s'arrête pas. Trois mois selon une logique simple : protéines fraîches sur la côte tant qu'elle est accessible, repli vers l'intérieur à mi-juin, remontée douce vers Artemps par la Somme.",
+    quests_ids:[44,45,46,47,48,49],
+    stocks:["Laminaria poudre","Algues séchées","Moules séchées","Millepertuis","Sureau baies"],
+    unlocked:false
+  },
+  {
+    id:16, phase:"CYCLE", pays:"🌙",
+    name:"La Roue de l'Année",
+    subtitle:"Sorcières des haies · Cycles du vivant · 8 fêtes",
+    period:"Toute l'année — fêtes déclenchables",
+    color:"#8840c8",
+    lore:"Huit nœuds dans l'année. Solstices, équinoxes, quarts. Chaque fête tombe dans une zone différente selon le calendrier de la boucle. Quêtes débloquées automatiquement à la bonne date.",
+    quests_ids:[51,52,53,54,55,56,57,58],
+    stocks:[],
+    unlocked:true
+  }
+];
+
+const QUETES_RPG = [
+  // ZONE 1 — Ardennes
+  { id:1, zone:1, type:"collecte", title:"La Récolte des Myrtilles", reward:"+stocks lipides & antioxydants",
+    lore:"Les landes acides des Ardennes en août : myrtilles à leur pic absolu. Rares à cette altitude, introuvables plus au sud.",
+    objectives:["Récolter myrtilles en landes (pics mi-août)","Faire des cuirs de myrtilles (anti-diarrhéique, 6 mois de conservation)","Sécher une portion pour stocks secs"], done:false },
+  { id:2, zone:1, type:"collecte", title:"Les Faînes de la Grande Hêtraie", reward:"+stocks lipides hivernaux",
+    lore:"Les vieux hêtres ardennais lâchent leurs faînes triangulaires dès fin août. Torréfiées, elles se conservent 6 mois.",
+    objectives:["Identifier les vieux hêtres à faînes abondantes","Récolter et décortiquer les faînes (gants — bogues piquantes)","Torréfier 10 min à sec (neutralise la fagine)","Stocker en bocal hermétique"], done:false },
+  { id:3, zone:1, type:"exploration", title:"Les Vergers de Lorraine", reward:"+stocks glucides & vitamines",
+    lore:"La Lorraine en août : mirabelles et quetsches dans les vergers abandonnés en bord de Moselle. Un trésor oublié.",
+    objectives:["Repérer les vergers abandonnés le long de la Moselle","Récolter mirabelles au pic (mi-août)","Faire des cuirs de prunes ou sécher"], done:false },
+  { id:4, zone:1, type:"survie", title:"Naviguer Offline — Zéro Réseau",
+    reward:"+autonomie totale · GPS sans données mobiles",
+    lore:"En forêt ardennaise, le réseau disparaît. Le projet entier repose sur des cartes offline — Brouter pour les GPX, OruxMaps ou OsmAnd pour la navigation temps réel. Maîtriser ces outils avant d'en avoir besoin.",
+    objectives:["Télécharger les tuiles CyclOSM offline pour toute la zone de la boucle avant le départ","Vérifier que le GPX Brouter s'affiche correctement sans réseau","Tester le recalcul d'itinéraire en cas de route fermée","Identifier les zones de mauvaise couverture sur la carte et anticiper"],
+    done:false },
+  { id:5, zone:1, type:"survie", title:"L'Eau — Trouver, Évaluer, Boire",
+    reward:"+autonomie hydrique totale · zéro achat",
+    lore:"L'eau gratuite est partout — fontaines de village, sources, ruisseaux, lavoirs. Mais toutes ne se valent pas. Apprendre à lire une eau avant de la boire, sans matériel de filtration coûteux.",
+    objectives:["Identifier les fontaines publiques potables sur OpenStreetMap (tag drinking_water=yes)","Apprendre à évaluer visuellement : eau courante > eau stagnante, amont d'élevage = risque","Technique de purification primitive si doute : ébullition 1 min (cuiseur à riz)","Repérer les sources sur IGN/OpenStreetMap avant chaque étape longue sans village"],
+    done:false },
+  { id:6, zone:1, type:"survie", title:"Premier Mois à Zéro Euro",
+    reward:"+émancipation économique · logique budget zéro validée",
+    lore:"Le premier mois teste toute la stratégie : nourriture sauvage, eau gratuite, bivouac légal, recharge électrique sans payer. Si ça marche en Ardennes et Lorraine, ça marchera partout.",
+    objectives:["Recharge batterie vélo : bibliothèques, offices de tourisme, aires de camping-car (souvent gratuites), restaurants avec demande directe","Bivouac : forêt domaniale (légal 1 nuit), bords de chemin rural, avec accord propriétaire","Ne rien acheter à manger les 30 premiers jours — tenir le journal des ressources gratuites","Documenter chaque jour dans le journal du carnet : zéro dépense = quête validée"],
+    done:false },
+  // ZONE 2 — Morvan
+  { id:7, zone:2, type:"survie", title:"La Constitution des Stocks Hivernaux", reward:"+résistance hiver · stocks complets",
+    lore:"Le Morvan est la seule chance avant l'Espagne de constituer des réserves solides. Rater cette halte, c'est arriver en Ibérie sous-alimenté.",
+    objectives:["Récolter faînes (Settons — hêtraies exceptionnelles)","Trouver et sécher champignons (cèpes, chanterelles, trompettes)","Lixiviation des glands 48h (lac = eau courante = rapide)","Torréfier et stocker — sacoches pleines avant Chalon"], done:false },
+  { id:8, zone:2, type:"collecte", title:"Les Champignons du Granit", reward:"+protéines séchées · stocks aromatiques",
+    lore:"Le granit acide du Morvan crée des conditions idéales pour les cèpes. Début septembre après pluie = jackpot.",
+    objectives:["Identification formelle avant récolte (pas de doute tolété)","Sécher côté lamelles au soleil (active vitamine D)","Objectif : 500g séchés minimum pour l'hiver"], done:false },
+  { id:9, zone:2, type:"exploration", title:"Cartographier les Ressources Libres",
+    reward:"+réseau de points gratuits · logique nomade ancrée",
+    lore:"Le Morvan est rural et peu dense. Idéal pour construire la carte mentale des ressources libres : fontaines, abris forestiers, bornes de recharge, propriétaires accueillants. Ce qui fonctionne ici fonctionnera partout.",
+    objectives:["Ajouter 5 bornes de recharge gratuites découvertes sur OpenStreetMap (contribution directe)","Repérer les abris forestiers ONF (ouverts au public, légaux pour bivouac)","Identifier un agriculteur ou habitant par zone acceptant le bivouac en échange d'un service"],
+    done:false },
+  // ZONE 3 — Saône
+  { id:10, zone:3, type:"collecte", title:"Les Noix de la Saône", reward:"+lipides & oméga 3",
+    lore:"Les coteaux calcaires de Saône en octobre : noyers partout, noix qui tombent au sol. Ramassage entièrement légal.",
+    objectives:["Ramasser noix tombées au sol (légal partout)","Sécher et casser — stocker les cerneaux","Repérer les pleurotes sur les peupliers des berges"], done:false },
+  { id:11, zone:3, type:"exploration", title:"Les Pleurotes des Bras Morts", reward:"+protéines fraîches",
+    lore:"Les peupleraies des îles de Saône sont exceptionnelles pour les pleurotes en huître. Chercher les troncs morts inclinés.",
+    objectives:["Identifier les peupliers morts en bord de Saône","Récolter pleurotes (automne frais et humide = optimal)","Sécher ce qu'on ne consomme pas immédiatement"], done:false },
+  { id:12, zone:3, type:"collecte", title:"Les Châtaigneraies du Pilat",
+    reward:"+glucides lents · stock hiver · 2-3 jours d'autonomie",
+    lore:"Le Pilat en octobre, c'est d'abord une odeur. Avant même de voir les arbres, tu sens les châtaignes au sol — cette odeur de terre humide et de sucre fermenté. Les châtaigneraies couvrent les versants entre 400 et 900m. Ici un kilo se ramasse en vingt minutes.",
+    objectives:["Cibler les versants nord-est entre Pélussin et Saint-Genest-Malifaux (altitude 500-800m)","Ramasser 3-4 kg de châtaignes saines — tester flottaison dans l'eau (les creuses flottent, jeter)","Séchage à l'air dans un filet : 3-4 jours avant de les mettre en sachet","Repérer les arbres producteurs pour la prochaine boucle — noter sur OsmAnd"],
+    done:false },
+  { id:13, zone:3, type:"exploration", title:"Traversée du Pilat — La Route des Crêtes",
+    reward:"+orientation hors réseau · bivouac forêt domaniale validé",
+    lore:"Le Pilat n'est pas une étape — c'est un raccourci sauvage. Plutôt que longer l'A47 et ses zones industrielles, monter par la vallée du Gier, passer sous le Crêt de la Perdrix et redescendre sur Annonay. 40 km de plus mais 400% plus beau, plus riche et plus utile.",
+    objectives:["Itinéraire : Givors → vallée du Gier → Pélussin → cols → Annonay (éviter les crêtes > 1200m avec vélo chargé)","Tester la navigation 100% offline sur ce segment : OruxMaps + tuiles CyclOSM pré-téléchargées","Bivouac en forêt domaniale ONF (légal 1 nuit, s'écarter des sentiers balisés)","Identifier une fontaine ou source pour la nuit — tagger sur OpenStreetMap"],
+    done:false },
+  { id:14, zone:3, type:"survie", title:"Le Tournant — Premiers Stocks Lourds", reward:"⭐ TRANSITION — Mode hiver enclenché",
+    lore:"Lyon, début octobre. C'est ici que le voyage change de nature. Fini ramasser pour manger ce soir — commence ramasser pour survivre dans deux mois. La Saône a donné des noix et des pleurotes. Il faut repartir chargé.",
+    objectives:["Constituer un stock minimum : 500g noix + champignons séchés + prunelles","Sécher et conditionner tout l'excédent en sachets ziploc étanches","Faire l'inventaire complet des sacoches — vider ce qui est inutile pour faire de la place","Calculer les prochaines zones stocks : Périgord châtaignes (3 semaines), Gascogne protéines (5 semaines)"], done:false },
+  // ZONE 4 — Cévennes
+  { id:15, zone:4, type:"collecte", title:"La Châtaigne des Cévennes", reward:"+stocks glucides & énergie",
+    lore:"Les châtaigneraies cévenoles sont les plus productives de France. Octobre = pic. Les châtaigniers en forêt domaniale = cueillette libre.",
+    objectives:["Localiser les châtaigneraies domaniales","Récolter châtaignes (objectif : 3kg séchés)","Sécher ou faire de la farine — conservation 6 mois"], done:false },
+  { id:16, zone:4, type:"collecte", title:"Les Trompettes Noires", reward:"+umami & vitamines B",
+    lore:"Les chênaies calcaires des Cévennes en octobre : trompettes de la mort en colonies denses. Séchées, elles concentrent leur saveur.",
+    objectives:["Trouver colonies de trompettes sous les chênes","Sécher intégralement — réduire de 90% du poids","Stocker en sachet hermétique"], done:false },
+  { id:17, zone:4, type:"exploration", title:"Les Noyeraies du Périgord", reward:"+lipides & oméga 3",
+    lore:"Les bords de Dordogne en octobre : noyeraies immenses, noix tombées en quantité. Le Périgord Noir est le pays de la noix.",
+    objectives:["Longer la Dordogne jusqu'à Bergerac","Ramasser noix au sol sous les noyers (légal)","Constituer réserve de 2kg de cerneaux secs"], done:false },
+  // ZONE 5 — Arcachon
+  { id:18, zone:5, type:"survie", title:"La Halte des Protéines", reward:"+B12 · zinc · fer · immunité hivernale",
+    lore:"Le Bassin d'Arcachon est la dernière source de protéines animales gratuites avant le Portugal. Deux jours ici peuvent changer tout l'hiver.",
+    objectives:["Repérer les zones non-concédées à marée basse","Récolter huîtres sur rochers (couteau + gants)","Récolter palourdes dans le sable","Manger à satiété — B12 et zinc pour les semaines à venir"], done:false },
+  { id:19, zone:5, type:"survie", title:"Le Passage des Pyrénées", reward:"+exploration · déblocage Zone 6",
+    lore:"Col d'Ibañeta, 1000m, novembre. Route goudronnée toute l'année. La voie haute est fermée. Prendre la voie Napoléonienne.",
+    objectives:["Recharger batterie à Saint-Jean-Pied-de-Port","Vérifier météo col (vent, verglas)","Passer par Valcarlos — route N-135 goudronnée","Descendre vers Donostia et la côte"], done:false },
+  // ZONE 6 — Cantabrique
+  { id:20, zone:6, type:"collecte", title:"Les Percebes de la Côte Sauvage", reward:"+protéines complètes · zinc · iode",
+    lore:"Les percebes poussent sur les rochers les plus exposés aux vagues. Cueillette périlleuse, récompense incomparable.",
+    objectives:["Attendre la marée basse (au moins -0.5m)","Identifier rochers exposés avec percebes","Cueillir avec un couteau solide (gants épais indispensables)","Ne jamais tourner le dos à la mer"], done:false },
+  { id:21, zone:6, type:"collecte", title:"Le Jackpot des Asturies", reward:"+stocks glucides · champignons tardifs",
+    lore:"Cangas de Onís, cœur des châtaigneraies asturiennes. Novembre = pic absolu. Les vieux châtaigniers centenaires ne demandent qu'à être récoltés.",
+    objectives:["Détour vers Cangas de Onís (vallée intérieure)","Récolter châtaignes asturiennes (grosses et douces)","Champignons sous chênaies humides (boletus, chanterelles tardives)","Sécher châtaignes + champignons avant retour côte"], done:false },
+  { id:22, zone:6, type:"exploration", title:"Les Rías de Galice", reward:"+protéines · déblocage Zone 7",
+    lore:"Les Rías Baixas de Vigo : la plus grande densité de coquillages sauvages d'Europe. Moules géantes, palourdes, huîtres. Faire le plein avant le Portugal.",
+    objectives:["Atteindre Vigo et les Rías Baixas","Récolter moules géantes sur rochers à marée basse","Ramasser palourdes dans sable zones libres","Sécher algues Porphyra (nori atlantique)"], done:false },
+  // ZONE 7 — Portugal
+  { id:23, zone:7, type:"exploration", title:"La Ria d'Aveiro", reward:"+protéines · B12 · fer",
+    lore:"La plus grande lagune salée du Portugal. À marée basse, les palourdes (amêijoas) affleurent dans le sable des zones non-concédées.",
+    objectives:["Atteindre Aveiro par la côte","Reconnaître les zones non-concédées (signalétique)","Récolter palourdes à mains nues à marée basse","Tenter la pêche à l'anguille dans les chenaux"], done:false },
+  { id:24, zone:7, type:"collecte", title:"Les Pignons de la Serra da Gardunha", reward:"+lipides denses · stocks majeurs",
+    lore:"Serra da Gardunha : pignons de pin parasol tombés au sol, châtaignes tardives, lactaires délicieux. Le jackpot hivernal du Portugal.",
+    objectives:["Quitter la côte à Coimbra vers l'est","Atteindre la Serra da Gardunha (détour 2 jours)","Extraire pignons des cônes (chaleur + pierre)","Récolter châtaignes tardives + lactaires sous les pins","Objectif : 500g pignons torréfiés"], done:false },
+  { id:25, zone:7, type:"collecte", title:"Les Oranges de Tomar", reward:"+vitamine C · stocks aromatiques",
+    lore:"La vallée du Nabão est jalonnée d'orangeraies semi-abandonnées. Oranges amères, citrons, kakis translucides en décembre.",
+    objectives:["Longer le Nabão depuis la Serra","Récolter oranges amères tombées (Citrus aurantium)","Sécher les zestes (vitamine C concentrée — stocks 1 an)","Kakis translucides = ultra-sucrés en décembre"], done:false },
+  // ZONE 8 — Lagos
+  { id:26, zone:8, type:"exploration", title:"La Côte Vicentine Sauvage", reward:"+iode · algues · percebes",
+    lore:"Le Parc Naturel de la Côte Vicentine en janvier : la côte la plus sauvage d'Europe occidentale. Quasi-déserte, battue par l'Atlantique.",
+    objectives:["Longer la côte depuis Comporta vers le sud","Récolter algues à marée basse (Laminaria, Porphyra, Chondrus)","Percebes sur rochers exposés du cap Sagres","Sécher Laminaria : poudre d'iode pour toute la saison"], done:false },
+  { id:27, zone:8, type:"survie", title:"L'Arrivée à Lagos", reward:"⭐ ACCOMPLISSEMENT MAJEUR — Mi-boucle",
+    lore:"Lagos, mi-janvier. Les amandiers fleurissent blanc et rose. La Ria de Alvor est couverte de palourdes. Mode slow. La boucle est à mi-chemin.",
+    objectives:["Atteindre Lagos — Ria de Alvor","Installer bivouac longue durée (2-3 semaines)","Reconstituer tous les stocks pour le retour","Observer les amandiers en fleurs mi-janvier"], done:false },
+  { id:28, zone:8, type:"exploration", title:"Bilan Mi-Boucle — Lagos",
+    reward:"⭐ MI-PARCOURS — Données réelles pour la 2ème moitié",
+    lore:"Lagos, mi-janvier. La mi-boucle. C'est le moment de tout mesurer — pas pour se féliciter, mais pour ajuster la 2ème moitié. Ce qui a fonctionné, ce qui a manqué, ce que le corps dit.",
+    objectives:["Bilan stocks : inventaire complet des sacoches — qu'est-ce qui manque pour le retour ?","Bilan corps : poids estimé, énergie, cycle hormonal depuis le départ — noter les changements","Bilan vélo : batterie (capacité réelle après 5 mois ?), freins, chaîne, pneus — prévoir pièces","Bilan budget : total dépensé depuis août — recalibrer si nécessaire","Bilan zones retour : identifier les 3 étapes les plus critiques pour les protéines sur les 4 mois à venir"],
+    done:false },
+  // ══ RETOUR ══
+  { id:29, zone:9, type:"collecte", title:"Les Asperges de l'Alentejo", reward:"+protéines végétales · vitamines printanières",
+    lore:"Asparagus aphyllus pousse dans les garrigues d'Alentejo dès février. Fine, tendre, sauvage — rien à voir avec l'asperge cultivée.",
+    objectives:["Reconnaître Asparagus aphyllus (tiges fines, buissonnant)","Récolter les jeunes pousses de 10-15cm (avant qu'elles durcissent)","Manger frais ou sécher pour stocks"], done:false },
+  { id:30, zone:9, type:"collecte", title:"Les Percebes du Cap Sagres", reward:"+protéines complètes · iode · zinc",
+    lore:"Les rochers du Cap Saint-Vincent en janvier : les conditions les plus exposées de la péninsule. Les percebes y sont exceptionnels.",
+    objectives:["Attendre marée basse sous -0.8m","Rochers exposés côté Atlantique uniquement","Ne jamais tourner le dos aux vagues — dangers réels","Objectif : 500g frais"], done:false },
+  { id:31, zone:9, type:"exploration", title:"Remontée des Rías Galiciennes", reward:"+protéines · déblocage Zone 10",
+    lore:"Porto → Vigo → Pontevedra : les rías galiciennes en février sont quasi-désertes. Moules géantes, huîtres sauvages, palourdes à profusion.",
+    objectives:["Longer la côte de Porto à Vigo","Récolter moules et palourdes dans zones libres","Sécher Porphyra (nori) sur les rochers plats","Passer la frontière espagnole à Tui/Valença"], done:false },
+  { id:32, zone:10, type:"collecte", title:"Les Oursins de Galice", reward:"+lipides · vitamines · iode",
+    lore:"Galice, février-mars : les oursins (erizos) sont au pic absolu de leur saison. Les gonades (parties comestibles) sont pleines et crémeuses.",
+    objectives:["Repérer les zones rocheuses peu profondes","Cueillir à marée basse avec gants épais","Ouvrir avec ciseaux — consommer les 5 gonades orange","Récolte raisonnée (laisser les petits)"], done:false },
+  { id:33, zone:10, type:"collecte", title:"L'Ail des Ours Cantabrique", reward:"+antibiotique naturel · stocks aromatiques",
+    lore:"Les forêts humides de Galice et d'Asturies en mars : l'ail des ours (Allium ursinum) tapisse le sol des chênaies. Odeur inimitable.",
+    objectives:["Identifier à l'odeur ail (ne pas confondre avec muguet — toxique)","Récolter feuilles avant floraison (mars = pic)","Faire du pesto : feuilles + huile + noisettes","Sécher feuilles restantes pour stocks"], done:false },
+  { id:34, zone:10, type:"survie", title:"La Traversée Cantabrique", reward:"+exploration · vent dans le dos · déblocage Zone 11",
+    lore:"La côte cantabrique vers l'est : cap 090°, vent d'ouest dominant dans le dos. Santander, Bilbao, San Sebastián. Le retour prend de la vitesse.",
+    objectives:["Longer la côte — cap est, vent dans le dos","Étape Santander : moules et huîtres baie","Étape Bilbao : marché — derniers achats ibériques","Franchir la frontière franco-espagnole à Hendaye"], done:false },
+  { id:35, zone:11, type:"collecte", title:"Le Retour des Orties", reward:"+fer · chlorophylle · protéines végétales",
+    lore:"Les berges de l'Adour à Bayonne en mars : orties en pleine croissance, tendres et riches. Après 6 mois d'Ibérie, retrouver les plantes françaises.",
+    objectives:["Récolter orties jeunes (gants — cueillir les 4-6 premières feuilles)","Décoction ou soupe chaude — réhydratation minérale","Sécher l'excédent pour stocks"], done:false },
+  { id:36, zone:11, type:"collecte", title:"Les Huîtres d'Arcachon", reward:"+zinc · B12 · retour aux sources",
+    lore:"Le Bassin d'Arcachon au retour — mars/début avril. Les zones non-concédées à marée basse. Bouclage émotionnel du cycle côtier.",
+    objectives:["Retrouver les zones non-concédées du bassin","Récolter huîtres creuses sur rochers","Palourdes dans le sable vaseux","Salicorne qui commence à pousser dans les marais"], done:false },
+  { id:37, zone:12, type:"collecte", title:"Le Cresson du Marais Poitevin", reward:"+vitamine C · fer · antioxydants",
+    lore:"Les canaux du Marais Poitevin en avril : le cresson sauvage (Nasturtium officinale) y est abondant. Eau courante propre = récolte sûre.",
+    objectives:["Identifier eau courante propre (pas en aval d'élevage)","Récolter Nasturtium officinale (feuilles rondes, goût piquant)","Consommer frais ou en jus","Oseille sauvage dans les prairies : acidité et vitamine C"], done:false },
+  { id:38, zone:12, type:"collecte", title:"Les Bouchots de Noirmoutier", reward:"+protéines · B12 · fer",
+    lore:"La Baie de Bourgneuf en avril : les moules de bouchot à leur meilleur. Et les premières salicornes de l'année dans les marais salants.",
+    objectives:["Longer la côte de Noirmoutier","Récolter moules sur rochers et pieux exposés","Premières salicornes (tiges de 3-5cm, tendres)","Huîtres Marennes-Oléron en zones libres"], done:false },
+  { id:39, zone:13, type:"collecte", title:"La Criste Marine des Falaises", reward:"+iode · aromatique · vitamines",
+    lore:"Crithmum maritimum — la samphire des falaises bretonnes. Goût intense de mer et d'épice. Pousse sur les rochers inaccessibles aux moutons et aux touristes.",
+    objectives:["Identifier Crithmum maritimum (ombelles blanches, feuilles charnues bleu-vert)","Récolter sur falaises et rochers côtiers","Goût unique : saler ou sécher pour condiment","Présente sur toute la côte bretonne mai-juin"], done:false },
+  { id:40, zone:13, type:"survie", title:"L'Apogée des Algues Bretonnes", reward:"+iode · protéines · stocks majeurs",
+    lore:"La Bretagne en mai est la capitale française des algues. Laminaria, Porphyra, Chondrus crispus, Ulva, Himanthalia. Une pharmacie minérale à marée basse.",
+    objectives:["Identifier 5 espèces d'algues comestibles","Laminaria digitata : sécher et réduire en poudre (iode pour 3 mois)","Porphyra : sécher en feuilles (nori breton)","Constituer stocks d'algues pour les dernières semaines"], done:false },
+  { id:41, zone:13, type:"exploration", title:"Les Araignées de Mer du Finistère", reward:"+protéines complètes · zinc · B12",
+    lore:"Mai en Bretagne : les araignées de mer (Maja squinado) reviennent vers la côte pour muer. Faciles à attraper à marée basse dans les mares rocheuses.",
+    objectives:["Marée basse de fort coefficient (>90)","Mares rocheuses profondes du Finistère","Attraper à la main ou au filet simple","Cuire à l'eau de mer — consommer immédiatement"], done:false },
+  { id:42, zone:14, type:"collecte", title:"L'Aster Maritime de la Baie de Somme", reward:"+minéraux · aromatique · fin de boucle",
+    lore:"Les prés salés de la Baie de Somme en mai : l'aster maritime (Aster tripolium) à son pic absolu. Saveur iodée intense, texture croquante.",
+    objectives:["Atteindre les prés salés de Saint-Valery-sur-Somme","Récolter Aster tripolium (fleurs mauves, feuilles charnues)","Salicorne abondante dans l'estuaire","Moules sur les pieux de la baie"], done:false },
+  { id:43, zone:14, type:"survie", title:"Le Retour à Artemps", reward:"🏆 ACCOMPLISSEMENT TOTAL — La Boucle est Bouclée",
+    lore:"Les derniers kilomètres sur le Canal de la Somme. Les haies de Picardie en mai : fleurs de sureau, orties en fleurs, fraises des bois. Artemps au bout du chemin. ~10 000 km. La boucle est bouclée.",
+    objectives:["Longer le Canal de la Somme depuis Abbeville","Récolter fleurs de sureau (Sambucus nigra — pic mai)","Premières fraises des bois dans les haies","Arriver à Artemps — fermer la boucle"], done:false },
+  // ══ INTER-BOUCLES — Protéines & Iode en continu ══
+  { id:44, zone:15, type:"terrain", title:"🛤️ Liaison Artemps → Creuse — Champagne & Berry",
+    reward:"+axe Champagne connu · asperges · ail des ours · 13 jours",
+    lore:"La clé : rester à l'est de 2.8°E pour contourner Paris par l'est. Laon → Reims → Épernay → Troyes → Auxerre → Nevers → Montluçon. Chaque vallée livre sa ressource.",
+    objectives:["Asperges sauvages sur les coteaux calcaires du Laonnois — noter les spots GPS","Ail des ours dans les sous-bois de l'Yonne (Auxerre) — récolter si encore présent","Sureau en fleurs sur les berges de Marne (Épernay) — ombelles pour infusion","Écrevisses signal dans l'Allier dès Nevers — premier test nocturne à l'épuisette","Documenter bivouac îles de Loire — conditions, accès, eau potable"],
+    done:false },
+  { id:45, zone:15, type:"terrain", title:"🌲 Creuse — Installation & Écrevisses (Juin)",
+    reward:"+protéines animales fraîches · écrevisses libres · truites · spots girolles",
+    lore:"L'écrevisse signal est invasive — pêche libre toute l'année, sans quota, sans licence. Les gorges de la Creuse et de la Sédelle en sont pleines. Pêche de nuit à la lampe torche.",
+    objectives:["Cartographier les zones à écrevisses : Creuse entre Fresselines et Crozant, Sédelle","Session nocturne : lampe torche + épuisette — objectif 500g par sortie","Truites fario dans la Sédelle — vérifier réglementation 1ère catégorie locale","Girolles : inspecter forêt de Chabrières après premières pluies de juin","Installer bivouac fixe en forêt domaniale — noter fontaines et points d'eau"],
+    done:false },
+  { id:46, zone:15, type:"terrain", title:"🫐 Millevaches — Myrtilles & Isolement (Juillet)",
+    reward:"+myrtilles stock · cuirs longue durée · cèpes d'été · isolement total",
+    lore:"Le plateau de Millevaches en juillet : quasi personne, des myrtilles à perte de vue entre 700 et 900m. Le moment de constituer les stocks d'antioxydants pour l'hiver au Portugal.",
+    objectives:["Myrtilles : session intensive début juillet — objectif 2kg frais pour cuirs","Faire des cuirs de myrtilles (Omnia ou soleil) — 2kg frais = ~300g cuir = 3 mois stock","Cèpes d'été (Boletus aestivalis) en forêt de Chabrières — séchage au soleil","Lac de Vassivière : pêche brochet et perche sur rives nord — séchage si excédent","Journal de mi-parcours : 3 ressources les plus importantes depuis Artemps"],
+    done:false },
+  { id:47, zone:15, type:"terrain", title:"🌰 Tronçais — Noisettes & Départ (Début août)",
+    reward:"+noisettes stock · mûres · carpes · recalage calendrier départ",
+    lore:"La forêt de Tronçais (10 600 ha) marque la fin du séjour Creuse. Les premières noisettes tombent mi-août en lisière. C'est le signal du départ pour la remontée vers Artemps.",
+    objectives:["Noisettes : inspecter lisières est de Tronçais — premières chutes mi-août","Mûres sauvages : pic sur toutes les haies — récolter 1kg pour cuirs","Étangs de Tronçais : pêche aux carpes et brèmes — dernière session protéines fraîches","Bilan Creuse dans le journal : ressources trouvées, spots GPS, manques identifiés","Vérifier état du vélo et matériel avant remontée — 550 km vers Artemps"],
+    done:false },
+  { id:48, zone:15, type:"terrain", title:"🏔️ Remontée Tronçais → Artemps — Allier & Marne",
+    reward:"+sureau Marne · houblon Aisne · retour mi-août · re-départ boucle 2",
+    lore:"Le retour est en miroir de l'aller — même axe, sens inverse. Tronçais → Moulins → Decize → Auxerre → Troyes → Épernay → Soissons → Artemps. Les bivouacs sont connus.",
+    objectives:["Sureau noir en baies sur les berges de Marne (Épernay, Château-Thierry) — sirop ou séchage","Houblon sauvage sur les haies et bords d'Aisne entre Soissons et Artemps","Mûres : ramasser sur tout le trajet — stock de route","Être à Artemps avant le 20 août — fenêtre re-départ boucle 2","Inventaire stock complet : lister ce qui manque pour la prochaine grande boucle"],
+    done:false },
+  { id:49, zone:15, type:"survie", title:"La Règle des 2 Jours — Permanente",
+    reward:"+logique nomade · zéro carence iode",
+    lore:"Règle fondamentale du nomadisme permanent : jamais à plus de 2 jours d'une côte ou rivière poissonneuse. Iode et protéines animales fraîches ne se stockent que sur 3-4 jours.",
+    objectives:["Planifier les étapes en gardant cette contrainte visible sur la carte","En cas d'éloignement forcé : activer la poudre de Laminaria (1g/jour)","Eau douce : prioriser les rivières avec visibilité de fond (eau claire = poissons)"],
+    done:false },
+  // ══ QUÊTE JOURNALIÈRE ══
+  { id:50, zone:0, type:"quotidienne", title:"⚡ Borne du Jour — Recharge Gratuite",
+    reward:"+autonomie électrique · zéro dépense énergie",
+    lore:"La contrainte silencieuse de tout le projet : le Cyrusher Kommoda 3 doit être rechargé. Chaque jour sans borne est un jour de range anxiety. Chaque borne trouvée gratuitement est une victoire.",
+    objectives:["Identifier la prochaine borne gratuite sur l'itinéraire (OpenStreetMap, PlugShare, demande directe)","Types prioritaires : bibliothèques, mairies, offices de tourisme, aires camping-car, hôtels de ville","En zone rurale : demander directement (boulangerie, bar, ferme) — taux d'acceptation >80%","Documenter la borne dans le journal : lieu + type + remarques pour la prochaine boucle"],
+    done:false },
+  // ══ ZONE 16 — ROUE DE L'ANNÉE ══
+  { id:51, zone:16, type:"witch", title:"🕯️ Imbolc — Le Feu qui Revient",
+    reward:"1er-2 février · Galice · Rías Baixas · Première lumière",
+    lore:"La Galice en février : l'air sent le varech et le feu de bois. La lumière revient d'un quart d'heure par jour. Les percebes sont au pic sur les rochers battus. Imbolc n'est pas une fête du chaud — c'est une fête du possible.",
+    objectives:[
+      "Percebes ou moules : récolter sur les rochers galiciens — protéines marines au pic hivernal",
+      "Asperges sauvages (Asparagus acutifolius) : premières tiges en Galice dès fin janvier — noter le spot GPS",
+      "Observer le lever du soleil sur l'Atlantique galicien — noter heure exacte, la lumière revient",
+      "Journal de boucle : écrire les 3 priorités terrain pour la saison qui commence",
+      "Rituel feu : allumer un feu au bivouac ce soir sur la côte galicienne — observer la flamme 10 minutes"
+    ], done:false },
+  { id:52, zone:16, type:"witch", title:"🥚 Ostara — L'Équilibre du Printemps",
+    reward:"~20 mars · Côte Basque ou Landes · Équinoxe",
+    lore:"Jour et nuit parfaitement équilibrés. Sur la Côte Basque et dans les Landes, le printemps explose avant le nord : ail des ours en tapis dans les sous-bois humides dès mars. Repas complet du terrain : c'est le test de la saison.",
+    objectives:[
+      "Ail des ours basque : identification certaine (odeur ail en froissant = bon, odeur neutre = muguet toxique) — récolter 200g minimum",
+      "Repas complet zéro achat : ail des ours + ortie + coquillage ou poisson côte basque / landes",
+      "Observer lever et coucher du soleil — noter heures exactes, confirmer l'équinoxe ressenti",
+      "Cueillette symbolique : une plante de chaque couleur disponible ce jour, noter dans le carnet",
+      "Coordonnées GPS : marquer les tapis d'ail des ours pour la prochaine boucle"
+    ], done:false },
+  { id:53, zone:16, type:"witch", title:"🔥 Beltane — Le Sommet du Printemps",
+    reward:"1er mai · Côte Bretagne ou Marais Poitevin · Sève maximale",
+    lore:"Fenêtre de 10 jours maximum pour les fleurs d'aubépine. La sève est au pic. Les anciens disaient que la rosée de Beltane soigne — laisse les plantes mouillées, mange-les sans sécher.",
+    objectives:[
+      "Aubépine en fleur : récolter les ombelles fraîches (fenêtre 2 semaines max fin avril-début mai) — infusion cardiotonique du soir",
+      "Sureau en fleur si disponible : fleurs fraîches en beignets ou sirop de survie concentré",
+      "Inventaire stock complet avant phase côtière : noter ce qui manque",
+      "Rosée du matin : à l'aube, laisser les mains mouillées de rosée sur les feuilles — contact sensoriel avec la sève",
+      "Bivouac en lisière de forêt fleurie — nuit sous les étoiles si sec"
+    ], done:false },
+  { id:54, zone:16, type:"witch", title:"☀️ Litha — Le Solstice d'Été",
+    reward:"~21 juin · Inter-boucles · Creuse ou Millevaches · Pic médicinal",
+    lore:"La nuit la plus courte, sur le plateau de Millevaches ou dans les gorges de la Creuse. La teneur en hypéricine du millepertuis est maximale exactement au solstice. Après, ça redescend. Une seule chance par an — ne pas rater la fenêtre.",
+    objectives:[
+      "Millepertuis : cueillir boutons floraux et fleurs ouvertes EXACTEMENT au solstice ou ±2 jours — jus rouge en écrasant le bouton = bon signe — sécher à l'ombre immédiatement",
+      "Girolles Creuse : après les premières pluies de juin, inspecter les talus moussus en forêt de Chabrières — noter les spots",
+      "Plantain lancéolé : récolter et sécher — anti-inflammatoire respiratoire pour l'hiver Portugal",
+      "Observer le lever du soleil depuis le plateau — noter heure et direction exactes depuis le bivouac",
+      "Inventaire médicinal : classer et étiqueter tout le séchage accumulé depuis Imbolc"
+    ], done:false },
+  { id:55, zone:16, type:"witch", title:"🌾 Lughnasadh — La Première Moisson",
+    reward:"1er août · Millevaches ou Tronçais · Bilan inter-boucles",
+    lore:"La première moisson sur le plateau. Les myrtilles sont au pic, les premières noisettes tombent à Tronçais. Pas une fête de l'abondance — une fête de la mesure. Qu'est-ce que tu as appris ? Qu'est-ce qui manque pour la 2ème boucle ?",
+    objectives:[
+      "Myrtilles Millevaches : dernière récolte intensive avant de quitter le plateau — faire des cuirs pour le stock",
+      "Noisettes Tronçais : premières chutes mi-août sur les lisières de la forêt domaniale — stock lipides",
+      "Inventaire stock complet avant départ boucle 2 : lister les manques critiques",
+      "Bilan inter-boucles dans le journal : 3 réussites terrain, 3 erreurs, 3 ajustements pour la boucle 2",
+      "Définir les 3 priorités nutritionnelles pour août-septembre (début phase Ardennes boucle 2)"
+    ], done:false },
+  { id:56, zone:16, type:"witch", title:"🍂 Mabon — L'Équinoxe de l'Abondance",
+    reward:"~22 septembre · Morvan ou Beaujolais · Grand stock automnal",
+    lore:"Le grand tournant. Les noix tombent, les châtaignes s'ouvrent, les champignons explosent après la pluie. C'est maintenant ou jamais pour constituer le stock qui tiendra jusqu'en Portugal.",
+    objectives:[
+      "Châtaignes : objectif 2kg séchées ou torréfiées — cartographier les châtaigniers dans la zone",
+      "Noix : objectif 500g cerneaux séchés — graisses essentielles pour les mois froids à venir",
+      "Champignons : sécher 200g minimum — cèpes, chanterelles, trompettes selon disponibilité",
+      "Cynorrhodons : repérer les rosiers sauvages, attendre après première gelée pour max vitamine C",
+      "GPS des meilleurs arbres (noyers, châtaigniers, poiriers sauvages) — notes pour boucle 3"
+    ], done:false },
+  { id:57, zone:16, type:"witch", title:"🕸️ Samhain — Le Voile entre les Mondes",
+    reward:"31 octobre · Cévennes ou Périgord · Dernier grand feu",
+    lore:"La végétation se retire mais pas tout. Les prunelles deviennent douces après la première gelée. Les trompettes de la mort arrivent. Les racines concentrent leurs sucres. Fête du retrait — et de ce qui reste.",
+    objectives:[
+      "Prunelles après première gelée : goûter la transformation amertume → douceur — macération ou manger directement",
+      "Racine de bardane : creuser, laver, cuire à l'eau 20min — féculent de secours, noter les sites GPS",
+      "Trompettes de la mort : reconnaître avec certitude (gris-noir, creux, odeur agréable) — sécher immédiatement",
+      "Bilan champignons de la saison : espèces, quantités, lieux dans le journal",
+      "Bivouac de Samhain : grand feu si conditions sèches — écrire la liste de ce qu'on laisse derrière"
+    ], done:false },
+  { id:58, zone:16, type:"witch", title:"❄️ Yule — Le Solstice d'Hiver",
+    reward:"~21 décembre · Portugal · Lagos ou Alentejo · Nuit la plus longue",
+    lore:"La nuit la plus longue de l'année, en Portugal. Le romarin est en fleur sur les garrigues. Les oranges amères pendent aux arbres. La lumière va revenir — c'est la promesse de Yule.",
+    objectives:[
+      "Observer le lever du soleil au solstice depuis un point haut — noter heure et direction exactes",
+      "Romarin en fleur : cueillette et séchage immédiat — pic de concentration en huile essentielle au solstice",
+      "Oranges amères sauvages (Portugal, bords de route) : zestes séchés, décoction digestive et vitamine C",
+      "Repas complet depuis le terrain local : poisson si côte accessible + plantes côtières Portugal",
+      "Journal de fin de boucle : bilan complet — stocks restants, santé, réussites, ajustements boucle suivante"
+    ], done:false },
+];
+
+const STOCKS_INITIAUX = [
+  { id:"myrtilles",   icon:"🫐", name:"Myrtilles séchées",  qty:0, max:500,  unit:"g" },
+  { id:"faines",      icon:"🌰", name:"Faînes torréfiées",  qty:0, max:1000, unit:"g" },
+  { id:"noisettes",   icon:"🥜", name:"Noisettes",          qty:0, max:800,  unit:"g" },
+  { id:"champignons", icon:"🍄", name:"Champignons séchés", qty:0, max:400,  unit:"g" },
+  { id:"chataignes",  icon:"🌰", name:"Châtaignes séchées", qty:0, max:2000, unit:"g" },
+  { id:"noix",        icon:"🪨", name:"Noix cerneaux",      qty:0, max:1500, unit:"g" },
+  { id:"pignons",     icon:"🌿", name:"Pignons torréfiés",  qty:0, max:600,  unit:"g" },
+  { id:"algues",      icon:"🌊", name:"Algues séchées",     qty:0, max:300,  unit:"g" },
+  { id:"cynorhodons", icon:"🔴", name:"Cynorrhodons séchés",qty:0, max:400,  unit:"g" },
+  { id:"zestes",      icon:"🍊", name:"Zestes agrumes",     qty:0, max:200,  unit:"g" },
+  { id:"farine_gland",icon:"🌾", name:"Farine de gland",    qty:0, max:1000, unit:"g" },
+  { id:"caroube",     icon:"🟫", name:"Caroube",            qty:0, max:500,  unit:"g" },
+];
+
+/* ═══════════════════════════════════════════════
+   STATE — proxy sur data.js (BS)
+═══════════════════════════════════════════════ */
+
+// Proxy state pour compatibilité avec le code existant
+// Toutes les lectures/écritures passent par BS
+const state = {
+  get quests_done()   { return window.BS ? BS.getQuetesDone()   : []; },
+  get journal()       { return window.BS ? BS.getJournal()       : []; },
+  get zones_visited() { return window.BS ? BS.getZonesVisited()  : [1,2,3]; },
+  get stocks()        { return window.BS ? BS.getStocks()        : {}; },
+};
+
+function saveState() {
+  // data.js sauvegarde automatiquement — no-op pour compatibilité
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function switchTab(tab, btn) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("panel-" + tab).classList.add("active");
+  if (btn) btn.classList.add("active");
+  else document.querySelectorAll(".tab-btn")[["carte","zones","quetes","observer","inventaire","journal"].indexOf(tab)]?.classList.add("active");
+  if (tab === 'carte') {
+    setTimeout(buildCarteMap, 80);
+  }
+  if (tab === 'observer') renderObsGrid();
+}
+
+/* ═══════════════════════════════════════════════
+   OBSERVER — formulaire 3 taps
+═══════════════════════════════════════════════ */
+let quickState = { lat: null, lng: null, type: 'cueillette', qty: 'moyen' };
+
+const OBS_TYPE_CFG = {
+  cueillette:    { icon:'🌿', color:'#4a7035', label:'Cueillette' },
+  champignon:    { icon:'🍄', color:'#c8882a', label:'Champignons' },
+  peche:         { icon:'🎣', color:'#2d7a5c', label:'Pêche' },
+  eau:           { icon:'💧', color:'#2d5c7a', label:'Eau potable' },
+  recharge:      { icon:'⚡', color:'#c8a820', label:'Recharge' },
+  bivouac:       { icon:'🏕️', color:'#7a5c3a', label:'Bivouac' },
+  danger:        { icon:'⚠️', color:'#9e3f20', label:'À éviter' },
+  oeuf:          { icon:'🥚', color:'#c8a820', label:'Œufs frais' },
+  abri:          { icon:'🛖', color:'#7a5c3a', label:'Abri' },
+  ravitaillement:{ icon:'🛒', color:'#3a6e28', label:'Ravitaillement' },
+  autre:         { icon:'📍', color:'#888',    label:'Autre' },
+};
+
+function quickGPS() {
+  const btn   = document.getElementById('quickGpsBtn');
+  const label = document.getElementById('quickGpsLabel');
+  const step2 = document.getElementById('quickStep2');
+  const save  = document.getElementById('quickSave');
+
+  label.textContent = '…acquisition GPS';
+  btn.classList.add('loading');
+
+  if (!navigator.geolocation) {
+    label.textContent = 'GPS non disponible';
+    btn.classList.remove('loading');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    quickState.lat = pos.coords.latitude;
+    quickState.lng = pos.coords.longitude;
+
+    const nearby = BS.getObservations().find(p => {
+      const d = Math.sqrt(
+        Math.pow((p.lat - quickState.lat) * 111000, 2) +
+        Math.pow((p.lng - quickState.lng) * 111000 * Math.cos(quickState.lat * Math.PI/180), 2)
+      );
+      return d < 50;
+    });
+
+    label.textContent = nearby
+      ? `📍 ${nearby.nom || nearby.type} (${Math.round(pos.coords.accuracy)}m)`
+      : `📍 ${quickState.lat.toFixed(4)}, ${quickState.lng.toFixed(4)} (${Math.round(pos.coords.accuracy)}m)`;
+
+    btn.classList.remove('loading');
+    btn.classList.add('locked');
+    step2.classList.add('visible');
+    save.disabled = false;
+  }, () => {
+    label.textContent = 'Position GPS indisponible';
+    btn.classList.remove('loading');
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function quickSetType(el) {
+  document.querySelectorAll('.qt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  quickState.type = el.dataset.type;
+}
+
+function quickSetQty(el) {
+  document.querySelectorAll('.qq-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  quickState.qty = el.dataset.qty;
+}
+
+function quickToggleNote() {
+  const note = document.getElementById('quickNote');
+  note.style.display = note.style.display === 'block' ? 'none' : 'block';
+  if (note.style.display === 'block') note.focus();
+}
+
+function quickSaveCarnet() {
+  if (!quickState.lat || !quickState.lng) return;
+  const note = document.getElementById('quickNote').value.trim();
+  BS.addObservation({
+    lat: quickState.lat, lng: quickState.lng,
+    type: quickState.type, quantite: quickState.qty, note,
+  });
+  const save = document.getElementById('quickSave');
+  save.textContent = '✓ Enregistré !';
+  save.style.background = 'var(--forest)';
+  renderObsGrid();
+  setTimeout(() => quickReset(), 1800);
+}
+
+function quickReset() {
+  quickState = { lat: null, lng: null, type: 'cueillette', qty: 'moyen' };
+  document.getElementById('quickGpsBtn').classList.remove('locked','loading');
+  document.getElementById('quickGpsLabel').textContent = 'Capturer position';
+  document.getElementById('quickStep2').classList.remove('visible');
+  const qs = document.getElementById('quickSave');
+  qs.disabled = true;
+  qs.textContent = "✓ Enregistrer l'observation";
+  qs.style.background = '';
+  document.getElementById('quickNote').value = '';
+  document.getElementById('quickNote').style.display = 'none';
+  document.querySelectorAll('.qt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.qt-btn[data-type="cueillette"]').classList.add('active');
+  document.querySelectorAll('.qq-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.qq-btn[data-qty="moyen"]').classList.add('active');
+}
+
+function addPointCarnet() {
+  const nom  = document.getElementById('newName').value.trim();
+  const type = document.getElementById('newType').value;
+  const lat  = parseFloat(document.getElementById('newLat').value);
+  const lng  = parseFloat(document.getElementById('newLng').value);
+  const note = document.getElementById('newDesc').value.trim();
+  if (!nom || isNaN(lat) || isNaN(lng)) { alert('Nom, latitude et longitude obligatoires.'); return; }
+  BS.addObservation({ nom, type, lat, lng, note });
+  ['newName','newLat','newLng','newDesc'].forEach(id => document.getElementById(id).value = '');
+  renderObsGrid();
+}
+
+function deleteObs(id) {
+  if (!confirm('Supprimer cette observation ?')) return;
+  BS.deleteObservation(id);
+  renderObsGrid();
+}
+
+function renderObsGrid() {
+  const grid = document.getElementById('obsGrid');
+  if (!grid) return;
+  const obs = BS.getObservations().slice().reverse();
+  if (!obs.length) {
+    grid.innerHTML = '<p style="font-style:italic;color:var(--ink-soft);font-size:.9rem">Aucune observation. Touche 📍 pour commencer.</p>';
+    return;
+  }
+  const QTY_COLOR = { absent:'#c84a2a', rare:'#c8882a', moyen:'#c8c040', abondant:'#6abf4a' };
+  grid.innerHTML = obs.map(p => {
+    const cfg  = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
+    const date = p.timestamp ? new Date(p.timestamp).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '';
+    const qty  = p.quantite || '';
+    return `
+    <div class="point-card parch">
+      <button class="pt-delete" onclick="deleteObs(${p.id})">✕</button>
+      <div class="pt-hdr">
+        <span class="pt-icon">${cfg.icon}</span>
+        <div>
+          <div class="pt-name">${p.nom || cfg.label}</div>
+          <div class="pt-type" style="color:${cfg.color}">
+            ${cfg.label}
+            ${qty ? `<span style="color:${QTY_COLOR[qty]||'#888'};font-weight:700"> · ${qty}</span>` : ''}
+            ${date ? ` · ${date}` : ''}
+          </div>
+        </div>
+      </div>
+      ${p.note ? `<div class="pt-desc">${p.note}</div>` : ''}
+      <div class="pt-coords">📍 ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}</div>
+    </div>`;
+  }).join('');
+}
+
+
+function updateXP() {
+  const done = state.quests_done.length;
+  const total = QUETES_RPG.length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById("xpFill").style.width = pct + "%";
+  document.getElementById("globalXpVal").textContent = done + " / " + total + " quêtes · cycle complet";
+  renderCycleSaisons();
+}
+
+
+/* ═══════════════════════════════════════════════
+   CYCLE DES SAISONS
+═══════════════════════════════════════════════ */
+function renderCycleSaisons() {
+  const el = document.getElementById('cycleSaisons');
+  if (!el) return;
+  el.innerHTML = SAISONS_CONFIG.map(s => {
+    const total = QUETES_RPG.filter(q => ZONE_SAISON[q.zone] === s.id).length;
+    const done  = QUETES_RPG.filter(q => ZONE_SAISON[q.zone] === s.id && state.quests_done.includes(q.id)).length;
+    const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+    return `
+    <div class="saison-bloc" onclick="filterQuests('saison-${s.id}', null)">
+      <div class="saison-header">
+        <span class="saison-emoji">${s.emoji}</span>
+        <span class="saison-label">${s.label}</span>
+        <span class="saison-count">${done}/${total}</span>
+      </div>
+      <div class="saison-track">
+        <div class="saison-fill" style="width:${pct}%;background:${s.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+/* ═══════════════════════════════════════════════
+   ZONES
+═══════════════════════════════════════════════ */
+function renderZones() {
+  const grid = document.getElementById("zonesGrid");
+  grid.innerHTML = ZONES_RPG.map(z => {
+    const unlocked = state.zones_visited.includes(z.id);
+    const zQuests = QUETES_RPG.filter(q => q.zone === z.id);
+    const doneCnt = zQuests.filter(q => state.quests_done.includes(q.id)).length;
+    const pct = zQuests.length ? Math.round(doneCnt / zQuests.length * 100) : 0;
+    return `
+    <div class="zone-card parch ${unlocked ? '' : 'locked'}" onclick="${unlocked ? 'focusZone('+z.id+')' : ''}">
+      ${!unlocked ? '<span class="zone-lock-icon">🔒</span>' : ''}
+      <span class="zone-num">${z.id}</span>
+      <div class="zone-label">${z.pays} ${z.phase}</div>
+      <div class="zone-name">${z.name}</div>
+      <div class="zone-period">${z.period}</div>
+      <div class="zone-quests-count" style="color:${z.color}">${doneCnt}/${zQuests.length} quêtes · ${pct}%</div>
+      <div class="zone-progress"><div class="zone-progress-fill" style="width:${pct}%;background:${z.color}"></div></div>
+    </div>`;
+  }).join("");
+}
+
+function focusZone(id) {
+  switchTab("quetes");
+  document.querySelectorAll(".tab-btn").forEach((b,i) => { if(i===2) b.classList.add("active"); else b.classList.remove("active"); });
+  filterQuestsByZone(id);
+}
+
+/* ═══════════════════════════════════════════════
+   QUÊTES
+═══════════════════════════════════════════════ */
+let currentFilter = "all";
+
+
+
+/* ══ CYCLE DES SAISONS — correspondance zone → saison ══ */
+const ZONE_SAISON = {
+  // Zones 1-2  : Août–septembre  → Été
+  1:'ete', 2:'ete',
+  // Zones 3-6  : Octobre–novembre → Automne
+  3:'automne', 4:'automne', 5:'automne', 6:'automne',
+  // Zones 7-9  : Décembre–février → Hiver
+  7:'hiver', 8:'hiver', 9:'hiver',
+  // Zones 10-15 : Mars–mai        → Printemps
+  10:'printemps', 11:'printemps', 12:'printemps',
+  13:'printemps', 14:'printemps', 15:'printemps',
+  // Zone 16 : Cycle witch — toute l'année (non compté par saison)
+  16: null,
+};
+const SAISONS_CONFIG = [
+  { id:'printemps', label:'Printemps', emoji:'🌸', color:'#7abf6a', zones:[10,11,12,13,14,15] },
+  { id:'ete',       label:'Été',       emoji:'☀️', color:'#c8a820', zones:[1,2] },
+  { id:'automne',   label:'Automne',   emoji:'🍂', color:'#c87820', zones:[3,4,5,6] },
+  { id:'hiver',     label:'Hiver',     emoji:'❄️', color:'#6aaabf', zones:[7,8,9] },
+];
+/* ══ QUÊTES WITCH 2.0 — Calendrier des sorcières ══ */
+const WITCH_CALENDAR = {
+  "Imbolc":     { month:2,  day:1,  color:"#e8d4f0", saison:"hiver",    zone:"Zone 9 · Galice · Rías Baixas" },
+  "Ostara":     { month:3,  day:20, color:"#a8e8a0", saison:"printemps", zone:"Zone 11-12 · Côte Basque · Landes" },
+  "Beltane":    { month:5,  day:1,  color:"#f8c860", saison:"printemps", zone:"Zone 13-14 · Saint-Malo" },
+  "Litha":      { month:6,  day:21, color:"#ffd040", saison:"été",       zone:"Inter-boucles · Creuse · Millevaches" },
+  "Lughnasadh": { month:8,  day:1,  color:"#e8a040", saison:"été",       zone:"Inter-boucles · Millevaches · Tronçais" },
+  "Mabon":      { month:9,  day:22, color:"#c87820", saison:"automne",   zone:"Phase 2-3 · Morvan → Lyon" },
+  "Samhain":    { month:10, day:31, color:"#8840c8", saison:"automne",   zone:"Phase 4-5 · Cévennes" },
+  "Yule":       { month:12, day:21, color:"#60c8f8", saison:"hiver",     zone:"Phase 7-8 · Portugal" }
+};
+
+function getWitchInfo(title) {
+  for (const [name, info] of Object.entries(WITCH_CALENDAR)) {
+    if (title.includes(name)) return { name, ...info };
+  }
+  return null;
+}
+
+function isWitchActive(info) {
+  if (!info) return false;
+  const today = new Date();
+  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
+  return Math.abs(today - fete) / (1000*60*60*24) <= 7;
+}
+
+function isWitchPast(info) {
+  if (!info) return false;
+  const today = new Date();
+  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
+  return (today - fete) > 7*24*60*60*1000;
+}
+
+function daysUntilWitch(info) {
+  if (!info) return null;
+  const today = new Date();
+  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
+  const diff = Math.round((fete - today) / (1000*60*60*24));
+  return diff;
+}
+
+function renderQuests(filter) {
+  const list = document.getElementById("questList");
+  let quests = [...QUETES_RPG];
+
+  if (filter === "done")        quests = quests.filter(q => state.quests_done.includes(q.id));
+  else if (filter === "collecte")   quests = quests.filter(q => q.type === "collecte");
+  else if (filter === "survie")     quests = quests.filter(q => q.type === "survie");
+  else if (filter === "exploration") quests = quests.filter(q => q.type === "exploration");
+  else if (filter === "quotidienne") quests = quests.filter(q => q.type === "quotidienne");
+  else if (filter === "witch")      quests = quests.filter(q => q.type === "witch");
+  else if (filter && filter.startsWith("saison-")) {
+    const sid = filter.replace("saison-", "");
+    quests = quests.filter(q => ZONE_SAISON[q.zone] === sid);
+  }
+
+  const typeEmoji = { collecte:"🌿", survie:"⚔️", exploration:"🗺️", quotidienne:"⚡", witch:"🧙" };
+  const typeBg    = { collecte:"#2c4a1a", survie:"#4a1a1a", exploration:"#1a2a4a",
+                      quotidienne:"#4a3a1a", witch:"#2a1040" };
+
+  list.innerHTML = quests.map(q => {
+    const done = state.quests_done.includes(q.id);
+    const zone = ZONES_RPG.find(z => z.id === q.zone);
+
+    // Rendu spécial pour les quêtes witch
+    if (q.type === "witch") {
+      const witch = getWitchInfo(q.title);
+      const active = isWitchActive(witch);
+      const past = isWitchPast(witch);
+      const daysLeft = witch ? daysUntilWitch(witch) : null;
+      const witchColor = witch ? witch.color : "#8840c8";
+
+      let countdownHtml = "";
+      if (active) {
+        countdownHtml = `<span class="witch-badge now" style="background:${witchColor}">🌙 MAINTENANT</span>`;
+      } else if (!past && daysLeft !== null && daysLeft > 0 && daysLeft <= 30) {
+        countdownHtml = `<span class="witch-badge soon" style="border-color:${witchColor};color:${witchColor}">dans ${daysLeft}j</span>`;
+      } else if (past) {
+        countdownHtml = `<span class="witch-badge past">passée</span>`;
+      }
+
+      return `
+      <div class="quest-card parch witch-card${active ? " witch-active" : ""}${done ? " quest-done" : ""}"
+           style="--witch-color:${witchColor}">
+        <div class="quest-header" onclick="toggleQuest(${q.id})">
+          <div class="quest-type-badge" style="background:${typeBg[q.type]};border:1px solid ${witchColor}40">
+            ${typeEmoji[q.type]}
+          </div>
+          <div class="quest-info">
+            <div class="quest-title" style="${done ? "text-decoration:line-through;opacity:.5" : ""}">
+              ${q.title}
+            </div>
+            <div class="witch-meta">
+              ${witch ? `<span class="witch-date-tag" style="color:${witchColor}">${witch.zone}</span>` : ""}
+              ${countdownHtml}
+            </div>
+          </div>
+          <div class="quest-status">${done ? "✅" : "○"}</div>
+        </div>
+        <div class="quest-body" id="qb-${q.id}">
+          <p class="quest-desc">"${q.lore}"</p>
+          <ul class="quest-objectives">
+            ${q.objectives.map(o => `<li class="${done ? "done" : ""}">${o}</li>`).join("")}
+          </ul>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+            <span class="quest-reward">🧙 Récompense : ${q.reward}</span>
+            <button class="btn btn-primary" onclick="completeQuest(${q.id})">
+              ${done ? "↩ Annuler" : "✓ Accomplie"}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Rendu standard
+    return `
+    <div class="quest-card parch${done ? " quest-done" : ""}">
+      <div class="quest-header" onclick="toggleQuest(${q.id})">
+        <div class="quest-type-badge" style="background:${typeBg[q.type]}">${typeEmoji[q.type]}</div>
+        <div class="quest-info">
+          <div class="quest-title" style="${done ? "text-decoration:line-through;opacity:.5" : ""}">${q.title}</div>
+          <div class="quest-zone-tag" style="color:${zone?.color}">${zone?.name || ""} · Zone ${q.zone}</div>
+        </div>
+        <div class="quest-status">${done ? "✅" : "○"}</div>
+      </div>
+      <div class="quest-body" id="qb-${q.id}">
+        <p class="quest-desc">"${q.lore}"</p>
+        <ul class="quest-objectives">
+          ${q.objectives.map(o => `<li class="${done ? "done" : ""}">${o}</li>`).join("")}
+        </ul>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          <span class="quest-reward">⚗️ Récompense : ${q.reward}</span>
+          <button class="btn btn-primary" onclick="completeQuest(${q.id})">
+            ${done ? "↩ Annuler" : "✓ Accomplie"}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleQuest(id) {
+  const body = document.getElementById("qb-" + id);
+  body.classList.toggle("open");
+}
+
+function filterQuests(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderQuests(type);
+}
+
+function filterQuestsByZone(zoneId) {
+  const list = document.getElementById("questList");
+  const quests = QUETES_RPG.filter(q => q.zone === zoneId);
+}
+
+
+function completeQuest(id, e) {
+  e.stopPropagation();
+  const done = BS.getQuetesDone();
+  if (!done.includes(id)) {
+    BS.completeQuete(id);
+    // Débloquer zone suivante si toutes les quêtes de la zone sont faites
+    const quest = QUETES_RPG.find(q => q.id === id);
+    if (quest) {
+      const zoneQuests = QUETES_RPG.filter(q => q.zone === quest.zone);
+      const nowDone = BS.getQuetesDone();
+      if (zoneQuests.every(q => nowDone.includes(q.id))) {
+        const nextZone = quest.zone + 1;
+        if (nextZone <= 16) BS.visitZone(nextZone);
+      }
+    }
+  } else {
+    BS.uncompleteQuete(id);
+  }
+  renderQuests(currentFilter);
+  renderZones();
+  updateXP();
+}
+
+/* ═══════════════════════════════════════════════
+   INVENTAIRE
+═══════════════════════════════════════════════ */
+function renderInventory() {
+  const grid = document.getElementById("inventoryGrid");
+  grid.innerHTML = STOCKS_INITIAUX.map(s => {
+    const qty = state.stocks[s.id] || 0;
+    const pct = Math.min(100, Math.round(qty / s.max * 100));
+    return `<div class="inv-card">
+      <div class="inv-top">
+        <span class="inv-icon">${s.icon}</span>
+        <span class="inv-name">${s.name}</span>
+      </div>
+      <div class="inv-track"><div class="inv-fill" style="width:${pct}%"></div></div>
+      <div class="inv-qty">${qty} / ${s.max} ${s.unit || 'g'}</div>
+      <div class="inv-controls">
+        <button class="inv-btn" onclick="adjustStock('${s.id}',-50)">−50</button>
+        <button class="inv-btn" onclick="adjustStock('${s.id}',50)">+50</button>
+        <button class="inv-btn" onclick="adjustStock('${s.id}',200)">+200</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function adjustStock(id, delta) {
+  BS.updateStock(id, (BS.getStock(id) || 0) + delta);
+  renderInventory();
+}
+
+
+// updateStock remplacée par adjustStock
+
+/* ═══════════════════════════════════════════════
+   JOURNAL
+═══════════════════════════════════════════════ */
+function renderJournal() {
+  const container = document.getElementById("journalList");
+  const sel = document.getElementById("journalZone");
+
+  // Remplir le select des zones
+  sel.innerHTML = "<option value=\"\">— Zone / Étape —</option>" +
+    ZONES_RPG.map(z => `<option value="${z.name}">${z.pays} Zone ${z.id} — ${z.name}</option>`).join("");
+
+  if (!state.journal.length) {
+    container.innerHTML = "<p style=\"font-style:italic;color:var(--ink-light);font-size:.9rem\">Le carnet est vide. La route commence.</p>";
+    return;
+  }
+  container.innerHTML = [...state.journal].reverse().map((e, i) => `
+    <div class="journal-entry">
+      <button class="journal-entry-delete" onclick="deleteJournalEntry(${state.journal.length - 1 - i})">✕</button>
+      <div class="journal-entry-date">${e.date}</div>
+      <div class="journal-entry-zone">${e.zone || 'En route'}</div>
+      <div class="journal-entry-text">${e.text}</div>
+    </div>`).join("");
+}
+
+function saveJournalEntry() {
+  const text    = document.getElementById("journalText").value.trim();
+  const zone    = document.getElementById("journalZone").value;
+  const zone_id = parseInt(document.getElementById("journalZone").selectedIndex) || null;
+  if (!text) return;
+  BS.addJournalEntry({ zone, zone_id, text });
+  document.getElementById("journalText").value = "";
+  renderJournal();
+}
+
+function deleteJournalEntry(idx) {
+  if (confirm("Supprimer cette entrée ?")) {
+    BS.deleteJournalEntry(idx);
+    renderJournal();
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+renderZones();
+renderQuests("all");
+renderInventory();
+renderJournal();
+updateXP();
+
+
+/* ═══ INIT ═══ */
+document.addEventListener("DOMContentLoaded", () => {
+  updateXP();
+  renderZones();
+  renderQuests("all");
+  renderInventory();
+  renderJournal();
+  document.getElementById("journalDate").value = new Date().toISOString().slice(0,10);
+  const sel = document.getElementById("journalZone");
+  ZONES_RPG.forEach(z => {
+    const opt = document.createElement("option");
+    opt.value = z.id; opt.textContent = z.name;
+    sel.appendChild(opt);
+  });
+  // Hash routing — ouvre directement l'onglet demandé
+  const hash = location.hash.replace('#','');
+  if (hash && document.getElementById('panel-' + hash)) {
+    switchTab(hash);
+  } else {
+    // Attendre que le layout soit calculé avant d'injecter le SVG
+    requestAnimationFrame(() => requestAnimationFrame(buildCarteMap));
+  }
+})
+
+let carnetMap = null;
+let carnetMarkers = [];
+
+// Initialiser le protocole PMTiles une seule fois
+if (typeof pmtiles !== 'undefined') {
+  const protocol = new pmtiles.Protocol();
+  maplibregl.addProtocol('pmtiles', protocol.tile);
+}
+
+function buildCarteMap() {
+  const wrap = document.getElementById('mapWrap');
+  if (!wrap) return;
+
+  if (carnetMap) { carnetMap.remove(); carnetMap = null; carnetMarkers = []; }
+
+  wrap.style.height = '60vh';
+  void wrap.offsetHeight;
+
+  carnetMap = new maplibregl.Map({
+    container: 'mapWrap',
+    style: {
+      version: 8,
+      glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
+      sources: {
+        basemap: {
+          type: 'vector',
+          url: 'pmtiles://' + window.location.origin + '/tiles.pmtiles',
+          attribution: '© OpenStreetMap'
+        }
+      },
+      layers: [
+        { id:'bg',    type:'background', paint:{'background-color':'#e8f0e8'} },
+        { id:'water', type:'fill', source:'basemap', 'source-layer':'water',
+          paint:{'fill-color':'#a0c8e8'} },
+        { id:'landuse', type:'fill', source:'basemap', 'source-layer':'landuse',
+          paint:{'fill-color':'#d4e8c8','fill-opacity':0.5} },
+        { id:'roads', type:'line', source:'basemap', 'source-layer':'roads',
+          paint:{'line-color':'#c8b89a','line-width':['interpolate',['linear'],['zoom'],5,0.5,12,2]} },
+        { id:'labels', type:'symbol', source:'basemap', 'source-layer':'places',
+          layout:{'text-field':['get','name:fr'],'text-size':['interpolate',['linear'],['zoom'],5,9,12,13],'text-font':['Noto Sans Regular']},
+          paint:{'text-color':'#3a2a1a','text-halo-color':'#fff','text-halo-width':1} }
+      ]
+    },
+    center: [2.5, 46.5],
+    zoom: 5
+  });
+
+  new maplibregl.NavigationControl({ showCompass: false }).addTo(carnetMap);
+
+  carnetMap.on('load', () => {
+    // Placer les observations
+    const obs = BS.getObservations();
+    obs.forEach(p => {
+      if (!p.lat || !p.lng) return;
+      const cfg = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
+      const el = document.createElement('div');
+      el.innerHTML = cfg.icon;
+      el.style.cssText = `width:40px;height:40px;border-radius:50%;background:${cfg.color};border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.4);cursor:pointer`;
+      const qtyLabel = {absent:'vide',rare:'rare',moyen:'moyen',abondant:'abondant'}[p.quantite]||'';
+      const popupHtml = `<div style="font-family:'DM Sans',sans-serif;min-width:180px;padding:.2rem">
+        <div style="font-weight:700;font-size:.95rem;margin-bottom:.3rem">${cfg.icon} ${p.nom||cfg.label}</div>
+        ${qtyLabel?`<div style="font-size:.78rem;color:#666;margin-bottom:.25rem">Abondance : <b>${qtyLabel}</b></div>`:''}
+        ${p.note?`<div style="font-size:.82rem;color:#444;margin-bottom:.25rem">${p.note}</div>`:''}
+        <div style="font-size:.68rem;color:#999;margin-top:.3rem">${new Date(p.timestamp||Date.now()).toLocaleDateString('fr')}</div>
+      </div>`;
+      const popup = new maplibregl.Popup({ maxWidth:'260px', offset:20 }).setHTML(popupHtml);
+      const m = new maplibregl.Marker({ element:el }).setLngLat([p.lng,p.lat]).setPopup(popup).addTo(carnetMap);
+      carnetMarkers.push(m);
+    });
+
+    // Zoomer sur les observations si présentes
+    if (carnetMarkers.length > 0) {
+      const coords = obs.filter(p=>p.lat&&p.lng);
+      if (coords.length === 1) {
+        carnetMap.flyTo({ center:[coords[0].lng, coords[0].lat], zoom:13 });
+      } else {
+        const lngs = coords.map(p=>p.lng), lats = coords.map(p=>p.lat);
+        carnetMap.fitBounds([[Math.min(...lngs),Math.min(...lats)],[Math.max(...lngs),Math.max(...lats)]],
+          { padding:40, duration:500 });
+      }
+    }
+  });
+
+  // Clic sur la carte → popup création de point
+  carnetMap.on('click', function(e) {
+    const lat = e.lngLat.lat.toFixed(5);
+    const lng = e.lngLat.lng.toFixed(5);
+    const types = Object.entries(OBS_TYPE_CFG).filter(([k]) => k !== 'autre');
+    const btns = types.map(([k,v]) =>
+      `<button onclick="mapPopupSetType(this,'${k}')" data-type="${k}"
+        style="width:36px;height:36px;border-radius:8px;border:2px solid transparent;
+               background:rgba(0,0,0,.06);font-size:1.05rem;cursor:pointer"
+        title="${v.label}">${v.icon}</button>`
+    ).join('');
+    const html = `
+      <div id="mapNewPoint" style="font-family:'DM Sans',sans-serif;min-width:210px">
+        <div style="font-size:.75rem;color:#888;margin-bottom:.5rem">📍 ${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:.55rem">${btns}</div>
+        <input id="mpNom" placeholder="Nom (optionnel)"
+          style="width:100%;box-sizing:border-box;padding:.3rem .45rem;border:1px solid #ccc;
+                 border-radius:6px;font-size:.82rem;margin-bottom:.4rem"/>
+        <textarea id="mpNote" placeholder="Note…" rows="2"
+          style="width:100%;box-sizing:border-box;padding:.3rem .45rem;border:1px solid #ccc;
+                 border-radius:6px;font-size:.82rem;resize:none;margin-bottom:.5rem"></textarea>
+        <button onclick="mapPopupSave(${lat},${lng})"
+          style="width:100%;padding:.4rem;background:#3a6e28;color:#fff;border:none;
+                 border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer">
+          ✓ Enregistrer
+        </button>
+      </div>`;
+    new maplibregl.Popup({ maxWidth:'280px', closeButton:true })
+      .setLngLat(e.lngLat)
+      .setHTML(html)
+      .addTo(carnetMap);
+    setTimeout(() => {
+      const first = document.querySelector('#mapNewPoint button[data-type]');
+      if (first) mapPopupSetType(first, first.dataset.type);
+    }, 30);
+  });
+
+  renderSpotsGrid();
+}
+
+let mapPopupType = 'cueillette';
+
+function mapPopupSetType(btn, type) {
+  mapPopupType = type;
+  document.querySelectorAll('#mapNewPoint button[data-type]').forEach(b => {
+    const cfg = OBS_TYPE_CFG[b.dataset.type] || OBS_TYPE_CFG.autre;
+    b.style.border = b.dataset.type === type
+      ? `2px solid ${cfg.color}`
+      : '2px solid transparent';
+    b.style.background = b.dataset.type === type
+      ? `${cfg.color}33`
+      : 'rgba(0,0,0,.06)';
+  });
+}
+
+function mapPopupSave(lat, lng) {
+  const nom  = (document.getElementById('mpNom')?.value  || '').trim();
+  const note = (document.getElementById('mpNote')?.value || '').trim();
+  const cfg  = OBS_TYPE_CFG[mapPopupType] || OBS_TYPE_CFG.autre;
+  BS.addObservation({
+    lat: parseFloat(lat), lng: parseFloat(lng),
+    type: mapPopupType,
+    nom: nom || cfg.label,
+    note,
+    quantite: 'moyen',
+    timestamp: new Date().toISOString()
+  });
+  document.querySelectorAll('.maplibregl-popup').forEach(p => p.remove());
+  buildCarteMap();
+}
+
+function renderSpotsGrid() {
+  const grid = document.getElementById('spotsGrid');
+  if (!grid) return;
+  const obs = BS.getObservations();
+  if (!obs.length) {
+    grid.innerHTML = '<p class="spots-empty">Aucun point enregistré — utilisez Observer pour ajouter vos premiers spots.</p>';
+    return;
+  }
+  grid.innerHTML = obs.map(p => {
+    const cfg = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
+    const qty = { absent:'vide', rare:'rare', moyen:'moyen', abondant:'abondant' }[p.quantite] || '';
+    const date = p.timestamp ? new Date(p.timestamp).toLocaleDateString('fr', { day:'numeric', month:'short' }) : '';
+    return `<div class="spot-card" onclick="carnetMap && carnetMap.setView([${p.lat},${p.lng}],13)">
+      <div class="spot-hdr">
+        <span class="spot-icon" style="background:${cfg.color}">${cfg.icon}</span>
+        <div class="spot-meta">
+          <div class="spot-name">${p.nom || cfg.label}</div>
+          <div class="spot-type" style="color:${cfg.color}">${cfg.label}${qty ? ' · ' + qty : ''}</div>
+        </div>
+        ${date ? `<div class="spot-date">${date}</div>` : ''}
+      </div>
+      ${p.note ? `<div class="spot-note">${p.note}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
