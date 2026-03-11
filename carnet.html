@@ -179,6 +179,7 @@
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
+<script src="map-style.js"></script>
 <script src="data.js"></script>
 <script src="terrain.js"></script>
 <script>
@@ -1246,29 +1247,7 @@ function buildCarteMap() {
 
   carnetMap = new maplibregl.Map({
     container: 'mapWrap',
-    style: {
-      version: 8,
-      glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
-      sources: {
-        basemap: {
-          type: 'vector',
-          url: 'pmtiles://' + window.location.origin + '/tiles.pmtiles',
-          attribution: '© OpenStreetMap'
-        }
-      },
-      layers: [
-        { id:'bg',    type:'background', paint:{'background-color':'#e8f0e8'} },
-        { id:'water', type:'fill', source:'basemap', 'source-layer':'water',
-          paint:{'fill-color':'#a0c8e8'} },
-        { id:'landuse', type:'fill', source:'basemap', 'source-layer':'landuse',
-          paint:{'fill-color':'#d4e8c8','fill-opacity':0.5} },
-        { id:'roads', type:'line', source:'basemap', 'source-layer':'roads',
-          paint:{'line-color':'#c8b89a','line-width':['interpolate',['linear'],['zoom'],5,0.5,12,2]} },
-        { id:'labels', type:'symbol', source:'basemap', 'source-layer':'places',
-          layout:{'text-field':['get','name:fr'],'text-size':['interpolate',['linear'],['zoom'],5,9,12,13],'text-font':['Noto Sans Regular']},
-          paint:{'text-color':'#3a2a1a','text-halo-color':'#fff','text-halo-width':1} }
-      ]
-    },
+    style: typeof mlStyle === 'function' ? mlStyle() : 'https://demotiles.maplibre.org/style.json',
     center: [2.5, 46.5],
     zoom: 5
   });
