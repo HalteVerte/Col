@@ -1273,7 +1273,7 @@ function buildCarteMap() {
     zoom: 5
   });
 
-  new maplibregl.NavigationControl({ showCompass: false }).addTo(carnetMap);
+  carnetMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
   carnetMap.on('load', () => {
     // S'assurer que terrain.js a bien initialisé les points par défaut
@@ -1282,6 +1282,14 @@ function buildCarteMap() {
     }
     // Placer les observations
     const obs = BS.getObservations();
+
+    // DEBUG temporaire — afficher le nombre de points trouvés
+    const dbg = document.createElement('div');
+    dbg.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#3a6e28;color:white;padding:.5rem 1rem;border-radius:8px;font-size:.85rem;z-index:9999;font-family:monospace';
+    dbg.textContent = `${obs.length} observations · BS:${!!window.BS} · DEFAUT:${!!(window.POINTS_DEFAUT)}`;
+    document.body.appendChild(dbg);
+    setTimeout(() => dbg.remove(), 6000);
+
     obs.forEach(p => {
       if (!p.lat || !p.lng) return;
       const cfg = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
