@@ -179,8 +179,8 @@
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
-<script defer src="data.js"></script>
-<script defer src="terrain.js"></script>
+<script src="data.js"></script>
+<script src="terrain.js"></script>
 <script>
 
 /* ═══════════════════════════════════════════════
@@ -1276,6 +1276,10 @@ function buildCarteMap() {
   new maplibregl.NavigationControl({ showCompass: false }).addTo(carnetMap);
 
   carnetMap.on('load', () => {
+    // S'assurer que terrain.js a bien initialisé les points par défaut
+    if (window.BS && BS.getObservations().length === 0 && window.POINTS_DEFAUT) {
+      POINTS_DEFAUT.forEach(p => BS.addObservation(p));
+    }
     // Placer les observations
     const obs = BS.getObservations();
     obs.forEach(p => {
