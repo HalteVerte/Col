@@ -1276,7 +1276,7 @@ function buildCarteMap() {
         <div style="font-size:.68rem;color:#999;margin-top:.3rem">${new Date(p.timestamp||Date.now()).toLocaleDateString('fr')}</div>
       </div>`;
       const popup = new maplibregl.Popup({ maxWidth:'260px', offset:20 }).setHTML(popupHtml);
-      const m = new maplibregl.Marker({ element:el }).setLngLat([p.lng,p.lat]).setPopup(popup).addTo(carnetMap);
+      const m = new maplibregl.Marker({ element:el, anchor:'center' }).setLngLat([p.lng,p.lat]).setPopup(popup).addTo(carnetMap);
       carnetMarkers.push(m);
     });
 
