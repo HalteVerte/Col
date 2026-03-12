@@ -186,7 +186,7 @@ function switchBoucle(which) {
   } else if (which === 'inter') {
     setTimeout(() => {
       renderInterBoucle();
-      setTimeout(() => { if (interMap) interMap.invalidateSize(); }, 200);
+      setTimeout(() => { if (interMap) interMap.resize(); }, 200);
     }, 50);
   } else {
     setTimeout(renderTrajComplet, 50);
@@ -209,19 +209,30 @@ function makeMlMap(containerId, center, zoom) {
   });
 }
 
+// Déclenche cb immédiatement si la carte est déjà chargée, sinon attend load
+function onMapReady(map, cb) {
+  if (map.isStyleLoaded()) cb();
+  else map.on('load', cb);
+}
+
 function addGpxLine(map, coords, color, sourceId) {
   if (!coords || !coords.length) return;
   const geojson = {
     type: 'Feature',
     geometry: { type: 'LineString', coordinates: coords.map(c => [c[1], c[0]]) }
   };
-  if (map.getSource(sourceId)) {
-    map.getSource(sourceId).setData(geojson);
-  } else {
-    map.addSource(sourceId, { type: 'geojson', data: geojson });
-    map.addLayer({ id: sourceId, type: 'line', source: sourceId,
-      paint: { 'line-color': color, 'line-width': 3, 'line-opacity': 0.85 }
-    });
+  try {
+    if (map.getSource(sourceId)) {
+      map.getSource(sourceId).setData(geojson);
+    } else {
+      map.addSource(sourceId, { type: 'geojson', data: geojson });
+      map.addLayer({ id: sourceId, type: 'line', source: sourceId,
+        paint: { 'line-color': color, 'line-width': 3, 'line-opacity': 0.85 }
+      });
+    }
+  } catch(e) {
+    // Style pas encore prêt — réessayer dans 200ms
+    setTimeout(() => addGpxLine(map, coords, color, sourceId), 200);
   }
 }
 
@@ -245,7 +256,7 @@ function fitMlBounds(map, coords, padding) {
 function initTCMap() {
   if (tcMap) return;
   tcMap = makeMlMap('tcMap', [-1.5, 44.5], 5);
-  tcMap.on('load', () => {
+  onMapReady(tcMap, () => {
     if (window.GPX_ALLER) addGpxLine(tcMap, GPX_ALLER, '#2c3e1a', 'gpx-aller');
   });
 }
@@ -343,7 +354,7 @@ let trMarkeurs = [];
 function initTRMap() {
   if (trMap) return;
   trMap = makeMlMap('trMap', [-3, 46], 5);
-  trMap.on('load', () => {
+  onMapReady(trMap, () => {
     if (window.GPX_RETOUR) addGpxLine(trMap, GPX_RETOUR, '#2d5c7a', 'gpx-retour');
   });
 }
@@ -436,7 +447,7 @@ function renderInterBoucle() {
   // ── Init carte (même pattern que initTRMap) ──────────
   if (!interMap) {
     interMap = makeMlMap('interMap', [3.0, 47.5], 6);
-    interMap.on('load', () => {
+    onMapReady(interMap, () => {
       if (window.GPX_BOUCLE) addGpxLine(interMap, GPX_BOUCLE, '#c84a2a', 'gpx-boucle');
     });
   }
