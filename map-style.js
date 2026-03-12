@@ -11,7 +11,7 @@ function mlStyle() {
       },
       basemap: {
         type: 'vector',
-        url: 'pmtiles://' + window.location.origin + '/tiles.pmtiles',
+        url: 'pmtiles://https://github.com/HalteVerte/Col/releases/download/map/tiles.pmtiles',
         attribution: ''
       }
     },
