@@ -256,13 +256,14 @@ function fitMlBounds(map, coords, padding) {
 function initTCMap() {
   if (tcMap) return;
   tcMap = makeMlMap('tcMap', [-1.5, 44.5], 5);
-  onMapReady(tcMap, () => {
-    if (window.GPX_ALLER) addGpxLine(tcMap, GPX_ALLER, '#2c3e1a', 'gpx-aller');
-  });
 }
 
 function renderTrajComplet() {
   initTCMap();
+  // Tracé GPX
+  onMapReady(tcMap, () => {
+    if (window.GPX_ALLER) addGpxLine(tcMap, GPX_ALLER, '#2c3e1a', 'gpx-aller');
+  });
   // Nettoyer
   tcMarkeurs.forEach(m => m.remove());
   tcMarkeurs = [];
@@ -354,13 +355,13 @@ let trMarkeurs = [];
 function initTRMap() {
   if (trMap) return;
   trMap = makeMlMap('trMap', [-3, 46], 5);
-  onMapReady(trMap, () => {
-    if (window.GPX_RETOUR) addGpxLine(trMap, GPX_RETOUR, '#2d5c7a', 'gpx-retour');
-  });
 }
 
 function renderTrajRetour() {
   initTRMap();
+  onMapReady(trMap, () => {
+    if (window.GPX_RETOUR) addGpxLine(trMap, GPX_RETOUR, '#2d5c7a', 'gpx-retour');
+  });
   trMarkeurs.forEach(m => m.remove());
   trMarkeurs = [];
 
