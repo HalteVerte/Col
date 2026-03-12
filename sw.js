@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v37';
+const CACHE_APP   = 'boucle-app-v38';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -386,14 +386,26 @@ self.addEventListener('fetch', event => {
    || url.hostname.includes('wxs.ign.fr')) return;
 
 
-  // Assets app — Cache First
+  // HTML — Network First (toujours la dernière version)
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response && response.status === 200) {
+          caches.open(CACHE_APP).then(c => c.put(event.request, response.clone()));
+        }
+        return response;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // JS/CSS/images — Cache First
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
         if (!response || response.status !== 200 || response.type === 'opaque') return response;
-        const clone = response.clone();
-        caches.open(CACHE_APP).then(c => c.put(event.request, clone));
+        caches.open(CACHE_APP).then(c => c.put(event.request, response.clone()));
         return response;
       });
     })

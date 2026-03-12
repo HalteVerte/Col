@@ -178,7 +178,6 @@
 </div>
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
 <script src="map-style.js"></script>
 <script src="data.js"></script>
 <script src="terrain.js"></script>
@@ -704,6 +703,7 @@ const OBS_TYPE_CFG = {
   oeuf:          { icon:'🥚', color:'#c8a820', label:'Œufs frais' },
   abri:          { icon:'🛖', color:'#7a5c3a', label:'Abri' },
   ravitaillement:{ icon:'🛒', color:'#3a6e28', label:'Ravitaillement' },
+  halte:         { icon:'🏠', color:'#5a8a6a', label:'Halte' },
   autre:         { icon:'📍', color:'#888',    label:'Autre' },
 };
 
@@ -1230,12 +1230,6 @@ document.addEventListener("DOMContentLoaded", () => {
 let carnetMap = null;
 let carnetMarkers = [];
 
-// Initialiser le protocole PMTiles une seule fois
-if (typeof pmtiles !== 'undefined') {
-  const protocol = new pmtiles.Protocol();
-  maplibregl.addProtocol('pmtiles', protocol.tile);
-}
-
 function buildCarteMap() {
   const wrap = document.getElementById('mapWrap');
   if (!wrap) return;
@@ -1254,7 +1248,7 @@ function buildCarteMap() {
 
   carnetMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
-  carnetMap.on('load', () => {
+  onMapReady(carnetMap, () => {
     // S'assurer que terrain.js a bien initialisé les points par défaut
     if (window.BS && BS.getObservations().length === 0 && window.POINTS_DEFAUT) {
       POINTS_DEFAUT.forEach(p => BS.addObservation(p));
