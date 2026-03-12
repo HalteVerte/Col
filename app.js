@@ -227,9 +227,9 @@ function addGpxLine(map, coords, color, sourceId) {
 
 function addMlMarker(map, lat, lng, color, size, popupHtml, markersArr) {
   const el = document.createElement('div');
-  el.style.cssText = `width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer`;
+  el.style.cssText = `width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;margin-left:-${size/2}px;margin-top:-${size/2}px`;
   const popup = new maplibregl.Popup({ maxWidth: '280px', offset: size/2 }).setHTML(popupHtml);
-  const m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
+  const m = new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
   if (markersArr) markersArr.push(m);
   return m;
 }
