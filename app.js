@@ -1,11 +1,6 @@
 /* ══════════════════════════════════════════════════════
    MAPLIBRE + PMTILES — Init protocole
 ══════════════════════════════════════════════════════ */
-if (typeof pmtiles !== 'undefined') {
-  const protocol = new pmtiles.Protocol();
-  maplibregl.addProtocol('pmtiles', protocol.tile);
-}
-
 
 /* ══════════════════════════════════════════════════════
    PWA — Service Worker & Installation
