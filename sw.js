@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v33';
+const CACHE_APP   = 'boucle-app-v34';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -380,34 +380,11 @@ self.addEventListener('fetch', event => {
   // PMTiles — laisser passer directement (Range requests nécessaires)
   if (url.pathname.endsWith('.pmtiles')) return;
 
-  const isTile = url.hostname.includes('tile.openstreetmap.org')
-              || url.hostname.includes('tile-cyclosm.openstreetmap.fr')
-              || url.hostname.includes('wxs.ign.fr');
+  // Tuiles OSM raster — laisser passer directement (CORS, pas de cache opaque)
+  if (url.hostname.includes('tile.openstreetmap.org')
+   || url.hostname.includes('tile-cyclosm.openstreetmap.fr')
+   || url.hostname.includes('wxs.ign.fr')) return;
 
-  if (isTile) {
-    event.respondWith(
-      fetch(event.request, { mode: 'no-cors' })
-        .then(response => {
-          if (response && response.status !== 0) {
-            const clone = response.clone();
-            caches.open(CACHE_TILES).then(async cache => {
-              cache.put(event.request, clone);
-              // LRU simple : purger si trop de tuiles
-              const keys = await cache.keys();
-              if (keys.length > TILES_MAX) {
-                await Promise.all(keys.slice(0, keys.length - TILES_MAX).map(k => cache.delete(k)));
-              }
-            });
-          }
-          return response;
-        })
-        .catch(() =>
-          caches.match(event.request)
-            .then(cached => cached || TILE_FALLBACK.clone())
-        )
-    );
-    return;
-  }
 
   // Assets app — Cache First
   event.respondWith(
