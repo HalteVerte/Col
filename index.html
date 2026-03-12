@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="La Boucle Sauvage — ~10 000 km à vélo, alimentation 100% sauvage, nomadisme permanent. Guide complet : recettes, carte terrain, carnet de quêtes."/>
+  <meta name="description" content="La Boucle Sauvage — ~12 000 km à vélo, alimentation 100% sauvage, nomadisme permanent. Guide complet : recettes, carte terrain, carnet de quêtes."/>
   <meta name="theme-color" content="#2c3e1a"/>
   <title>La Boucle Sauvage — Alimentation Sauvage & Nomadisme</title>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="main.css"/>
@@ -26,7 +27,7 @@
     </div>
   </div>
   <div class="hdr-right">
-    <span class="badge badge-year">France · Portugal</span>
+    <span class="badge badge-year">France · Espagne · Portugal</span>
     <span class="badge badge-online" id="netBadge">⬤ ONLINE</span>
   </div>
 </header>
@@ -57,18 +58,18 @@
 <section id="accueil" class="section active">
   <div class="page-head">
     <h1 class="page-title">La Boucle Sauvage</h1>
-    <p class="page-subtitle">~10 000 km à vélo · Alimentation sauvage · Émancipation · Santé profonde</p>
+    <p class="page-subtitle">~12 000 km à vélo · Alimentation sauvage · Émancipation · Santé profonde</p>
   </div>
 
   <div class="synopsis-hero">
     <h1>Le projet</h1>
-    <p class="hero-sub">FRANCE · ESPAGNE · PORTUGAL · MI-AOÛT → PRINTEMPS</p>
+    <p class="hero-sub">FRANCE · ESPAGNE · PORTUGAL</p>
     <p>Une boucle à vélo électrique en autonomie alimentaire maximale — se nourrir de ce que la route offre, sans dépendre d'aucun commerce, d'aucune infrastructure, d'aucun système. Pas une performance sportive. Une réorientation profonde.</p>
   </div>
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-val">~10 000</div><div class="stat-label">km parcourus</div></div>
-    <div class="stat-card"><div class="stat-val">8</div><div class="stat-label">phases aller</div></div>
+    <div class="stat-card"><div class="stat-val">~12 000</div><div class="stat-label">km parcourus</div></div>
+    <div class="stat-card"><div class="stat-val">17</div><div class="stat-label">phases</div></div>
     <div class="stat-card"><div class="stat-val">0€</div><div class="stat-label">budget nourriture visé</div></div>
     <div class="stat-card"><div class="stat-val">↓</div><div class="stat-label">cortisol, inflammation, SOPK</div></div>
     <div class="stat-card"><div class="stat-val">↑</div><div class="stat-label">clarté, équilibre, énergie</div></div>
@@ -82,7 +83,8 @@
     <div class="region-item"><span class="region-dot">🌰</span><div><div class="region-name">Cévennes &amp; Périgord</div><div class="region-detail">Châtaignes, noix, trompettes — stocks lourds pour l'hiver</div></div></div>
     <div class="region-item"><span class="region-dot">🦪</span><div><div class="region-name">Arcachon &amp; Côte cantabrique</div><div class="region-detail">Huîtres, moules, percebes, oursins — protéines animales continues</div></div></div>
     <div class="region-item"><span class="region-dot">🌊</span><div><div class="region-name">Galice &amp; Portugal</div><div class="region-detail">Rías Baixas, Serra da Gardunha, Algarve — l'hiver le plus riche du trajet</div></div></div>
-    <div class="region-item"><span class="region-dot">🌿</span><div><div class="region-name">Retour atlantique</div><div class="region-detail">Bretagne, Baie de Somme — algues, aster maritime, moules jusqu'à Artemps</div></div></div>
+    <div class="region-item"><span class="region-dot">🌿</span><div><div class="region-name">Côtes ouest</div><div class="region-detail">Bretagne, Baie de Somme — algues, aster maritime, moules jusqu'à Artemps</div></div></div>
+    <div class="region-item"><span class="region-dot">🌱</span><div><div class="region-name">Creuse &amp; Millevache</div><div class="region-detail">Petite boucle pour échapper à la foule et aux vacanciers</div></div></div>
   </div>
 
   <div class="quote-block">
@@ -184,6 +186,8 @@
   <!-- Onglets internes -->
   <div class="terrain-tabs">
     <button class="terrain-tab active" id="ttab-nutrition"  onclick="switchTerrain('nutrition', this)">🔬 Nutrition & Saisons</button>
+    <!-- A rajouter: bouton avec 3 différents types de stocks -->
+     
     <button class="terrain-tab"        id="ttab-techniques" onclick="switchTerrain('techniques', this)">🔥 Techniques & Recettes</button>
   </div>
 
