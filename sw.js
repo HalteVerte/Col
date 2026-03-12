@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v38';
+const CACHE_APP   = 'boucle-app-v39';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -399,16 +399,14 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // JS/CSS/images — Cache First
+  // JS/CSS/images — Network First avec fallback cache
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') return response;
+    fetch(event.request).then(response => {
+      if (response && response.status === 200) {
         caches.open(CACHE_APP).then(c => c.put(event.request, response.clone()));
-        return response;
-      });
-    })
+      }
+      return response;
+    }).catch(() => caches.match(event.request))
   );
 });
 
