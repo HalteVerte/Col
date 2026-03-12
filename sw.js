@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v41';
+const CACHE_APP   = 'boucle-app-v42';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -11,7 +11,7 @@ const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 const APP_SHELL = [
   './index.html',
   './carnet.html',
-  './data.js',
+  // './data.js' — chargé en Network First, jamais mis en cache
   './main.css',
   './map.css',
   './carnet.css',
