@@ -201,13 +201,136 @@ function getStock(id) {
 /* ─────────────────────────────────────────────
    EXPORT AGENT
 ───────────────────────────────────────────── */
-function exportForAgent() {
+// ── Calculs astronomiques locaux (sans API) ──────────────────
+function _sunTimes(lat, lng, date) {
+  // Algorithme simplifié lever/coucher soleil
+  const rad = Math.PI / 180;
+  const d = new Date(date);
+  const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+  const declination = -23.45 * Math.cos(rad * (360 / 365) * (dayOfYear + 10));
+  const hourAngle = Math.acos(-Math.tan(lat * rad) * Math.tan(declination * rad)) / rad;
+  const sunrise = 12 - hourAngle / 15 - lng / 15;
+  const sunset  = 12 + hourAngle / 15 - lng / 15;
+  const fmt = h => {
+    const hh = Math.floor(((h % 24) + 24) % 24);
+    const mm = Math.floor((h - Math.floor(h)) * 60);
+    return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  };
+  return { lever: fmt(sunrise), coucher: fmt(sunset), duree_h: Math.round((sunset - sunrise) * 10) / 10 };
+}
+
+function _moonPhase(date) {
+  const d = new Date(date);
+  const known = new Date('2000-01-06'); // nouvelle lune connue
+  const diff = (d - known) / (1000 * 60 * 60 * 24);
+  const cycle = 29.53058867;
+  const phase = ((diff % cycle) + cycle) % cycle;
+  const phases = ['🌑 Nouvelle lune','🌒 Premier croissant','🌓 Premier quartier','🌔 Gibbeuse croissante','🌕 Pleine lune','🌖 Gibbeuse décroissante','🌗 Dernier quartier','🌘 Dernier croissant'];
+  return { phase_jours: Math.round(phase * 10) / 10, label: phases[Math.floor(phase / (cycle / 8))] };
+}
+
+function _tideSimple(lat, lng, date) {
+  // Calcul harmonique simplifié — cycle semi-diurne M2 (12h25)
+  const d = new Date(date);
+  const t = d.getTime() / (1000 * 60 * 60); // heures depuis epoch
+  const M2 = 12.4206; // période M2 en heures
+  const phase = (t % M2) / M2;
+  const height = Math.cos(phase * 2 * Math.PI);
+  const isCostal = Math.abs(lat) < 60 && (lng < -1 || lng > 8); // côte atlantique/manche
+  if (!isCostal) return null;
+  const nextHigh = M2 * (1 - phase);
+  const nextLow  = M2 * (0.5 - phase > 0 ? 0.5 - phase : 1.5 - phase);
+  return {
+    hauteur_relative: Math.round(height * 100) / 100,
+    etat: height > 0.3 ? 'montante' : height < -0.3 ? 'descendante' : 'étale',
+    prochaine_haute_h: Math.round(nextHigh * 10) / 10,
+    prochaine_basse_h: Math.round(Math.min(nextLow, nextHigh) * 10) / 10,
+    note: 'calcul harmonique M2 simplifié — confirmer avec SHOM'
+  };
+}
+
+async function _fetchMeteo(lat, lng) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=precipitation_sum,windspeed_10m_max,temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error('meteo offline');
+    const data = await r.json();
+    const cw = data.current_weather;
+    const wmo = {0:'☀️ Dégagé',1:'🌤 Peu nuageux',2:'⛅ Partiellement nuageux',3:'☁️ Couvert',51:'🌦 Bruine',61:'🌧 Pluie légère',63:'🌧 Pluie modérée',65:'🌧 Pluie forte',71:'❄️ Neige légère',80:'🌦 Averses',95:'⛈ Orage',96:'⛈ Orage grêle'};
+    return {
+      source: 'open-meteo.com',
+      temperature_c: cw.temperature,
+      vent_kmh: Math.round(cw.windspeed),
+      direction_vent: cw.winddirection,
+      meteo: wmo[cw.weathercode] || `Code ${cw.weathercode}`,
+      previsions_3j: data.daily ? {
+        dates: data.daily.time,
+        temp_max: data.daily.temperature_2m_max,
+        temp_min: data.daily.temperature_2m_min,
+        pluie_mm: data.daily.precipitation_sum,
+        vent_max: data.daily.windspeed_10m_max,
+      } : null
+    };
+  } catch(e) {
+    return { source: 'offline', note: 'météo non disponible — pas de connexion' };
+  }
+}
+
+async function exportForAgent() {
   _state.meta.export_count++;
   _save();
 
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+
+  // Position : dernier point GPS ou centre de la boucle
+  const lastObs = _state.observations.slice().reverse().find(o => o.lat && o.lng);
+  const lat = lastObs ? lastObs.lat : 49.65;
+  const lng = lastObs ? lastObs.lng : 3.27;
+
+  // Calculs locaux offline
+  const soleil = _sunTimes(lat, lng, now);
+  const lune   = _moonPhase(now);
+  const marees = _tideSimple(lat, lng, now);
+  const meteo  = await _fetchMeteo(lat, lng);
+
+  // Observations proches (rayon ~100km)
+  const proches = _state.observations.filter(o => {
+    if (!o.lat || !o.lng) return false;
+    const dlat = (o.lat - lat) * 111;
+    const dlng = (o.lng - lng) * 111 * Math.cos(lat * Math.PI / 180);
+    return Math.sqrt(dlat*dlat + dlng*dlng) < 100;
+  });
+
   const payload = {
-    export_date:    new Date().toISOString(),
-    version:        DATA_VERSION,
+    export_date:  now.toISOString(),
+    version:      DATA_VERSION,
+    agent:        '6BL-v1',
+
+    // Contexte position
+    position: {
+      lat, lng,
+      source: lastObs ? `dernier waypoint: ${lastObs.nom}` : 'défaut Artemps',
+      date: dateStr,
+    },
+
+    // Contexte astronomique & météo (offline-first)
+    environnement: {
+      soleil,
+      lune,
+      marees,
+      meteo,
+    },
+
+    // Données terrain
+    observations:      _state.observations,
+    observations_proches: proches,
+    stocks:            _state.stocks,
+    zones_visited:     _state.zones_visited,
+    quetes_done:       _state.quetes_done,
+    journal:           _state.journal.slice(-10), // 10 dernières entrées
+
+    // Stats
     meta: {
       total_observations: _state.observations.length,
       total_journal:      _state.journal.length,
@@ -215,18 +338,13 @@ function exportForAgent() {
       zones_visitees:     _state.zones_visited.length,
       export_count:       _state.meta.export_count,
     },
-    observations:   _state.observations,
-    journal:        _state.journal,
-    quetes_done:    _state.quetes_done,
-    zones_visited:  _state.zones_visited,
-    stocks:         _state.stocks,
   };
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `boucle_sauvage_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `6BL_${dateStr}.json`;
   a.click();
   URL.revokeObjectURL(url);
 
