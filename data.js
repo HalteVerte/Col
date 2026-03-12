@@ -236,7 +236,7 @@ function _tideSimple(lat, lng, date) {
   const M2 = 12.4206; // période M2 en heures
   const phase = (t % M2) / M2;
   const height = Math.cos(phase * 2 * Math.PI);
-  const isCostal = Math.abs(lat) < 60 && (lng < -1 || lng > 8); // côte atlantique/manche
+  const isCostal = Math.abs(lat) < 60 && (lng < 3 || lng > 8); // côte atlantique/manche/méditerranée
   if (!isCostal) return null;
   const nextHigh = M2 * (1 - phase);
   const nextLow  = M2 * (0.5 - phase > 0 ? 0.5 - phase : 1.5 - phase);
