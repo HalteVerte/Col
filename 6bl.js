@@ -9,11 +9,11 @@ const SBL = (() => {
   const METEO_CACHE_KEY  = 'sbl_meteo_cache';
   const METEO_MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6h
 
-  const STOCKS_MAX = {
-    myrtilles:   500,  faines:      1000, noisettes:   800,
-    champignons: 400,  chataignes:  2000, noix:        1500,
-    pignons:     600,  algues:      300,  cynorhodons: 400,
-    zestes:      200,  farine_gland:1000, caroube:     500,
+  // STOCKS_MAX chargé depuis stocks.js (source unique)
+  const STOCKS_MAX = window.STOCKS_MAX || {
+    myrtilles:500, faines:1000, noisettes:800, champignons:400,
+    chataignes:2000, noix:1500, pignons:600, algues:300,
+    cynorhodons:400, zestes:200, farine_gland:1000, caroube:500,
   };
 
   // Seuils saisonniers (% du max) — zone verte min, orange min, rouge = < orange

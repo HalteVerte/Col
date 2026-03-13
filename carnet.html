@@ -238,6 +238,7 @@ if (typeof onMapReady === 'undefined') {
 }
 </script>
 <script src="data.js"></script>
+<script src="stocks.js"></script>
 <script src="terrain.js"></script>
 <script src="zones.js"></script>
 <script src="quetes.js"></script>
@@ -249,20 +250,6 @@ if (typeof onMapReady === 'undefined') {
 ═══════════════════════════════════════════════ */
 
 
-const STOCKS_INITIAUX = [
-  { id:"myrtilles",   icon:"🫐", name:"Myrtilles séchées",  qty:0, max:500,  unit:"g" },
-  { id:"faines",      icon:"🌰", name:"Faînes torréfiées",  qty:0, max:1000, unit:"g" },
-  { id:"noisettes",   icon:"🥜", name:"Noisettes",          qty:0, max:800,  unit:"g" },
-  { id:"champignons", icon:"🍄", name:"Champignons séchés", qty:0, max:400,  unit:"g" },
-  { id:"chataignes",  icon:"🌰", name:"Châtaignes séchées", qty:0, max:2000, unit:"g" },
-  { id:"noix",        icon:"🪨", name:"Noix cerneaux",      qty:0, max:1500, unit:"g" },
-  { id:"pignons",     icon:"🌿", name:"Pignons torréfiés",  qty:0, max:600,  unit:"g" },
-  { id:"algues",      icon:"🌊", name:"Algues séchées",     qty:0, max:300,  unit:"g" },
-  { id:"cynorhodons", icon:"🔴", name:"Cynorrhodons séchés",qty:0, max:400,  unit:"g" },
-  { id:"zestes",      icon:"🍊", name:"Zestes agrumes",     qty:0, max:200,  unit:"g" },
-  { id:"farine_gland",icon:"🌾", name:"Farine de gland",    qty:0, max:1000, unit:"g" },
-  { id:"caroube",     icon:"🟫", name:"Caroube",            qty:0, max:500,  unit:"g" },
-];
 
 /* ═══════════════════════════════════════════════
    STATE — proxy sur data.js (BS)
@@ -640,7 +627,7 @@ function renderQuests(filter) {
       <div class="quest-card parch witch-card${active ? " witch-active" : ""}${done ? " quest-done" : ""}"
            style="--witch-color:${witchColor}">
         <div class="quest-header" onclick="toggleQuest(${q.id})">
-          <div class="quest-type-badge" style="background:${typeBg[q.type]};border:1px solid ${witchColor}40">
+          <div class="quest-type-badge" style="background:${typeBg[q.type]||'#1a1a2a'};border:1px solid ${witchColor}40">
             ${typeEmoji[q.type]}
           </div>
           <div class="quest-info">
@@ -673,7 +660,7 @@ function renderQuests(filter) {
     return `
     <div class="quest-card parch${done ? " quest-done" : ""}">
       <div class="quest-header" onclick="toggleQuest(${q.id})">
-        <div class="quest-type-badge" style="background:${typeBg[q.type]}">${typeEmoji[q.type]}</div>
+        <div class="quest-type-badge" style="background:${typeBg[q.type]||'#1a1a2a'}">${typeEmoji[q.type]||'📍'}</div>
         <div class="quest-info">
           <div class="quest-title" style="${done ? "text-decoration:line-through;opacity:.5" : ""}">${q.title}</div>
           <div class="quest-zone-tag" style="color:${zone?.color}">${zone?.name || ""} · Zone ${q.zone}</div>
@@ -1029,7 +1016,7 @@ function renderSpotsGrid() {
     const date = p.timestamp ? new Date(p.timestamp).toLocaleDateString('fr', { day:'numeric', month:'short' }) : '';
     return `<div class="spot-card" onclick="carnetMap && carnetMap.setView([${p.lat},${p.lng}],13)">
       <div class="spot-hdr">
-        <span class="spot-icon" style="background:${cfg.color}">${cfg.icon}</span>
+        <span class="spot-icon" style="background:${cfg.color||'#888'}">${cfg.icon}</span>
         <div class="spot-meta">
           <div class="spot-name">${p.nom || cfg.label}</div>
           <div class="spot-type" style="color:${cfg.color||'#888'}">${cfg.label}${qty ? ' · ' + qty : ''}</div>
