@@ -1300,6 +1300,7 @@ header {
   cursor: pointer;
   padding: .5rem 0;
   list-style: none;
+  -webkit-user-select: none;
   user-select: none;
 }
 .quick-detail-toggle:hover { color: var(--ink-light); }
@@ -1656,4 +1657,92 @@ header {
   .sbl-footer { font-size: 6pt !important; margin-top: 3pt; }
 
   * { animation: none !important; }
+}
+
+/* ═══════════════════════════════════════════════
+   KOMMODA 3
+═══════════════════════════════════════════════ */
+.kommoda-form {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.kommoda-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.kommoda-field {
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+}
+
+.kommoda-field label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mud-light, #9a8a70);
+  margin-bottom: 0.4rem;
+}
+
+.kommoda-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.k-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: var(--cream, #f0e8d4);
+  font-family: 'JetBrains Mono', 'Courier Prime', monospace;
+  font-size: 1.1rem;
+  padding: 0.3rem 0.5rem;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+.k-input::-webkit-outer-spin-button,
+.k-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.k-input:focus {
+  outline: none;
+  border-color: var(--accent, #c8a430);
+}
+
+.k-unit {
+  font-size: 0.8rem;
+  color: var(--mud-light, #9a8a70);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.kommoda-save-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background: var(--moss, #4a6741);
+  color: var(--cream, #f0e8d4);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.kommoda-save-btn:hover { background: #5a8a50; }
+
+.kommoda-last {
+  margin-top: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(200,164,48,0.06);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--mud-light, #9a8a70);
+  min-height: 1.5rem;
 }
