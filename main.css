@@ -893,3 +893,14 @@ select.ar-field option { background: #1e2a18; color: #f0e8d4; }
   border-color: #c8a430 !important;
   transform: scale(1.1);
 }
+
+/* Iframe carnet RPG */
+.carnet-iframe {
+  width: 100%;
+  height: calc(100vh - 130px);
+  height: calc(100dvh - 130px - env(safe-area-inset-bottom, 0px));
+  min-height: 500px;
+  border: none;
+  border-radius: 8px;
+  display: block;
+}
