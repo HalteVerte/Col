@@ -109,47 +109,151 @@ function filterRecipes(cat, btn) {
   renderRecipes();
 }
 
+// Cache recettes fusionnées (base JSON + utilisateur)
+let _allRecipes = [];
+
+async function loadRecipes() {
+  if (_allRecipes.length > 0) return;
+  try {
+    let base = window.RECIPES || [];
+    if (base.length === 0) {
+      const r = await fetch('./recettes.json');
+      base = await r.json();
+      window.RECIPES = base;
+    }
+    const user = window.BS ? BS.getRecettesUser() : [];
+    _allRecipes = [...base, ...user];
+  } catch(e) {
+    console.warn('recettes.json indisponible, fallback RECIPES');
+    _allRecipes = window.RECIPES || [];
+  }
+}
+
 function renderRecipes() {
   const grid = document.getElementById('recipesGrid');
-  const list = currentFilter === 'all' ? RECIPES : RECIPES.filter(r => r.cat.includes(currentFilter));
-  grid.innerHTML = list.map(r => {
-    const idx = RECIPES.indexOf(r);
-    return `
-    <div class="recipe-card" onclick="openRecipe(${idx})">
-      <div class="recipe-stripe" style="background:${r.color}"></div>
-      <div class="recipe-body">
-        <span class="recipe-emoji">${r.emoji}</span>
-        <div class="recipe-name">${r.name}</div>
-        <div class="recipe-desc">${r.desc}</div>
-        <div class="recipe-meta">
-          <span>⏱ ${r.time}</span>
-          <span>📊 ${r.diff}</span>
-          ${r.tags.map(t => `<span class="recipe-tag">${t}</span>`).join('')}
+  loadRecipes().then(() => {
+    const list = currentFilter === 'all'
+      ? _allRecipes
+      : _allRecipes.filter(r => r.cat && r.cat.includes(currentFilter));
+    grid.innerHTML = list.map((r, idx) => {
+      const isUser = r.source === 'utilisateur';
+      return `
+      <div class="recipe-card${isUser ? ' recipe-user' : ''}" onclick="openRecipe(${idx})">
+        <div class="recipe-stripe" style="background:${r.color || '#4a7035'}"></div>
+        <div class="recipe-body">
+          <span class="recipe-emoji">${r.emoji || '🌿'}</span>
+          <div class="recipe-name">${r.name}${isUser ? ' <span class="recipe-user-badge">✎</span>' : ''}</div>
+          <div class="recipe-desc">${r.desc || ''}</div>
+          <div class="recipe-meta">
+            <span>⏱ ${r.time || '—'}</span>
+            <span>📊 ${r.diff || '—'}</span>
+            ${(r.tags || []).map(t => `<span class="recipe-tag">${t}</span>`).join('')}
+          </div>
         </div>
+      </div>`;
+    }).join('') +
+    `<div class="recipe-card recipe-add" onclick="openAddRecipe()">
+      <div class="recipe-stripe" style="background:#2d7a5c"></div>
+      <div class="recipe-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.5rem">
+        <span style="font-size:2rem">＋</span>
+        <div class="recipe-name">Ajouter une recette</div>
+        <div class="recipe-desc">Recette découverte sur le terrain</div>
       </div>
     </div>`;
-  }).join('');
+  });
 }
 
 function openRecipe(i) {
-  const r = RECIPES[i];
+  loadRecipes().then(() => {
+    const r = _allRecipes[i];
+    if (!r) return;
+    const isUser = r.source === 'utilisateur';
+    document.getElementById('modalBody').innerHTML = `
+      <div style="height:4px;background:${r.color || '#4a7035'};border-radius:2px;margin-bottom:1.2rem"></div>
+      <h2>${r.emoji || '🌿'} ${r.name}</h2>
+      <p class="m-sub">⏱ ${r.time || '—'} &nbsp;·&nbsp; 📊 ${r.diff || '—'} &nbsp;·&nbsp; ${(r.tags || []).map(t => `<span style="text-transform:uppercase;font-weight:700">${t}</span>`).join(' / ')}</p>
+      <p style="font-style:italic;color:var(--mud);font-size:.88rem;margin-bottom:.5rem">${r.desc || ''}</p>
+      ${r.warn ? `<div class="warn">⚠️ Cette recette nécessite une identification botanique certaine avant toute consommation.</div>` : ''}
+      <div class="m-sec">Ingrédients</div>
+      <ul>${(r.ing || []).map(x => `<li>${x}</li>`).join('')}</ul>
+      <div class="m-sec">Préparation</div>
+      <ol>${(r.steps || []).map(x => `<li>${x}</li>`).join('')}</ol>
+      ${r.tip ? `<div class="ok">💡 ${r.tip}</div>` : ''}
+      ${isUser ? `<button onclick="deleteUserRecipe('${r.id}')" style="margin-top:1rem;padding:.5rem 1rem;background:#9e3f20;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit">🗑 Supprimer</button>` : ''}
+    `;
+    document.getElementById('recipeModal').classList.add('open');
+  });
+}
+
+function deleteUserRecipe(id) {
+  if (!confirm('Supprimer cette recette ?')) return;
+  BS.deleteRecetteUser(id);
+  _allRecipes = [];
+  closeModal();
+  renderRecipes();
+}
+
+function openAddRecipe() {
   document.getElementById('modalBody').innerHTML = `
-    <div style="height:4px;background:${r.color};border-radius:2px;margin-bottom:1.2rem"></div>
-    <h2>${r.emoji} ${r.name}</h2>
-    <p class="m-sub">⏱ ${r.time} &nbsp;·&nbsp; 📊 ${r.diff} &nbsp;·&nbsp; ${r.tags.map(t => `<span style="text-transform:uppercase;font-weight:700">${t}</span>`).join(' / ')}</p>
-    <p style="font-style:italic;color:var(--mud);font-size:.88rem;margin-bottom:.5rem">${r.desc}</p>
-    ${r.warn ? `<div class="warn">⚠️ Cette recette nécessite une identification botanique certaine avant toute consommation.</div>` : ''}
-    <div class="m-sec">Ingrédients</div>
-    <ul>${r.ing.map(x => `<li>${x}</li>`).join('')}</ul>
-    <div class="m-sec">Préparation</div>
-    <ol>${r.steps.map(x => `<li>${x}</li>`).join('')}</ol>
-    ${r.tip ? `<div class="ok">💡 ${r.tip}</div>` : ''}
+    <h2>✎ Nouvelle recette</h2>
+    <p style="color:var(--mud);font-size:.88rem;margin-bottom:1rem">Sauvegardée localement sur cet appareil.</p>
+    <div class="add-recipe-form">
+      <label>Emoji</label>
+      <input id="ar-emoji" type="text" value="🌿" maxlength="2" style="width:3rem;text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.3rem">
+      <label>Nom *</label>
+      <input id="ar-name" type="text" placeholder="ex: Soupe de cresson sauvage" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <label>Description courte</label>
+      <input id="ar-desc" type="text" placeholder="ex: Riche en vitamine C" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <label>Temps</label>
+      <input id="ar-time" type="text" placeholder="ex: 20 min" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <label>Difficulté</label>
+      <select id="ar-diff" style="width:100%;background:rgba(30,40,20,.9);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+        <option>Facile</option><option>Moyen</option><option>Avancé</option>
+      </select>
+      <label>Saisons (virgule)</label>
+      <input id="ar-tags" type="text" placeholder="ex: printemps, ete" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <label>Ingrédients (un par ligne) *</label>
+      <textarea id="ar-ing" rows="4" placeholder="Feuilles de cresson&#10;Eau de source&#10;Sel" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <label>Étapes (une par ligne) *</label>
+      <textarea id="ar-steps" rows="5" placeholder="Rincer le cresson&#10;Porter l'eau à ébullition" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <label>Conseil / Astuce</label>
+      <textarea id="ar-tip" rows="2" placeholder="Variantes, conservation..." style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:1rem">
+        <button onclick="saveNewRecipe()" style="flex:1;padding:.7rem;background:#2d7a5c;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit">💾 Sauvegarder</button>
+        <button onclick="closeModal()" style="padding:.7rem 1rem;background:rgba(255,255,255,.1);color:inherit;border:none;border-radius:5px;cursor:pointer;font-family:inherit">Annuler</button>
+      </div>
+    </div>
   `;
   document.getElementById('recipeModal').classList.add('open');
 }
 
+function saveNewRecipe() {
+  const name  = document.getElementById('ar-name').value.trim();
+  const ing   = document.getElementById('ar-ing').value.trim();
+  const steps = document.getElementById('ar-steps').value.trim();
+  if (!name || !ing || !steps) { alert('Nom, ingrédients et étapes sont obligatoires.'); return; }
+  const tags = document.getElementById('ar-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  BS.addRecetteUser({
+    emoji: document.getElementById('ar-emoji').value || '🌿',
+    name,
+    desc:  document.getElementById('ar-desc').value.trim(),
+    time:  document.getElementById('ar-time').value.trim() || '—',
+    diff:  document.getElementById('ar-diff').value,
+    tags,  cat: tags.length ? tags : ['autre'],
+    color: '#2d7a5c',
+    ing:   ing.split('\n').map(l => l.trim()).filter(Boolean),
+    steps: steps.split('\n').map(l => l.trim()).filter(Boolean),
+    tip:   document.getElementById('ar-tip').value.trim(),
+    warn:  false,
+  });
+  _allRecipes = [];
+  closeModal();
+  renderRecipes();
+}
+
 function closeModalOv(e) { if (e.target === document.getElementById('recipeModal')) closeModal(); }
 function closeModal() { document.getElementById('recipeModal').classList.remove('open'); }
+
 
 
 

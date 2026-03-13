@@ -36,6 +36,7 @@ function _defaultState() {
     zones_visited: [1, 2, 3],
     stocks:        { ...STOCKS_DEFAUT },
     kommoda:       { ...KOMMODA_DEFAUT },
+    recettes_user: [],  // recettes ajoutées par l'utilisateur
     meta: {
       created_at:    new Date().toISOString(),
       last_modified: new Date().toISOString(),
@@ -390,6 +391,30 @@ async function exportForAgent() {
 }
 
 /* ─────────────────────────────────────────────
+   RECETTES UTILISATEUR
+───────────────────────────────────────────── */
+function getRecettesUser() { return [...(_state.recettes_user || [])]; }
+
+function addRecetteUser(recette) {
+  if (!_state.recettes_user) _state.recettes_user = [];
+  const r = {
+    ...recette,
+    id: `user_${Date.now()}`,
+    source: 'utilisateur',
+    timestamp: new Date().toISOString(),
+  };
+  _state.recettes_user.push(r);
+  _save();
+  return r;
+}
+
+function deleteRecetteUser(id) {
+  if (!_state.recettes_user) return;
+  _state.recettes_user = _state.recettes_user.filter(r => r.id !== id);
+  _save();
+}
+
+/* ─────────────────────────────────────────────
    RESET (dev/debug)
 ───────────────────────────────────────────── */
 function resetAllData() {
@@ -415,6 +440,8 @@ window.BS = {
   visitZone,
   // Stocks
   updateStock, getStock,
+  // Recettes utilisateur
+  getRecettesUser, addRecetteUser, deleteRecetteUser,
   // Export
   getKommoda, setKommoda, exportForAgent,
   // Debug
