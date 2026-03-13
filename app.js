@@ -32,33 +32,49 @@ if ('serviceWorker' in navigator) {
 /* ======================================================
    NAVIGATION
 ====================================================== */
-let gpxReady = false;      // true dès que gpx.js est chargé
-let gpxLoading = false;    // true pendant le chargement
+let gpxReady = false;
+let gpxLoading = false;
 
-/* Charge gpx.js une seule fois à la demande, puis exécute callback */
+/* Parse un fichier GPX XML -> tableau [[lat,lng], ...] */
+function parseGPX(xmlText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'application/xml');
+  const trkpts = doc.querySelectorAll('trkpt');
+  const points = [];
+  trkpts.forEach(pt => {
+    const lat = parseFloat(pt.getAttribute('lat'));
+    const lng = parseFloat(pt.getAttribute('lon'));
+    if (!isNaN(lat) && !isNaN(lng)) points.push([lat, lng]);
+  });
+  return points;
+}
+
+/* Charge les 3 fichiers GPX à la demande, puis exécute callback */
 function loadGPX(callback) {
   if (gpxReady) { callback(); return; }
   if (gpxLoading) { setTimeout(() => loadGPX(callback), 100); return; }
   gpxLoading = true;
 
-  // Indicateur visuel
   const indicator = document.getElementById('gpx-loading');
   if (indicator) indicator.style.display = 'block';
 
-  const script = document.createElement('script');
-  script.src = 'gpx.js';
-  script.onload = () => {
+  Promise.all([
+    fetch('aller.gpx').then(r => r.text()),
+    fetch('retour.gpx').then(r => r.text()),
+    fetch('boucle.gpx').then(r => r.text()),
+  ]).then(([a, r, b]) => {
+    window.GPX_ALLER  = parseGPX(a);
+    window.GPX_RETOUR = parseGPX(r);
+    window.GPX_BOUCLE = parseGPX(b);
     gpxReady = true;
     gpxLoading = false;
     if (indicator) indicator.style.display = 'none';
     callback();
-  };
-  script.onerror = () => {
+  }).catch(() => {
     gpxLoading = false;
     if (indicator) indicator.textContent = '⚠ Tracés GPX indisponibles (mode hors ligne ?)';
-    callback(); // on continue quand même sans GPX
-  };
-  document.head.appendChild(script);
+    callback();
+  });
 }
 
 function showSection(id) {
