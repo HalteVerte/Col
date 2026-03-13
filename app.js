@@ -1,10 +1,10 @@
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    MAPLIBRE + PMTILES — Init protocole
-══════════════════════════════════════════════════════ */
+====================================================== */
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    PWA — Service Worker & Installation
-══════════════════════════════════════════════════════ */
+====================================================== */
 let interMarkeurs = [];
 // Enregistrement du Service Worker
 if ('serviceWorker' in navigator) {
@@ -29,9 +29,9 @@ if ('serviceWorker' in navigator) {
 // Installation PWA — gérée nativement par le navigateur
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    NAVIGATION
-══════════════════════════════════════════════════════ */
+====================================================== */
 let gpxReady = false;      // true dès que gpx.js est chargé
 let gpxLoading = false;    // true pendant le chargement
 
@@ -82,9 +82,9 @@ function showSection(id) {
   }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TERRAIN — onglets internes Nutrition / Techniques
-══════════════════════════════════════════════════════ */
+====================================================== */
 function switchTerrain(which, btn) {
   document.querySelectorAll('.terrain-panel').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.terrain-tab').forEach(b => b.classList.remove('active'));
@@ -97,9 +97,9 @@ function toggleAcc(header) {
   header.parentElement.classList.toggle('open');
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    RECETTES
-══════════════════════════════════════════════════════ */
+====================================================== */
 let currentFilter = 'all';
 
 function filterRecipes(cat, btn) {
@@ -271,9 +271,9 @@ function closeModal() { document.getElementById('recipeModal').classList.remove(
 
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    BOUCLE — onglets aller / retour / inter
-══════════════════════════════════════════════════════ */
+====================================================== */
 function switchBoucle(which) {
   const panels = {
     aller:  document.getElementById('boucle-aller'),
@@ -306,9 +306,9 @@ function switchBoucle(which) {
   }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TRAJET COMPLET — Artemps → Lagos
-══════════════════════════════════════════════════════ */
+====================================================== */
 let tcMap = null;
 let tcMarkeurs = [];
 let gpxAllerLayer = null;
@@ -459,9 +459,9 @@ function tcToggleAll(check) {
   renderTrajComplet();
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TRAJET RETOUR — Lagos → Artemps
-══════════════════════════════════════════════════════ */
+====================================================== */
 let trMap = null;
 let trMarkeurs = [];
 
@@ -552,13 +552,13 @@ function trToggleAll(check) {
   renderTrajRetour();
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    INTER-BOUCLES — Carte dédiée
-══════════════════════════════════════════════════════ */
+====================================================== */
 let interMap = null;
 
 function renderInterBoucle() {
-  // ── Init carte (même pattern que initTRMap) ──────────
+  // -- Init carte (même pattern que initTRMap) ----------
   if (!interMap) {
     interMap = makeMlMap('interMap', [3.0, 47.5], 6);
     onMapReady(interMap, () => {
@@ -566,7 +566,7 @@ function renderInterBoucle() {
     });
   }
 
-  // ── Nettoyer marqueurs ───────────────────────────────
+  // -- Nettoyer marqueurs -------------------------------
   interMarkeurs.forEach(m => m.remove());
   interMarkeurs = [];
 
@@ -600,7 +600,7 @@ function renderInterBoucle() {
   if (allCoords.length > 1) fitMlBounds(interMap, allCoords, 30);
   else if (window.GPX_BOUCLE) fitMlBounds(interMap, GPX_BOUCLE, 20);
 
-  // ── Liste segments ───────────────────────────────────
+  // -- Liste segments -----------------------------------
   const container = document.getElementById('interContent');
   if (container && window.INTER_BOUCLE_SEGMENTS) {
     container.innerHTML = INTER_BOUCLE_SEGMENTS.map(seg => {

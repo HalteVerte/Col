@@ -11,7 +11,7 @@
 </head>
 <body class="carnet-page">
 
-<!-- ── HEADER ── -->
+<!-- -- HEADER -- -->
 <header>
   <span class="hdr-leaf">🌿</span>
   <div class="hdr-title">
@@ -27,7 +27,7 @@
   <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
 </header>
 
-<!-- ── TABS ── -->
+<!-- -- TABS -- -->
 <nav class="tabs-bar">
   <button class="tab-btn active" onclick="switchTab('carte',this)">🗺️ Carte</button>
   <button class="tab-btn" onclick="switchTab('zones',this)">🌲 Zones</button>
@@ -38,7 +38,7 @@
   <button class="tab-btn" onclick="switchTab('sixbl',this)">🌿 6BL</button>
 </nav>
 
-<!-- ══ PANEL CARTE ══ -->
+<!-- == PANEL CARTE == -->
 <div id="panel-carte" class="tab-panel active">
   <div class="section-title">🗺️ La Boucle — ~10 000 km</div>
   <div class="map-wrap" id="mapWrap"></div>
@@ -46,14 +46,14 @@
   <div class="spots-grid" id="spotsGrid"></div>
 </div>
 
-<!-- ══ PANEL ZONES ══ -->
+<!-- == PANEL ZONES == -->
 <div id="panel-zones" class="tab-panel">
   <div class="section-title">🌲 Zones de la Boucle</div>
   <div class="zone-focus" id="zoneFocus"></div>
   <div class="zones-grid" id="zonesGrid"></div>
 </div>
 
-<!-- ══ PANEL QUÊTES ══ -->
+<!-- == PANEL QUÊTES == -->
 <div id="panel-quetes" class="tab-panel">
   <div class="section-title">⚔️ Quêtes</div>
   <!-- Cycle des saisons -->
@@ -71,8 +71,8 @@
   <div id="questList"></div>
 </div>
 
-<!-- ══ PANEL INVENTAIRE ══ -->
-<!-- ══ PANEL OBSERVER ══ -->
+<!-- == PANEL INVENTAIRE == -->
+<!-- == PANEL OBSERVER == -->
 <div id="panel-observer" class="tab-panel">
   <div class="section-title">📍 Observer un point</div>
 
@@ -163,7 +163,7 @@
   <div class="section-title">🎒 Stocks & Inventaire</div>
   <div class="inventory-grid" id="inventoryGrid"></div>
 
-  <!-- ── KOMMODA 3 ── -->
+  <!-- -- KOMMODA 3 -- -->
   <div class="section-title" style="margin-top:1.2rem">⚡ Kommoda 3</div>
   <div class="kommoda-form" id="kommoda-form">
     <div class="kommoda-grid">
@@ -201,7 +201,7 @@
   </div>
 </div>
 
-<!-- ══ PANEL JOURNAL ══ -->
+<!-- == PANEL JOURNAL == -->
 <div id="panel-journal" class="tab-panel">
   <div class="section-title">📖 Journal de Bord</div>
   <div class="journal-compose">
@@ -217,7 +217,7 @@
   <div id="journalList"></div>
 </div>
 
-<!-- ══ PANEL 6BL ══ -->
+<!-- == PANEL 6BL == -->
 <div id="panel-sixbl" class="tab-panel">
   <div class="section-title">🌿 6BL — Briefing Terrain</div>
   <div id="sbl-container">
@@ -247,15 +247,15 @@ if (typeof onMapReady === 'undefined') {
 <script src="6bl.js"></script>
 <script>
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    DONNÉES RPG — générées depuis les phases du trajet
-═══════════════════════════════════════════════ */
+=============================================== */
 
 
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    STATE — proxy sur data.js (BS)
-═══════════════════════════════════════════════ */
+=============================================== */
 
 // Proxy state pour compatibilité avec le code existant
 // Toutes les lectures/écritures passent par BS
@@ -270,9 +270,9 @@ function saveState() {
   // data.js sauvegarde automatiquement — no-op pour compatibilité
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    NAVIGATION
-═══════════════════════════════════════════════ */
+=============================================== */
 function switchTab(tab, btn) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -340,9 +340,9 @@ function lancerBriefing() {
   });
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    OBSERVER — formulaire 3 taps
-═══════════════════════════════════════════════ */
+=============================================== */
 let quickState = { lat: null, lng: null, type: 'cueillette', qty: 'moyen' };
 
 const OBS_TYPE_CFG = {
@@ -512,9 +512,9 @@ function updateXP() {
 }
 
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    CYCLE DES SAISONS
-═══════════════════════════════════════════════ */
+=============================================== */
 function renderCycleSaisons() {
   const el = document.getElementById('cycleSaisons');
   if (!el) return;
@@ -535,9 +535,9 @@ function renderCycleSaisons() {
     </div>`;
   }).join('');
 }
-/* ═══════════════════════════════════════════════
+/* ===============================================
    ZONES
-═══════════════════════════════════════════════ */
+=============================================== */
 function renderZones() {
   const grid = document.getElementById("zonesGrid");
   grid.innerHTML = ZONES_RPG.map(z => {
@@ -564,14 +564,14 @@ function focusZone(id) {
   filterQuestsByZone(id);
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    QUÊTES
-═══════════════════════════════════════════════ */
+=============================================== */
 let currentFilter = "all";
 
 
 
-/* ══ CYCLE DES SAISONS — correspondance zone → saison ══ */
+/* == CYCLE DES SAISONS — correspondance zone → saison == */
 const ZONE_SAISON = {
   // Zones 1-2  : Août–septembre  → Été
   1:'ete', 2:'ete',
@@ -591,7 +591,7 @@ const SAISONS_CONFIG = [
   { id:'automne',   label:'Automne',   emoji:'🍂', color:'#c87820', zones:[3,4,5,6] },
   { id:'hiver',     label:'Hiver',     emoji:'❄️', color:'#6aaabf', zones:[7,8,9] },
 ];
-/* ══ QUÊTES WITCH 2.0 — Calendrier des sorcières ══ */
+/* == QUÊTES WITCH 2.0 — Calendrier des sorcières == */
 const WITCH_CALENDAR = {
   "Imbolc":     { month:2,  day:1,  color:"#e8d4f0", saison:"hiver",    zone:"Zone 9 · Galice · Rías Baixas" },
   "Ostara":     { month:3,  day:20, color:"#a8e8a0", saison:"printemps", zone:"Zone 11-12 · Côte Basque · Landes" },
@@ -773,9 +773,9 @@ function completeQuest(id, e) {
   updateXP();
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    INVENTAIRE
-═══════════════════════════════════════════════ */
+=============================================== */
 function renderInventory() {
   const grid = document.getElementById("inventoryGrid");
   grid.innerHTML = STOCKS_INITIAUX.map(s => {
@@ -804,9 +804,9 @@ function adjustStock(id, delta) {
 }
 
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    KOMMODA 3
-═══════════════════════════════════════════════ */
+=============================================== */
 function saveKommoda() {
   const vals = {
     batterie_pct:   parseFloat(document.getElementById('k-batterie').value)   || null,
@@ -844,9 +844,9 @@ function loadKommoda() {
 
 // updateStock remplacée par adjustStock
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    JOURNAL
-═══════════════════════════════════════════════ */
+=============================================== */
 function renderJournal() {
   const container = document.getElementById("journalList");
   const sel = document.getElementById("journalZone");
@@ -885,9 +885,9 @@ function deleteJournalEntry(idx) {
   }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    INIT
-═══════════════════════════════════════════════ */
+=============================================== */
 renderZones();
 renderQuests("all");
 renderInventory();
@@ -895,7 +895,7 @@ renderJournal();
 updateXP();
 
 
-/* ═══ INIT ═══ */
+/* === INIT === */
 document.addEventListener("DOMContentLoaded", () => {
   updateXP();
   renderZones();

@@ -1,7 +1,7 @@
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    SERVICE WORKER — La Boucle Sauvage
    v5 — Précache tuiles zoom 5-8 + fallback offline
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 const CACHE_APP   = 'boucle-app-v61';
 const CACHE_TILES = 'boucle-tiles-v2';
@@ -342,7 +342,7 @@ const TILE_FALLBACK = new Response(
   { headers: { 'Content-Type': 'image/svg+xml' } }
 );
 
-// ── Installation ──────────────────────────────────────
+// -- Installation --------------------------------------
 self.addEventListener('install', event => {
   event.waitUntil(
     Promise.all([
@@ -366,7 +366,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// ── Activation ────────────────────────────────────────
+// -- Activation ----------------------------------------
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -378,7 +378,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── Fetch ─────────────────────────────────────────────
+// -- Fetch ---------------------------------------------
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
@@ -425,7 +425,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// ── Messages ──────────────────────────────────────────
+// -- Messages ------------------------------------------
 self.addEventListener('message', event => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
   if (event.data === 'CLEAR_TILES') {

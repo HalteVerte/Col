@@ -1,11 +1,11 @@
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    6BL.JS — Moteur de décision terrain
    Lit BS directement, météo via cache localStorage + open-meteo
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 const SBL = (() => {
 
-  /* ── Constantes ─────────────────────────────────────────────── */
+  /* -- Constantes ----------------------------------------------- */
   const METEO_CACHE_KEY  = 'sbl_meteo_cache';
   const METEO_MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6h
 
@@ -46,7 +46,7 @@ const SBL = (() => {
   const VENT_DIR = ['N','NNE','NE','ENE','E','ESE','SE','SSE',
                     'S','SSO','SO','OSO','O','ONO','NO','NNO'];
 
-  /* ── Helpers ─────────────────────────────────────────────────── */
+  /* -- Helpers --------------------------------------------------- */
   function ventDir(deg) { return VENT_DIR[Math.round(deg / 22.5) % 16]; }
 
   function moisCourant() { return new Date().getMonth() + 1; }
@@ -71,7 +71,7 @@ const SBL = (() => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  /* ── Astronomie locale (offline) ────────────────────────────── */
+  /* -- Astronomie locale (offline) ------------------------------ */
   function sunTimes(lat, lng) {
     const now = new Date();
     const rad = Math.PI / 180;
@@ -115,7 +115,7 @@ const SBL = (() => {
     };
   }
 
-  /* ── Météo — cache localStorage + open-meteo ─────────────────── */
+  /* -- Météo — cache localStorage + open-meteo ------------------- */
   async function getMeteo(lat, lng) {
     // 1. Vérifier cache
     try {
@@ -171,7 +171,7 @@ const SBL = (() => {
     }
   }
 
-  /* ── GPS ─────────────────────────────────────────────────────── */
+  /* -- GPS ------------------------------------------------------- */
   function getGPS() {
     return new Promise(resolve => {
       if (!navigator.geolocation) { resolve(null); return; }
@@ -183,7 +183,7 @@ const SBL = (() => {
     });
   }
 
-  /* ── Analyse stocks ──────────────────────────────────────────── */
+  /* -- Analyse stocks -------------------------------------------- */
   function analyseStocks(stocks) {
     const mois = moisCourant();
     const seuils = SEUILS_SAISON[mois] || { vert: 30, orange: 15 };
@@ -210,7 +210,7 @@ const SBL = (() => {
     return { details, pctGlobal, zoneGlobale, seuils, isSoudure, alerteSoudure, totalPoids, mois };
   }
 
-  /* ── Observations proches ────────────────────────────────────── */
+  /* -- Observations proches -------------------------------------- */
   function obsProches(lat, lng, rayon = 120) {
     const all = window.BS ? BS.getObservations() : [];
     return all
@@ -219,7 +219,7 @@ const SBL = (() => {
       .sort((a, b) => a.dist_km - b.dist_km);
   }
 
-  /* ── Waypoint objectif du jour ───────────────────────────────── */
+  /* -- Waypoint objectif du jour --------------------------------- */
   function waypointObjectif(lat, lng) {
     // Cherche le prochain point terrain entre 40 et 100km
     const proches = obsProches(lat, lng, 100).filter(o => o.dist_km >= 40);
@@ -229,7 +229,7 @@ const SBL = (() => {
     return loin[0] || null;
   }
 
-  /* ── Décisions ───────────────────────────────────────────────── */
+  /* -- Décisions ------------------------------------------------- */
   function calcDecisions(ctx) {
     const { meteo, marees, lat, lng, stocks, mois } = ctx;
     const decisions = [];
@@ -318,7 +318,7 @@ const SBL = (() => {
     return decisions;
   }
 
-  /* ── RENDU HTML ─────────────────────────────────────────────── */
+  /* -- RENDU HTML ----------------------------------------------- */
   function html_alerte(niveau, icon, titre, msg) {
     return `<div class="sbl-alerte sbl-${niveau}">
       <span class="sbl-al-icon">${icon}</span>
@@ -518,7 +518,7 @@ const SBL = (() => {
     </div>`;
   }
 
-  /* ── API publique ────────────────────────────────────────────── */
+  /* -- API publique ---------------------------------------------- */
   async function generate(container) {
     container.innerHTML = '<div class="sbl-loading">⏳ Localisation GPS…</div>';
 
