@@ -1,21 +1,21 @@
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    data.js — La Boucle Sauvage
    État unifié · Migration · CRUD · Export agent
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 const DATA_VERSION  = 1;
 const STORAGE_KEY   = 'boucle_sauvage_v1';
 const OLD_KEY_MAP   = 'sauvage_points_v2';
 const OLD_KEY_RPG   = 'boucle_rpg_v1';
 
-/* ── Stocks par défaut ── */
+/* -- Stocks par défaut -- */
 const STOCKS_DEFAUT = {
   myrtilles:   0, faines:     0, noisettes:  0, champignons: 0,
   chataignes:  0, noix:       0, pignons:    0, algues:      0,
   cynorhodons: 0, zestes:     0, farine_gland:0, caroube:    0,
 };
 
-/* ── Kommoda par défaut ── */
+/* -- Kommoda par défaut -- */
 const KOMMODA_DEFAUT = {
   batterie_pct:   null,  // % batterie 0-100
   assistance:     null,  // niveau 0-5
@@ -24,9 +24,9 @@ const KOMMODA_DEFAUT = {
   timestamp:      null,  // dernière saisie
 };
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    INIT — chargement + migration
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function _defaultState() {
   return {
     version:       DATA_VERSION,
@@ -94,9 +94,9 @@ function _migrate() {
   return state;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    ÉTAT GLOBAL
-───────────────────────────────────────────── */
+--------------------------------------------- */
 let _state = _migrate();
 
 function _save(s) {
@@ -109,9 +109,9 @@ function _save(s) {
   }
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    LECTURE
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function getObservations()  { return [..._state.observations]; }
 function getJournal()       { return [..._state.journal]; }
 function getQuetesDone()    { return [..._state.quetes_done]; }
@@ -125,9 +125,9 @@ function setKommoda(vals) {
   _save();
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    OBSERVATIONS (ex-POINTS)
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function addObservation({ lat, lng, type, quantite, saison, mois, note, nom }) {
   const now = new Date();
   const obs = {
@@ -157,9 +157,9 @@ function _getSaison(mois) {
   return map[mois] || '';
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    JOURNAL
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function addJournalEntry({ date, zone, zone_id, text }) {
   const entry = {
     date:      date     || new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
@@ -178,9 +178,9 @@ function deleteJournalEntry(index) {
   _save();
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    QUÊTES
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function completeQuete(id) {
   if (!_state.quetes_done.includes(id)) {
     _state.quetes_done.push(id);
@@ -193,9 +193,9 @@ function uncompleteQuete(id) {
   _save();
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    ZONES
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function visitZone(id) {
   if (!_state.zones_visited.includes(id)) {
     _state.zones_visited.push(id);
@@ -203,9 +203,9 @@ function visitZone(id) {
   }
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    STOCKS
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function updateStock(id, qty) {
   _state.stocks[id] = Math.max(0, qty);
   _save();
@@ -215,10 +215,10 @@ function getStock(id) {
   return _state.stocks[id] || 0;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    EXPORT AGENT
-───────────────────────────────────────────── */
-// ── Calculs astronomiques locaux (sans API) ──────────────────
+--------------------------------------------- */
+// -- Calculs astronomiques locaux (sans API) ------------------
 function _sunTimes(lat, lng, date) {
   // Algorithme simplifié lever/coucher soleil
   const rad = Math.PI / 180;
@@ -390,9 +390,9 @@ async function exportForAgent() {
   return payload;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    RECETTES UTILISATEUR
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function getRecettesUser() { return [...(_state.recettes_user || [])]; }
 
 function addRecetteUser(recette) {
@@ -414,36 +414,36 @@ function deleteRecetteUser(id) {
   _save();
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    IMPORT — fusion depuis un export JSON 6BL
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function importFromJSON(data) {
   const report = { added: {}, skipped: {}, errors: [] };
 
   try {
-    // ── Journal : union par timestamp
+    // -- Journal : union par timestamp
     const journalIds = new Set(_state.journal.map(e => e.timestamp));
     const newJournal = (data.journal || []).filter(e => !journalIds.has(e.timestamp));
     _state.journal.push(...newJournal);
     report.added.journal = newJournal.length;
 
-    // ── Observations : union par id
+    // -- Observations : union par id
     const obsIds = new Set(_state.observations.map(o => o.id));
     const newObs = (data.observations || []).filter(o => !obsIds.has(o.id));
     _state.observations.push(...newObs);
     report.added.observations = newObs.length;
 
-    // ── Quêtes accomplies : union
+    // -- Quêtes accomplies : union
     const before = _state.quetes_done.length;
     const merged = new Set([..._state.quetes_done, ...(data.quetes_done || [])]);
     _state.quetes_done = [...merged];
     report.added.quetes = _state.quetes_done.length - before;
 
-    // ── Zones visitées : union
+    // -- Zones visitées : union
     const mergedZones = new Set([..._state.zones_visited, ...(data.zones_visited || [])]);
     _state.zones_visited = [...mergedZones];
 
-    // ── Stocks : prendre l'import si Kommoda plus récent
+    // -- Stocks : prendre l'import si Kommoda plus récent
     if (data.stocks) {
       const localTs  = _state.kommoda?.timestamp || '1970';
       const importTs = data.kommoda?.timestamp   || '1970';
@@ -456,7 +456,7 @@ function importFromJSON(data) {
       }
     }
 
-    // ── Recettes utilisateur : union par id
+    // -- Recettes utilisateur : union par id
     if (!_state.recettes_user) _state.recettes_user = [];
     const recIds = new Set(_state.recettes_user.map(r => r.id));
     const newRec = (data.recettes_user || []).filter(r => !recIds.has(r.id));
@@ -475,7 +475,7 @@ function importFromJSON(data) {
 }
 
 
-───────────────────────────────────────────── */
+--------------------------------------------- */
 function resetAllData() {
   if (!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
   _state = _defaultState();
@@ -483,9 +483,9 @@ function resetAllData() {
   location.reload();
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    EXPOSITION GLOBALE
-───────────────────────────────────────────── */
+--------------------------------------------- */
 window.BS = {
   // Lecture
   getObservations, getJournal, getQuetesDone, getZonesVisited, getStocks, getMeta,
