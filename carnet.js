@@ -682,7 +682,7 @@ function initCarnet() {
     // Attendre que le layout soit calculé avant d'injecter le SVG
     requestAnimationFrame(() => requestAnimationFrame(buildCarteMap));
   }
-})
+}
 
 let carnetMap = null;
 let carnetMarkers = [];
