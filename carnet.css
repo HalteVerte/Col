@@ -1746,3 +1746,10 @@ header {
   color: var(--mud-light, #9a8a70);
   min-height: 1.5rem;
 }
+
+/* Bouton import — variante bleue */
+.import-btn {
+  border-color: rgba(106,154,191,.4);
+  color: #8ab4d4;
+}
+.import-btn:hover { background: rgba(106,154,191,.22); }

@@ -23,6 +23,8 @@
     <span id="globalXpVal">0 / 58 quêtes</span>
   </div>
   <button class="export-agent-btn" onclick="BS.exportForAgent()" title="Exporter les données pour l'agent IA">⬇ Export</button>
+  <button class="export-agent-btn import-btn" onclick="triggerImport()" title="Importer depuis un export JSON">⬆ Import</button>
+  <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
 </header>
 
 <!-- ── TABS ── -->
@@ -283,6 +285,53 @@ function switchTab(tab, btn) {
   if (tab === 'observer') renderObsGrid();
 }
 
+function triggerImport() {
+  document.getElementById('importFileInput').click();
+}
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Vérifier que c'est bien un export 6BL
+      if (!data.version || !data.agent) {
+        alert('❌ Fichier non reconnu — utilise un export 6BL valide.');
+        return;
+      }
+
+      const report = BS.importFromJSON(data);
+
+      if (report.success) {
+        const msg = [
+          `✅ Import réussi depuis ${data.export_date?.slice(0,10) || '?'}`,
+          `📓 Journal : +${report.added.journal} entrée(s)`,
+          `📍 Observations : +${report.added.observations}`,
+          `⚔️ Quêtes : +${report.added.quetes}`,
+          `🍄 Recettes : +${report.added.recettes}`,
+          report.added.stocks ? `📦 Stocks : ${report.added.stocks}` : `📦 Stocks : ${report.skipped.stocks}`,
+        ].join('\n');
+        alert(msg);
+
+        // Recharger l'interface
+        location.reload();
+      } else {
+        alert('❌ Erreur import : ' + report.errors.join(', '));
+      }
+    } catch(err) {
+      alert('❌ JSON invalide : ' + err.message);
+    }
+
+    // Reset input pour permettre re-import du même fichier
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
 function lancerBriefing() {
   const container = document.getElementById('sbl-container');
   const printBtn  = document.getElementById('sbl-print-btn');
@@ -503,7 +552,7 @@ function renderZones() {
       <div class="zone-label">${z.pays} ${z.phase}</div>
       <div class="zone-name">${z.name}</div>
       <div class="zone-period">${z.period}</div>
-      <div class="zone-quests-count" style="color:${z.color}">${doneCnt}/${zQuests.length} quêtes · ${pct}%</div>
+      <div class="zone-quests-count" style="color:${z.color||'#9a8a70'}">${doneCnt}/${zQuests.length} quêtes · ${pct}%</div>
       <div class="zone-progress"><div class="zone-progress-fill" style="width:${pct}%;background:${z.color}"></div></div>
     </div>`;
   }).join("");
@@ -663,7 +712,7 @@ function renderQuests(filter) {
         <div class="quest-type-badge" style="background:${typeBg[q.type]||'#1a1a2a'}">${typeEmoji[q.type]||'📍'}</div>
         <div class="quest-info">
           <div class="quest-title" style="${done ? "text-decoration:line-through;opacity:.5" : ""}">${q.title}</div>
-          <div class="quest-zone-tag" style="color:${zone?.color}">${zone?.name || ""} · Zone ${q.zone}</div>
+          <div class="quest-zone-tag" style="color:${zone?.color||'#9a8a70'}">${zone?.name || ""} · Zone ${q.zone}</div>
         </div>
         <div class="quest-status">${done ? "✅" : "○"}</div>
       </div>

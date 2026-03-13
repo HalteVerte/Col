@@ -415,7 +415,66 @@ function deleteRecetteUser(id) {
 }
 
 /* ─────────────────────────────────────────────
-   RESET (dev/debug)
+   IMPORT — fusion depuis un export JSON 6BL
+───────────────────────────────────────────── */
+function importFromJSON(data) {
+  const report = { added: {}, skipped: {}, errors: [] };
+
+  try {
+    // ── Journal : union par timestamp
+    const journalIds = new Set(_state.journal.map(e => e.timestamp));
+    const newJournal = (data.journal || []).filter(e => !journalIds.has(e.timestamp));
+    _state.journal.push(...newJournal);
+    report.added.journal = newJournal.length;
+
+    // ── Observations : union par id
+    const obsIds = new Set(_state.observations.map(o => o.id));
+    const newObs = (data.observations || []).filter(o => !obsIds.has(o.id));
+    _state.observations.push(...newObs);
+    report.added.observations = newObs.length;
+
+    // ── Quêtes accomplies : union
+    const before = _state.quetes_done.length;
+    const merged = new Set([..._state.quetes_done, ...(data.quetes_done || [])]);
+    _state.quetes_done = [...merged];
+    report.added.quetes = _state.quetes_done.length - before;
+
+    // ── Zones visitées : union
+    const mergedZones = new Set([..._state.zones_visited, ...(data.zones_visited || [])]);
+    _state.zones_visited = [...mergedZones];
+
+    // ── Stocks : prendre l'import si Kommoda plus récent
+    if (data.stocks) {
+      const localTs  = _state.kommoda?.timestamp || '1970';
+      const importTs = data.kommoda?.timestamp   || '1970';
+      if (importTs > localTs) {
+        Object.assign(_state.stocks, data.stocks);
+        if (data.kommoda) _state.kommoda = { ..._state.kommoda, ...data.kommoda };
+        report.added.stocks = 'import (plus récent)';
+      } else {
+        report.skipped.stocks = 'local plus récent';
+      }
+    }
+
+    // ── Recettes utilisateur : union par id
+    if (!_state.recettes_user) _state.recettes_user = [];
+    const recIds = new Set(_state.recettes_user.map(r => r.id));
+    const newRec = (data.recettes_user || []).filter(r => !recIds.has(r.id));
+    _state.recettes_user.push(...newRec);
+    report.added.recettes = newRec.length;
+
+    _save();
+    report.success = true;
+
+  } catch(e) {
+    report.success = false;
+    report.errors.push(e.message);
+  }
+
+  return report;
+}
+
+
 ───────────────────────────────────────────── */
 function resetAllData() {
   if (!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
@@ -444,7 +503,8 @@ window.BS = {
   getRecettesUser, addRecetteUser, deleteRecetteUser,
   // Export
   getKommoda, setKommoda, exportForAgent,
-  // Debug
-  resetAllData,
+  // Import synchro
+  importFromJSON,
+  // Reset (dev/debug)
   _raw: () => ({ ..._state }),
 };
