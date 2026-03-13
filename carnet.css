@@ -1301,7 +1301,7 @@ header {
   padding: .5rem 0;
   list-style: none;
   -webkit-user-select: none;
-  user-select: none;
+  user-select: text;
 }
 .quick-detail-toggle:hover { color: var(--ink-light); }
 
