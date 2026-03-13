@@ -15,6 +15,15 @@ const STOCKS_DEFAUT = {
   cynorhodons: 0, zestes:     0, farine_gland:0, caroube:    0,
 };
 
+/* ── Kommoda par défaut ── */
+const KOMMODA_DEFAUT = {
+  batterie_pct:   null,  // % batterie 0-100
+  assistance:     null,  // niveau 0-5
+  distance_jour:  null,  // km du jour
+  distance_total: null,  // km total odométre
+  timestamp:      null,  // dernière saisie
+};
+
 /* ─────────────────────────────────────────────
    INIT — chargement + migration
 ───────────────────────────────────────────── */
@@ -26,6 +35,7 @@ function _defaultState() {
     quetes_done:   [],
     zones_visited: [1, 2, 3],
     stocks:        { ...STOCKS_DEFAUT },
+    kommoda:       { ...KOMMODA_DEFAUT },
     meta: {
       created_at:    new Date().toISOString(),
       last_modified: new Date().toISOString(),
@@ -107,6 +117,12 @@ function getQuetesDone()    { return [..._state.quetes_done]; }
 function getZonesVisited()  { return [..._state.zones_visited]; }
 function getStocks()        { return { ..._state.stocks }; }
 function getMeta()          { return { ..._state.meta }; }
+function getKommoda()       { return { ...(_state.kommoda || KOMMODA_DEFAUT) }; }
+
+function setKommoda(vals) {
+  _state.kommoda = { ...KOMMODA_DEFAUT, ..._state.kommoda, ...vals, timestamp: new Date().toISOString() };
+  _save();
+}
 
 /* ─────────────────────────────────────────────
    OBSERVATIONS (ex-POINTS)
@@ -276,6 +292,20 @@ async function _fetchMeteo(lat, lng) {
   }
 }
 
+function _getGPSPosition() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(null);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, precision_m: Math.round(pos.coords.accuracy), source: 'gps' }),
+      _err => resolve(null),
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+    );
+  });
+}
+
 async function exportForAgent() {
   _state.meta.export_count++;
   _save();
@@ -283,10 +313,16 @@ async function exportForAgent() {
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
 
-  // Position : dernier point GPS ou centre de la boucle
+  // Position : GPS réel en priorité, fallback dernier waypoint
+  const gpsPos  = await _getGPSPosition();
   const lastObs = _state.observations.slice().reverse().find(o => o.lat && o.lng);
-  const lat = lastObs ? lastObs.lat : 49.65;
-  const lng = lastObs ? lastObs.lng : 3.27;
+  const lat = gpsPos?.lat ?? (lastObs?.lat ?? 49.65);
+  const lng = gpsPos?.lng ?? (lastObs?.lng ?? 3.27);
+  const posSource = gpsPos
+    ? `GPS réel (±${gpsPos.precision_m}m)`
+    : lastObs
+      ? `dernier waypoint: ${lastObs.nom} ⚠️ position approximative`
+      : 'défaut Artemps ⚠️ GPS indisponible';
 
   // Calculs locaux offline
   const soleil = _sunTimes(lat, lng, now);
@@ -310,7 +346,8 @@ async function exportForAgent() {
     // Contexte position
     position: {
       lat, lng,
-      source: lastObs ? `dernier waypoint: ${lastObs.nom}` : 'défaut Artemps',
+      source: posSource,
+      gps_brut: gpsPos ?? null,
       date: dateStr,
     },
 
@@ -326,6 +363,7 @@ async function exportForAgent() {
     observations:      _state.observations,
     observations_proches: proches,
     stocks:            _state.stocks,
+    kommoda:           _state.kommoda || KOMMODA_DEFAUT,
     zones_visited:     _state.zones_visited,
     quetes_done:       _state.quetes_done,
     journal:           _state.journal.slice(-10), // 10 dernières entrées
@@ -378,7 +416,7 @@ window.BS = {
   // Stocks
   updateStock, getStock,
   // Export
-  exportForAgent,
+  getKommoda, setKommoda, exportForAgent,
   // Debug
   resetAllData,
   _raw: () => ({ ..._state }),
