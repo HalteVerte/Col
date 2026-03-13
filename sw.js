@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ══════════════════════════════════════════════════════ */
 
-const CACHE_APP   = 'boucle-app-v56';
+const CACHE_APP   = 'boucle-app-v58';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -390,12 +390,21 @@ self.addEventListener('fetch', event => {
    || url.hostname.includes('wxs.ign.fr')) return;
 
 
+  // data.js — Network First sans cache (state JS dynamique)
+  if (url.pathname.endsWith('data.js')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   // HTML — Network First (toujours la dernière version)
   if (url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
     event.respondWith(
       fetch(event.request).then(response => {
-        if (response && response.status === 200) {
-          caches.open(CACHE_APP).then(c => c.put(event.request, response.clone()));
+        if (response && response.ok) {
+          const toCache = response.clone();
+          caches.open(CACHE_APP).then(c => c.put(event.request, toCache));
         }
         return response;
       }).catch(() => caches.match(event.request))
@@ -403,11 +412,12 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // JS/CSS/images — Network First avec fallback cache
+  // JS/CSS/JSON/images — Network First avec fallback cache
   event.respondWith(
     fetch(event.request).then(response => {
-      if (response && response.status === 200) {
-        caches.open(CACHE_APP).then(c => c.put(event.request, response.clone()));
+      if (response && response.ok) {
+        const toCache = response.clone();
+        caches.open(CACHE_APP).then(c => c.put(event.request, toCache));
       }
       return response;
     }).catch(() => caches.match(event.request))
