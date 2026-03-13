@@ -942,10 +942,7 @@ function buildCarteMap() {
   carnetMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
   onMapReady(carnetMap, () => {
-    // S'assurer que terrain.js a bien initialisé les points par défaut
-    if (window.BS && BS.getObservations().length === 0 && window.POINTS_DEFAUT) {
-      POINTS_DEFAUT.forEach(p => BS.addObservation(p));
-    }
+    // Points par défaut chargés par terrain.js depuis waypoints.json
     // Placer les observations
     const obs = BS.getObservations();
 
