@@ -475,7 +475,7 @@ function importFromJSON(data) {
 }
 
 
---------------------------------------------- */
+/* --------------------------------------------- */
 function resetAllData() {
   if (!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
   _state = _defaultState();
