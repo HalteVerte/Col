@@ -1301,7 +1301,7 @@ header {
   padding: .5rem 0;
   list-style: none;
   -webkit-user-select: none;
-  user-select: text;
+  user-select: none;
 }
 .quick-detail-toggle:hover { color: var(--ink-light); }
 
@@ -1753,3 +1753,22 @@ header {
   color: #8ab4d4;
 }
 .import-btn:hover { background: rgba(106,154,191,.22); }
+
+/* Groupe boutons export/import header */
+.hdr-actions {
+  display: flex;
+  gap: .3rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.hdr-actions .export-agent-btn {
+  padding: .35rem .6rem;
+  font-size: .8rem;
+  min-width: 2rem;
+}
+
+/* Sur très petit écran — icônes seules */
+@media (max-width: 400px) {
+  .hdr-title small { display: none; }
+  .xp-bar { max-width: 80px; }
+}
