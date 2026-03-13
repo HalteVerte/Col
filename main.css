@@ -317,6 +317,7 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   cursor: pointer;
   background: var(--cream);
   transition: background .18s;
+  -webkit-user-select: none;
   user-select: none;
 }
 .acc-header:hover { background: var(--paper2); }
@@ -840,3 +841,28 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   color: var(--mud);
   margin-top: .3rem;
 }
+
+/* Formulaire ajout recette — inputs avec couleurs explicites */
+.ar-field {
+  width: 100%;
+  background: #1e2a18;
+  border: 1px solid rgba(255,255,255,.2);
+  color: #f0e8d4;
+  border-radius: 4px;
+  padding: .45rem .55rem;
+  font-family: inherit;
+  font-size: .9rem;
+  box-sizing: border-box;
+}
+.ar-field::placeholder { color: #7a8a6a; }
+.ar-field:focus {
+  outline: none;
+  border-color: #c8a430;
+}
+.ar-emoji-field {
+  width: 3.5rem;
+  text-align: center;
+  font-size: 1.4rem;
+  padding: .2rem;
+}
+select.ar-field option { background: #1e2a18; color: #f0e8d4; }

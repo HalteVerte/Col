@@ -199,25 +199,25 @@ function openAddRecipe() {
     <p style="color:var(--mud);font-size:.88rem;margin-bottom:1rem">Sauvegardée localement sur cet appareil.</p>
     <div class="add-recipe-form">
       <label>Emoji</label>
-      <input id="ar-emoji" type="text" value="🌿" maxlength="2" style="width:3rem;text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.3rem">
+      <input id="ar-emoji" type="text" value="🌿" class="ar-field ar-emoji-field" placeholder="🌿">
       <label>Nom *</label>
-      <input id="ar-name" type="text" placeholder="ex: Soupe de cresson sauvage" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <input id="ar-name" type="text" placeholder="ex: Soupe de cresson sauvage" class="ar-field">
       <label>Description courte</label>
-      <input id="ar-desc" type="text" placeholder="ex: Riche en vitamine C" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <input id="ar-desc" type="text" placeholder="ex: Riche en vitamine C" class="ar-field">
       <label>Temps</label>
-      <input id="ar-time" type="text" placeholder="ex: 20 min" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <input id="ar-time" type="text" placeholder="ex: 20 min" class="ar-field">
       <label>Difficulté</label>
-      <select id="ar-diff" style="width:100%;background:rgba(30,40,20,.9);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <select id="ar-diff" class="ar-field">
         <option>Facile</option><option>Moyen</option><option>Avancé</option>
       </select>
       <label>Saisons (virgule)</label>
-      <input id="ar-tags" type="text" placeholder="ex: printemps, ete" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem">
+      <input id="ar-tags" type="text" placeholder="ex: printemps, ete" class="ar-field">
       <label>Ingrédients (un par ligne) *</label>
-      <textarea id="ar-ing" rows="4" placeholder="Feuilles de cresson&#10;Eau de source&#10;Sel" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <textarea id="ar-ing" rows="4" placeholder="Feuilles de cresson&#10;Eau de source&#10;Sel" class="ar-field"></textarea>
       <label>Étapes (une par ligne) *</label>
-      <textarea id="ar-steps" rows="5" placeholder="Rincer le cresson&#10;Porter l'eau à ébullition" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <textarea id="ar-steps" rows="5" placeholder="Rincer le cresson&#10;Porter l'eau à ébullition" class="ar-field"></textarea>
       <label>Conseil / Astuce</label>
-      <textarea id="ar-tip" rows="2" placeholder="Variantes, conservation..." style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:inherit;border-radius:4px;padding:.4rem"></textarea>
+      <textarea id="ar-tip" rows="2" placeholder="Variantes, conservation..." class="ar-field"></textarea>
       <div style="display:flex;gap:.5rem;margin-top:1rem">
         <button onclick="saveNewRecipe()" style="flex:1;padding:.7rem;background:#2d7a5c;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit">💾 Sauvegarder</button>
         <button onclick="closeModal()" style="padding:.7rem 1rem;background:rgba(255,255,255,.1);color:inherit;border:none;border-radius:5px;cursor:pointer;font-family:inherit">Annuler</button>
