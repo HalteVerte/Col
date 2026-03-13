@@ -198,8 +198,14 @@ function openAddRecipe() {
     <h2>✎ Nouvelle recette</h2>
     <p style="color:var(--mud);font-size:.88rem;margin-bottom:1rem">Sauvegardée localement sur cet appareil.</p>
     <div class="add-recipe-form">
-      <label>Emoji</label>
-      <input id="ar-emoji" type="text" value="🌿" class="ar-field ar-emoji-field" placeholder="🌿">
+      <label>Emoji <span style="font-size:.75rem;opacity:.6">(tap pour choisir)</span></label>
+      <div class="ar-emoji-grid" id="ar-emoji-grid">
+        ${["🌿","🍄","🌰","🫐","🥜","🌊","🔴","🍊","🌾","🟫","🦪","🐟","🥚","🌸","🍇","🍎","🫚","🌱","🔥","⚗️","🧪","🫙","🏕️","🗺️"].map(e =>
+          `<button type="button" class="ar-emoji-btn" onclick="selectEmoji('${e}')">${e}</button>`
+        ).join('')}
+      </div>
+      <input id="ar-emoji" type="hidden" value="🌿">
+      <div id="ar-emoji-preview" style="font-size:2rem;text-align:center;margin:.3rem 0">🌿</div>
       <label>Nom *</label>
       <input id="ar-name" type="text" placeholder="ex: Soupe de cresson sauvage" class="ar-field">
       <label>Description courte</label>
@@ -225,6 +231,14 @@ function openAddRecipe() {
     </div>
   `;
   document.getElementById('recipeModal').classList.add('open');
+}
+
+function selectEmoji(e) {
+  document.getElementById('ar-emoji').value = e;
+  document.getElementById('ar-emoji-preview').textContent = e;
+  document.querySelectorAll('.ar-emoji-btn').forEach(b => {
+    b.classList.toggle('ar-emoji-selected', b.textContent === e);
+  });
 }
 
 function saveNewRecipe() {

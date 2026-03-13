@@ -866,3 +866,30 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   padding: .2rem;
 }
 select.ar-field option { background: #1e2a18; color: #f0e8d4; }
+
+/* Grille sélection emoji recette */
+.ar-emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-bottom: .3rem;
+}
+.ar-emoji-btn {
+  font-size: 1.3rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ar-emoji-btn:hover { background: rgba(255,255,255,.15); transform: scale(1.15); }
+.ar-emoji-selected {
+  background: rgba(200,164,48,.3) !important;
+  border-color: #c8a430 !important;
+  transform: scale(1.1);
+}
