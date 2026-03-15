@@ -270,14 +270,168 @@ const SBL = (() => {
       .sort((a, b) => a.dist_km - b.dist_km);
   }
 
-  /* -- Waypoint objectif du jour --------------------------------- */
+
+  /* -- Détection automatique état boucle ------------------------- */
+  function getAllBoucleWaypoints() {
+    // Collecter TOUS les waypoints de TOUS les tracés
+    const wps = [];
+
+    const addEtapes = (phases, source) => {
+      if (!phases) return;
+      phases.forEach(phase => {
+        (phase.etapes || []).forEach(e => {
+          if (e.lat && e.lng) wps.push({ ...e, source });
+        });
+      });
+    };
+
+    // Trajet Aller (A)
+    if (window.TRAJET_COMPLET?.phases) addEtapes(window.TRAJET_COMPLET.phases, 'aller');
+    // Trajet Retour
+    if (window.TRAJET_RETOUR?.phases) addEtapes(window.TRAJET_RETOUR.phases, 'retour');
+    if (window.TRAJET_RETOUR_WAYPOINTS) {
+      window.TRAJET_RETOUR_WAYPOINTS.forEach(w => wps.push({ ...w, source: 'retour' }));
+    }
+    // Trajet B
+    if (window.TRAJET_B?.phases) addEtapes(window.TRAJET_B.phases, 'tracé-b');
+    // Inter-boucles
+    if (window.INTER_BOUCLE_POINTS) {
+      window.INTER_BOUCLE_POINTS.forEach(p => wps.push({ ...p, source: 'inter' }));
+    }
+
+    return wps;
+  }
+
+  function detecterEtatBoucle(lat, lng) {
+    const wps = getAllBoucleWaypoints();
+    if (!wps.length) return { etat: 'inconnu', dist_min: null, wp_proche: null };
+
+    // Trouver le waypoint le plus proche sur n'importe quel tracé
+    let distMin = Infinity;
+    let wpProche = null;
+    wps.forEach(wp => {
+      const d = haversine(lat, lng, wp.lat, wp.lng);
+      if (d < distMin) { distMin = d; wpProche = { ...wp, dist_km: Math.round(d) }; }
+    });
+
+    let etat;
+    if (distMin < 50)       etat = 'en_route';
+    else if (distMin < 150) etat = 'hors_boucle_proche';
+    else                    etat = 'hors_boucle';
+
+    return { etat, dist_min: Math.round(distMin), wp_proche: wpProche };
+  }
+
+  function cueillettesUrgentes(lat, lng, analyse) {
+    // Si stocks critiques → chercher cueillettes/pêche en saison dans les 150 km
+    if (analyse.zoneGlobale !== 'rouge' && !analyse.alerteSoudure) return [];
+    const obs = window.BS ? BS.getObservations() : [];
+    return obs
+      .filter(o => o.lat && o.lng &&
+        ['cueillette','champignon','peche'].includes(o.type) &&
+        estEnSaison(o))
+      .map(o => ({ ...o, dist_km: Math.round(haversine(lat, lng, o.lat, o.lng)) }))
+      .filter(o => o.dist_km <= 150)
+      .sort((a, b) => a.dist_km - b.dist_km)
+      .slice(0, 3);
+  }
+
+  /* -- Waypoint objectif du jour --------------------------------- --------------------------------- */
   function waypointObjectif(lat, lng) {
-    // Cherche le prochain point terrain entre 40 et 100km
-    const proches = obsProches(lat, lng, 100).filter(o => o.dist_km >= 40);
+    // Types utiles pour un objectif terrain (pas les abris/haltes)
+    const TYPES_TERRAIN = ['cueillette','champignon','peche','eau','ravitaillement'];
+
+    // 1. Si config_boucle avec date_depart et déjà parti
+    const config = window.BS ? BS.getConfigBoucle() : null;
+    if (config?.date_depart) {
+      const jourJ = Math.floor((new Date() - new Date(config.date_depart)) / 86400000);
+      if (jourJ >= 0) {
+        const wp = waypointParDate(lat, lng, config);
+        if (wp) return wp;
+      }
+      // Départ futur → utiliser waypoints du tracé pour simuler l'objectif logique
+      if (jourJ < 0) {
+        const trace = config.trace_actif === 'B' ? window.TRAJET_B : window.TRAJET_COMPLET;
+        if (trace?.phases) {
+          // Trouver l'étape la plus proche sur le tracé entre 20 et 120 km
+          const wps = getAllBoucleWaypoints();
+          const candidats = wps
+            .map(w => ({ ...w, dist_km: Math.round(haversine(lat, lng, w.lat, w.lng)) }))
+            .filter(w => w.dist_km >= 20 && w.dist_km <= 120)
+            .sort((a, b) => a.dist_km - b.dist_km);
+          if (candidats.length > 0) return candidats[0];
+        }
+      }
+    }
+
+    // 2. Waypoints du tracé entre 20 et 120 km (priorité sur obsProches)
+    const wps = getAllBoucleWaypoints();
+    if (wps.length) {
+      const candidats = wps
+        .map(w => ({ ...w, dist_km: Math.round(haversine(lat, lng, w.lat, w.lng)) }))
+        .filter(w => w.dist_km >= 20 && w.dist_km <= 120)
+        .sort((a, b) => a.dist_km - b.dist_km);
+      if (candidats.length > 0) return candidats[0];
+    }
+
+    // 3. Observations terrain pertinentes entre 20 et 120 km
+    const proches = obsProches(lat, lng, 120)
+      .filter(o => TYPES_TERRAIN.includes(o.type) && o.dist_km >= 20);
     if (proches.length > 0) return proches[0];
-    // Fallback : point le plus proche > 10km
+
+    // 4. N'importe quel point > 10 km
     const loin = obsProches(lat, lng, 200).filter(o => o.dist_km >= 10);
     return loin[0] || null;
+  }
+
+  function waypointParDate(lat, lng, config) {
+    // Calcule le jour J depuis le départ
+    const depart = new Date(config.date_depart);
+    const today  = new Date();
+    const jourJ  = Math.floor((today - depart) / 86400000);
+    if (jourJ < 0) return null; // pas encore parti
+
+    // Choisir le tracé
+    const trace = config.trace_actif === 'B' ? window.TRAJET_B : window.TRAJET_COMPLET;
+    if (!trace?.phases) return null;
+
+    // Estimer la phase courante selon jourJ et km/jour moyen (60 km/j)
+    const KM_JOUR = 60;
+    const kmParcourus = jourJ * KM_JOUR;
+    let kmCumul = 0;
+    let phaseActuelle = null;
+
+    for (const phase of trace.phases) {
+      const kmPhase = parseInt(phase.km) || 0;
+      if (kmCumul + kmPhase >= kmParcourus) {
+        phaseActuelle = phase;
+        break;
+      }
+      kmCumul += kmPhase;
+    }
+
+    if (!phaseActuelle) phaseActuelle = trace.phases[trace.phases.length - 1];
+
+    // Trouver la prochaine étape avec coordonnées GPS dans TRAJET_COMPLET
+    if (phaseActuelle.etapes) {
+      for (const e of phaseActuelle.etapes) {
+        if (e.lat && e.lng) {
+          const d = haversine(lat, lng, e.lat, e.lng);
+          if (d > 5) {
+            return {
+              nom: e.nom,
+              lat: e.lat,
+              lng: e.lng,
+              dist_km: Math.round(d),
+              type: e.type || 'halte',
+              source: `tracé ${config.trace_actif} · J+${jourJ} · ${phaseActuelle.label}`,
+            };
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   /* -- Décisions ------------------------------------------------- */
@@ -550,15 +704,18 @@ const SBL = (() => {
   }
 
   function renderBriefing(container, ctx) {
-    const { lat, lng, posSource, meteo, marees, stocks, kommoda, now } = ctx;
+    const { lat, lng, posSource, meteo, marees, stocks, kommoda, now, etatBoucle } = ctx;
     const moisNum  = moisCourant();
     const soleil   = sunTimes(lat, lng);
     const lune     = moonPhase();
-    const proche   = obsProches(lat, lng, 120);
+    // Terrain proche — exclure abris/haltes/recharges/dangers
+    const TYPES_EXCLUS = ['abri','halte','recharge','danger','bivouac'];
+    const proche   = obsProches(lat, lng, 120).filter(o => !TYPES_EXCLUS.includes(o.type));
     const objectif = waypointObjectif(lat, lng);
     const decisions = calcDecisions(ctx);
     const analyse  = analyseStocks(stocks);
     const prev     = meteo?.previsions_3j;
+    const cueilUrgentes = cueillettesUrgentes(lat, lng, analyse);
 
     const d = new Date(now);
     const dateStr = `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LABEL[moisNum]} ${d.getFullYear()}`;
@@ -653,6 +810,19 @@ const SBL = (() => {
           <div class="sbl-date">${dateStr}</div>
           <div class="sbl-pos">📍 ${posSource}</div>
           <div class="sbl-coords">${lat.toFixed(5)}°N &nbsp;${lng.toFixed(5)}°E</div>
+          ${etatBoucle ? (() => {
+            const ETAT_CFG = {
+              en_route:           { icon:'🚴', label:'En route', color:'#7abf5a' },
+              hors_boucle_proche: { icon:'📍', label:'Hors boucle (proche)', color:'#c8a430' },
+              hors_boucle:        { icon:'🏠', label:'Hors boucle', color:'#9a8a70' },
+              inconnu:            { icon:'❓', label:'Position inconnue', color:'#9a8a70' },
+            };
+            const cfg = ETAT_CFG[etatBoucle.etat] || ETAT_CFG.inconnu;
+            const wpInfo = etatBoucle.wp_proche
+              ? ` · ${etatBoucle.dist_min}km de ${etatBoucle.wp_proche.nom?.split('→').pop().trim().split('(')[0].trim() || '?'}`
+              : '';
+            return `<div class="sbl-etat-boucle" style="color:${cfg.color}">${cfg.icon} ${cfg.label}${wpInfo}</div>`;
+          })() : ''}
         </div>
         <div class="sbl-header-right">
           <div class="sbl-title">6BL</div>
@@ -776,8 +946,11 @@ const SBL = (() => {
     const stocks  = window.BS ? BS.getStocks()  : {};
     const kommoda = window.BS ? BS.getKommoda() : null;
 
-    // 4. Rendu
-    renderBriefing(container, { lat, lng, posSource, meteo, marees, stocks, kommoda, now });
+    // 4. Détection état boucle
+    const etatBoucle = detecterEtatBoucle(lat, lng);
+
+    // 5. Rendu
+    renderBriefing(container, { lat, lng, posSource, meteo, marees, stocks, kommoda, now, etatBoucle });
 
     // Notifications push pour les alertes critiques
     const alertesPush = calcAlertes(meteo, analyseStocks(stocks), kommoda);
