@@ -32,7 +32,6 @@
 <!-- -- TABS -- -->
 <nav class="tabs-bar">
   <button class="tab-btn active" onclick="switchTab('carte',this)">🗺️ Carte</button>
-  <button class="tab-btn" onclick="switchTab('zones',this)">🌲 Zones</button>
   <button class="tab-btn" onclick="switchTab('quetes',this)">⚔️ Quêtes</button>
   <button class="tab-btn" id="tab-observer" onclick="switchTab('observer',this)">📍 Observer</button>
   <button class="tab-btn" onclick="switchTab('inventaire',this)">🎒 Stocks</button>
@@ -49,15 +48,11 @@
 </div>
 
 <!-- == PANEL ZONES == -->
-<div id="panel-zones" class="tab-panel">
-  <div class="section-title">🌲 Zones de la Boucle</div>
-  <div class="zone-focus" id="zoneFocus"></div>
-  <div class="zones-grid" id="zonesGrid"></div>
-</div>
-
 <!-- == PANEL QUÊTES == -->
 <div id="panel-quetes" class="tab-panel">
   <div class="section-title">⚔️ Quêtes</div>
+  <!-- Zones — filtre visuel intégré -->
+  <div class="zones-grid-compact" id="zonesGrid"></div>
   <!-- Cycle des saisons -->
   <div id="cycleSaisons" class="cycle-saisons"></div>
 
