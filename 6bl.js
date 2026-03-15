@@ -7,7 +7,7 @@ const SBL = (() => {
 
   /* -- Constantes ----------------------------------------------- */
   const METEO_CACHE_KEY  = 'sbl_meteo_cache';
-  const METEO_MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6h
+  const METEO_MAX_AGE_MS = 2 * 60 * 60 * 1000; // 2h
 
   // STOCKS_MAX chargé depuis stocks.js (source unique)
   const STOCKS_MAX = window.STOCKS_MAX || {
@@ -32,6 +32,20 @@ const SBL = (() => {
      9: { vert: 40, orange: 25 },  // Septembre — début reconstitution
   };
 
+  // Seuils critiques — météo, batterie, stocks
+  const SEUILS = {
+    meteo: {
+      vent:  { orange: 30, rouge: 50 },   // km/h
+      pluie: { orange: 5,  rouge: 15 },   // mm/jour
+      temp:  { orange: 2,  rouge: -5 },   // °C
+    },
+    batterie: { orange: 30, rouge: 15 },  // %
+    stocks: {
+      normal:  { orange: 40, rouge: 20 }, // % global
+      soudure: { orange: 35, rouge: 25 }, // % global mars-avril
+    },
+  };
+
   const MOIS_LABEL = ['','Janvier','Février','Mars','Avril','Mai','Juin',
                       'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const JOURS      = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
@@ -47,6 +61,16 @@ const SBL = (() => {
                     'S','SSO','SO','OSO','O','ONO','NO','NNO'];
 
   /* -- Helpers --------------------------------------------------- */
+  function haversine(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+              Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
   function ventDir(deg) { return VENT_DIR[Math.round(deg / 22.5) % 16]; }
 
   function moisCourant() { return new Date().getMonth() + 1; }
@@ -122,16 +146,24 @@ const SBL = (() => {
       const cached = JSON.parse(localStorage.getItem(METEO_CACHE_KEY) || 'null');
       if (cached && cached.timestamp) {
         const age = Date.now() - cached.timestamp;
-        if (age < METEO_MAX_AGE_MS) {
+        // Invalider si trop vieux OU si déplacement > 30km
+        const dist = cached.lat != null
+          ? haversine(lat, lng, cached.lat, cached.lng)
+          : 0;
+        const cacheValide = age < METEO_MAX_AGE_MS && dist < 30;
+        if (cacheValide) {
           const ageH = Math.round(age / 3600000 * 10) / 10;
-          return { ...cached.data, cache_age_h: ageH, source: `open-meteo (cache ${ageH}h)` };
+          const src = dist > 5
+            ? `open-meteo (cache ${ageH}h — déplacé ${Math.round(dist)}km)`
+            : `open-meteo (cache ${ageH}h)`;
+          return { ...cached.data, cache_age_h: ageH, source: src };
         }
       }
     } catch(e) {}
 
     // 2. Fetch frais
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current_weather=true&daily=precipitation_sum,windspeed_10m_max,temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current_weather=true&daily=precipitation_sum,windspeed_10m_max,temperature_2m_max,temperature_2m_min,weathercode&hourly=temperature_2m,windspeed_10m,precipitation,weathercode&timezone=auto&forecast_days=2`;
       const r = await fetch(url, { signal: AbortSignal.timeout(5000) });
       if (!r.ok) throw new Error('http ' + r.status);
       const d  = await r.json();
@@ -145,6 +177,25 @@ const SBL = (() => {
         vent_kmh:        Math.round(cw.windspeed),
         direction_vent:  cw.winddirection,
         meteo:           WMO[cw.weathercode] || `Code ${cw.weathercode}`,
+        horaires:        d.hourly ? (() => {
+          // Filtrer les 48h à venir, grouper matin/après-midi
+          const times = d.hourly.time;
+          const now = new Date();
+          const todayStr = now.toISOString().slice(0,10);
+          const slots = [];
+          times.forEach((t, i) => {
+            if (!t.startsWith(todayStr)) return;
+            const h = parseInt(t.slice(11,13));
+            slots.push({
+              heure:  h,
+              temp:   d.hourly.temperature_2m[i],
+              vent:   d.hourly.windspeed_10m[i],
+              pluie:  d.hourly.precipitation[i],
+              code:   d.hourly.weathercode[i],
+            });
+          });
+          return slots;
+        })() : null,
         previsions_3j:   d.daily ? {
           dates:    d.daily.time,
           temp_max: d.daily.temperature_2m_max,
@@ -156,7 +207,7 @@ const SBL = (() => {
         cache_age_h: 0,
       };
       // Sauvegarder en cache
-      localStorage.setItem(METEO_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data }));
+      localStorage.setItem(METEO_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), lat, lng, data }));
       return data;
     } catch(e) {
       // 3. Cache périmé mais disponible
@@ -326,6 +377,178 @@ const SBL = (() => {
     </div>`;
   }
 
+
+  /* -- Alertes critiques centralisées ---------------------------- */
+  function calcAlertes(meteo, analyse, kommoda) {
+    const alertes = [];
+
+    // -- Météo
+    if (meteo && meteo.source !== 'offline') {
+      const vent  = meteo.vent_kmh || 0;
+      const pluie = meteo.previsions_3j?.pluie_mm?.[0] || 0;
+      const temp  = meteo.temperature_c ?? 99;
+      const ventMax3j = meteo.previsions_3j ? Math.max(...meteo.previsions_3j.vent_max) : 0;
+
+      if (vent >= SEUILS.meteo.vent.rouge || ventMax3j >= SEUILS.meteo.vent.rouge)
+        alertes.push({ niveau:'rouge', icon:'💨', titre:'TEMPÊTE', msg:`Vent ${Math.max(vent,ventMax3j)}km/h — ne pas rouler, abri solide immédiat.` });
+      else if (vent >= SEUILS.meteo.vent.orange || ventMax3j >= SEUILS.meteo.vent.orange)
+        alertes.push({ niveau:'orange', icon:'🌬️', titre:'VENT FORT', msg:`${Math.max(vent,ventMax3j)}km/h — progression difficile, prévoir abri.` });
+
+      if (pluie >= SEUILS.meteo.pluie.rouge)
+        alertes.push({ niveau:'rouge', icon:'🌧️', titre:'PLUIE FORTE', msg:`${pluie}mm aujourd'hui — imperméables, routes glissantes, pause cueillette.` });
+      else if (pluie >= SEUILS.meteo.pluie.orange)
+        alertes.push({ niveau:'orange', icon:'🌦️', titre:'PLUIE MODÉRÉE', msg:`${pluie}mm prévus — équipement pluie sorti.` });
+
+      if (temp <= SEUILS.meteo.temp.rouge)
+        alertes.push({ niveau:'rouge', icon:'🥶', titre:'GEL FORT', msg:`${temp}°C — risque verglas, bivouac isolé obligatoire.` });
+      else if (temp <= SEUILS.meteo.temp.orange)
+        alertes.push({ niveau:'orange', icon:'🌡️', titre:'PROCHE ZÉRO', msg:`${temp}°C — surveiller verglas tôt le matin.` });
+    }
+
+    // -- Batterie Kommoda
+    if (kommoda?.batterie_pct != null) {
+      const bat = kommoda.batterie_pct;
+      if (bat <= SEUILS.batterie.rouge)
+        alertes.push({ niveau:'rouge', icon:'🔋', titre:'BATTERIE CRITIQUE', msg:`${bat}% — recharge urgente, réduire assistance au minimum.` });
+      else if (bat <= SEUILS.batterie.orange)
+        alertes.push({ niveau:'orange', icon:'🔋', titre:'BATTERIE FAIBLE', msg:`${bat}% — identifier point de recharge dans les 30km.` });
+    }
+
+    // -- Stocks
+    if (analyse) {
+      const seuil = analyse.isSoudure ? SEUILS.stocks.soudure : SEUILS.stocks.normal;
+      if (analyse.alerteSoudure || analyse.pctGlobal <= seuil.rouge)
+        alertes.push({ niveau:'rouge', icon:'🎒', titre:'STOCKS CRITIQUES', msg:`${analyse.pctGlobal}%${analyse.isSoudure?' (soudure)':''} — cueillette/pêche prioritaire immédiate.` });
+      else if (analyse.pctGlobal <= seuil.orange)
+        alertes.push({ niveau:'orange', icon:'🎒', titre:'STOCKS EN VIGILANCE', msg:`${analyse.pctGlobal}% — surveiller consommation, opportunités terrain.` });
+    }
+
+    return alertes;
+  }
+
+  /* -- Notifications push PWA ------------------------------------ */
+  async function envoyerNotifications(alertes) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'denied') return;
+
+    // Demander permission si pas encore accordée
+    if (Notification.permission === 'default') {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+    }
+
+    // Envoyer une notif par alerte rouge
+    const rouges = alertes.filter(a => a.niveau === 'rouge');
+    if (rouges.length === 0) return;
+
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.ready;
+      rouges.forEach(a => {
+        reg.showNotification(`🆘 La Boucle Sauvage — ${a.titre}`, {
+          body: a.msg,
+          icon: '/Col/icons/icon-192.png',
+          badge: '/Col/icons/icon-192.png',
+          tag: `bls-${a.titre}`,
+          renotify: false,
+          requireInteraction: true,
+        });
+      });
+    }
+  }
+
+  /* -- Plan matin / après-midi ------------------------------------ */
+  function planJournee(meteo, soleil, marees, proche) {
+    if (!meteo?.horaires || meteo.horaires.length === 0) return null;
+
+    const WMO_COURT = {
+      0:'☀️ Dégagé', 1:'🌤 Peu nuageux', 2:'⛅ Nuageux',
+      3:'☁️ Couvert', 51:'🌦 Bruine', 61:'🌧 Pluie légère',
+      63:'🌧 Pluie', 65:'🌧 Pluie forte', 71:'❄️ Neige',
+      80:'🌦 Averses', 95:'⛈ Orage',
+    };
+
+    // Lever/coucher en heures décimales
+    const leverH  = soleil?.lever  ? parseInt(soleil.lever.split(':')[0])  + parseInt(soleil.lever.split(':')[1])/60  : 6.5;
+    const coucherH = soleil?.coucher ? parseInt(soleil.coucher.split(':')[0]) + parseInt(soleil.coucher.split(':')[1])/60 : 19;
+
+    function créneau(slots) {
+      if (!slots.length) return null;
+      const ventMoy  = Math.round(slots.reduce((s,x) => s + x.vent,  0) / slots.length);
+      const pluieTot = Math.round(slots.reduce((s,x) => s + x.pluie, 0) * 10) / 10;
+      const tempMoy  = Math.round(slots.reduce((s,x) => s + x.temp,  0) / slots.length * 10) / 10;
+      // Météo dominante = code le plus fréquent
+      const freq = {};
+      slots.forEach(s => { freq[s.code] = (freq[s.code]||0)+1; });
+      const codeDom = parseInt(Object.entries(freq).sort((a,b)=>b[1]-a[1])[0][0]);
+      const meteoLabel = WMO_COURT[codeDom] || '⛅';
+
+      // Fenêtre optimale : blocs consécutifs secs ET vent < 30
+      let fenetreDebut = null, fenetreFin = null, streak = 0;
+      slots.forEach((s, i) => {
+        if (s.pluie < 0.3 && s.vent < 30) {
+          if (streak === 0) fenetreDebut = s.heure;
+          streak++;
+          fenetreFin = s.heure;
+        } else {
+          streak = 0;
+        }
+      });
+
+      return { ventMoy, pluieTot, tempMoy, meteoLabel, fenetreDebut, fenetreFin, codeDom };
+    }
+
+    const matin   = créneau(meteo.horaires.filter(s => s.heure >= Math.round(leverH) && s.heure < 13));
+    const aprem   = créneau(meteo.horaires.filter(s => s.heure >= 13 && s.heure <= Math.round(coucherH)));
+
+    // Conseil départ
+    function conseilDepart(cr, label) {
+      if (!cr) return '';
+      const icones = [];
+      if (cr.pluieTot === 0 && cr.ventMoy < 20) icones.push('🟢 Favorable');
+      else if (cr.pluieTot > 5 || cr.ventMoy > 40) icones.push('🔴 Déconseillé');
+      else icones.push('🟠 Acceptable');
+
+      if (cr.ventMoy > 30) icones.push(`💨 ${cr.ventMoy}km/h`);
+      if (cr.pluieTot > 0) icones.push(`🌧 ${cr.pluieTot}mm`);
+      if (cr.fenetreDebut !== null) icones.push(`✓ Fenêtre sèche ${cr.fenetreDebut}h–${cr.fenetreFin+1}h`);
+
+      return `<div class="sbl-créneau">
+        <div class="sbl-créneau-titre">${label}</div>
+        <div class="sbl-créneau-meteo">${cr.meteoLabel} · ${cr.tempMoy}°C</div>
+        <div class="sbl-créneau-tags">${icones.map(i => `<span class="sbl-tag">${i}</span>`).join('')}</div>
+      </div>`;
+    }
+
+    // Conseil Kommoda batterie
+    function conseilBatterie(cr) {
+      if (!cr || cr.ventMoy <= 25) return '';
+      const surcoût = cr.ventMoy > 40 ? 30 : cr.ventMoy > 30 ? 15 : 5;
+      return `<div class="sbl-créneau-note">⚡ Vent ${cr.ventMoy}km/h → surconsommation batterie estimée +${surcoût}%</div>`;
+    }
+
+    // Conseil cueillette/pêche
+    function conseilTerrain(cr, label) {
+      if (!cr) return '';
+      const obs = proche?.filter(o => estEnSaison(o)) || [];
+      if (!obs.length) return '';
+      const meilleur = obs[0];
+      if (cr.pluieTot === 0 && cr.ventMoy < 25) {
+        return `<div class="sbl-créneau-note">🌿 ${label} — fenêtre favorable pour ${meilleur.nom.split('—')[0].trim()} (${meilleur.dist_km}km)</div>`;
+      }
+      return '';
+    }
+
+    return {
+      html: `
+        <div class="sbl-plan-journee">
+          ${conseilDepart(matin,  '🌅 Matin — ' + (soleil?.lever || '?') + ' → 13h')}
+          ${conseilDepart(aprem,  '🌆 Après-midi — 13h → ' + (soleil?.coucher || '?'))}
+          ${conseilBatterie(matin) || conseilBatterie(aprem)}
+          ${conseilTerrain(matin, 'Matin') || conseilTerrain(aprem, 'Après-midi')}
+        </div>`
+    };
+  }
+
   function renderBriefing(container, ctx) {
     const { lat, lng, posSource, meteo, marees, stocks, kommoda, now } = ctx;
     const moisNum  = moisCourant();
@@ -340,16 +563,16 @@ const SBL = (() => {
     const d = new Date(now);
     const dateStr = `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LABEL[moisNum]} ${d.getFullYear()}`;
 
-    // Alertes critiques
-    const alertes = [];
-    if (prev) {
-      const vMax = Math.max(...prev.vent_max);
-      if (vMax >= 60) alertes.push(html_alerte('danger','💨','TEMPÊTE',`Vent ${vMax}km/h prévu — abri impératif.`));
-      else if (vMax >= 40) alertes.push(html_alerte('warning','🌬️','VENT FORT',`Rafales ${vMax}km/h — anticiper abri.`));
-    }
-    if (analyse.alerteSoudure) alertes.push(html_alerte('danger','⚠️','SOUDURE CRITIQUE',`Stocks à ${analyse.pctGlobal}% — période mars–avril. Minimum 30% requis.`));
-    if (meteo?.source?.includes('périmé')) alertes.push(html_alerte('warning','📵','MÉTÉO PÉRIMÉE',meteo.source));
-    if (!posSource?.includes('GPS réel')) alertes.push(html_alerte('info','📍','POSITION APPROXIMATIVE',posSource || 'GPS indisponible'));
+    // Alertes critiques — centralisées
+    const alertesList = calcAlertes(meteo, analyse, kommoda);
+    // Alertes système (météo périmée, GPS approximatif)
+    if (meteo?.source?.includes('périmé')) alertesList.push({ niveau:'orange', icon:'📵', titre:'MÉTÉO PÉRIMÉE', msg: meteo.source });
+    if (!posSource?.includes('GPS réel'))  alertesList.push({ niveau:'info',   icon:'📍', titre:'POSITION APPROXIMATIVE', msg: posSource || 'GPS indisponible' });
+
+    const alertes = alertesList.map(a =>
+      html_alerte(a.niveau === 'rouge' ? 'danger' : a.niveau === 'orange' ? 'warning' : 'info',
+        a.icon, a.titre, a.msg)
+    );
 
     // Stocks HTML
     const ZONE_EMOJI = { vert:'🟢', orange:'🟠', rouge:'🔴' };
@@ -391,6 +614,10 @@ const SBL = (() => {
         <span class="sbl-dec-icon">${dec.icon}</span>
         <div><strong>${dec.titre}</strong> — ${dec.msg}</div>
       </div>`).join('');
+
+    // Plan journée matin/après-midi
+    const plan = planJournee(meteo, soleil, marees, proche);
+    const planHTML = plan ? plan.html : '';
 
     // Observations proches HTML
     const obsHTML = proche.length === 0
@@ -491,6 +718,12 @@ const SBL = (() => {
           ${komHTML}
         </div>
 
+        <!-- PLAN JOURNÉE -->
+        ${planHTML ? `<div class="sbl-card sbl-card-plan">
+          <div class="sbl-card-titre">📅 Plan de la journée</div>
+          ${planHTML}
+        </div>` : ''}
+
         <!-- DÉCISIONS -->
         <div class="sbl-card sbl-card-dec">
           <div class="sbl-card-titre">🎯 Décisions</div>
@@ -545,6 +778,10 @@ const SBL = (() => {
 
     // 4. Rendu
     renderBriefing(container, { lat, lng, posSource, meteo, marees, stocks, kommoda, now });
+
+    // Notifications push pour les alertes critiques
+    const alertesPush = calcAlertes(meteo, analyseStocks(stocks), kommoda);
+    envoyerNotifications(alertesPush);
   }
 
   return { generate };

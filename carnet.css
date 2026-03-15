@@ -1,6 +1,6 @@
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    ROUE DE L'ANNÉE — Calendrier sorcières des haies
-══════════════════════════════════════════════════════ */
+====================================================== */
 .wheel-container { max-width: 800px; margin: 0 auto; }
 .wheel-intro {
   background: rgba(245,240,232,.03);
@@ -105,10 +105,10 @@
 .wm-close-btn:hover { background: rgba(245,240,232,.1); }
 
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    SOLARPUNK — LA BOUCLE SAUVAGE
    Palette : vert profond · terre chaude · soleil doré · crème végétale
-═══════════════════════════════════════════════ */
+=============================================== */
 
 
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -121,7 +121,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Fond animé ── */
+/* -- Fond animé -- */
 body::before {
   content:'';
   position: fixed; inset:0; z-index:0;
@@ -132,7 +132,7 @@ body::before {
   pointer-events: none;
 }
 
-/* ── Motif feuilles SVG en fond ── */
+/* -- Motif feuilles SVG en fond -- */
 body::after {
   content:'';
   position: fixed; inset:0; z-index:0;
@@ -141,9 +141,9 @@ body::after {
   pointer-events: none;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    HEADER
-───────────────────────────────────────────── */
+--------------------------------------------- */
 header {
   position: sticky; top:0; z-index: 100;
   background: rgba(26,42,26,.92);
@@ -201,9 +201,9 @@ header {
 }
 #globalXpVal { color: var(--sprout); font-weight:500; }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    TABS
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .tabs-bar {
   display: flex;
   gap: .3rem;
@@ -244,9 +244,9 @@ header {
   box-shadow: 0 2px 12px rgba(245,240,232,.25);
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    PANELS
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .tab-panel { display:none; padding:1.2rem 1rem 4rem; position:relative; z-index:1; }
 .tab-panel.active { display:block; animation: fadeUp .3s ease; }
 @keyframes fadeUp {
@@ -254,9 +254,9 @@ header {
   to   { opacity:1; transform:translateY(0); }
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    CARTE DU MONDE
-───────────────────────────────────────────── */
+--------------------------------------------- */
 #panel-carte .map-wrap {
   border: 1px solid rgba(245,240,232,.2);
   border-radius: 16px;
@@ -276,9 +276,9 @@ header {
   font-size:.7rem; color:var(--ink-soft); letter-spacing:.04em;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    ZONES
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .zones-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -359,9 +359,9 @@ header {
 }
 .zone-prog-label { font-size:.6rem; color:var(--ink-soft); white-space:nowrap; }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    QUÊTES
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .quest-filters {
   display:flex; flex-wrap:wrap; gap:.4rem;
   margin-bottom:1rem;
@@ -466,9 +466,9 @@ header {
   margin-top:.35rem;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    INVENTAIRE
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .inventory-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
@@ -506,9 +506,9 @@ header {
 }
 .inv-btn:hover { background:rgba(245,240,232,.12); }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    JOURNAL
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .journal-compose {
   background:linear-gradient(135deg, rgba(26,58,42,.6), rgba(20,42,28,.8));
   border:1px solid rgba(245,240,232,.2);
@@ -583,9 +583,9 @@ header {
   color:#f5f0e8;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    ORNEMENTS SOLARPUNK
-───────────────────────────────────────────── */
+--------------------------------------------- */
 .section-title {
   font-family:'Cormorant Garamond',serif;
   font-size:1.1rem; font-weight:600;
@@ -637,22 +637,22 @@ header {
   color:#6a9a5a;
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    SCROLLBAR
-───────────────────────────────────────────── */
+--------------------------------------------- */
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(245,240,232,.2); border-radius:2px; }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    RESPONSIVE
-───────────────────────────────────────────── */
+--------------------------------------------- */
 @media(max-width:400px) {
   .hdr-title { font-size:1rem; }
   .tab-btn { padding:.38rem .7rem; font-size:.7rem; }
 }
 
-/* ── Lisibilité — éléments directs sur fond vert body ── */
+/* -- Lisibilité — éléments directs sur fond vert body -- */
 .map-legend .legend-item,
 .map-legend .legend-dot + span,
 .section > .map-legend,
@@ -661,9 +661,9 @@ header {
   color: rgba(245,240,232,.85);
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    QUÊTES WITCH 2.0 — Sorcières des haies
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 /* Card witch : cadre distinctif */
 .witch-card {
@@ -740,9 +740,9 @@ header {
 }
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    COMPOSANTS GÉNÉRAUX CARNET
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 /* Boutons */
 .btn {
@@ -793,7 +793,7 @@ header {
   filter: grayscale(.5);
 }
 
-/* ══ ZONES ══ */
+/* == ZONES == */
 .zone-card {
   padding: .9rem 1rem;
   cursor: pointer;
@@ -845,7 +845,7 @@ header {
   transition: width .4s ease;
 }
 
-/* ══ QUÊTES — éléments internes ══ */
+/* == QUÊTES — éléments internes == */
 .quest-card {
   margin-bottom: .6rem;
 }
@@ -906,7 +906,7 @@ header {
   font-style: italic;
 }
 
-/* ══ JOURNAL ══ */
+/* == JOURNAL == */
 .journal-entry {
   position: relative;
   background: rgba(245,240,232,.03);
@@ -962,9 +962,9 @@ header {
   opacity: .85;
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    CARNET — Mobile ≤ 640px
-═══════════════════════════════════════════ */
+=========================================== */
 @media (max-width: 640px) {
 
   /* Carnet page = aussi une PWA page → pas de top nav */
@@ -1013,9 +1013,9 @@ header {
   .tab-btn { font-size: .6rem; padding: .35rem .6rem; }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    CYCLE DES SAISONS
-═══════════════════════════════════════════════ */
+=============================================== */
 .cycle-saisons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1075,7 +1075,7 @@ header {
   .cycle-saisons { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* ── Bouton export agent ── */
+/* -- Bouton export agent -- */
 .export-agent-btn {
   background: rgba(154,191,106,.12);
   border: 1px solid rgba(154,191,106,.3);
@@ -1092,7 +1092,7 @@ header {
 }
 .export-agent-btn:hover { background: rgba(154,191,106,.22); }
 
-/* ── Panel Observer ── */
+/* -- Panel Observer -- */
 .obs-details-wrap { margin-top: .75rem; }
 .obs-details-wrap summary { list-style: none; }
 .obs-details-wrap .add-form {
@@ -1136,9 +1136,9 @@ header {
   min-width: 120px;
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    PANEL OBSERVER — Formulaire quick 3 taps
-═══════════════════════════════════════════════ */
+=============================================== */
 
 .quick-obs {
   display: flex;
@@ -1315,7 +1315,7 @@ header {
   border-bottom: 1px solid rgba(154,191,106,.2);
 }
 
-/* ── Spots grid (sous la carte) ── */
+/* -- Spots grid (sous la carte) -- */
 .spots-grid {
   display: flex;
   flex-direction: column;
@@ -1376,9 +1376,9 @@ header {
   padding-top: .4rem;
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    6BL — BRIEFING TERRAIN
-═══════════════════════════════════════════════ */
+=============================================== */
 
 .sbl-welcome {
   text-align: center;
@@ -1425,7 +1425,7 @@ header {
   font-style: italic;
 }
 
-/* ── Briefing layout ── */
+/* -- Briefing layout -- */
 .sbl-brief {
   font-size: 0.88rem;
   line-height: 1.45;
@@ -1445,7 +1445,7 @@ header {
 .sbl-title  { font-size: 1.8rem; font-weight: 900; color: rgba(200,164,48,0.9); text-align: right; }
 .sbl-subtitle { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mud-light); text-align: right; }
 
-/* ── Alertes ── */
+/* -- Alertes -- */
 .sbl-alertes { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.8rem; }
 .sbl-alerte {
   display: flex; gap: 0.6rem; align-items: flex-start;
@@ -1458,7 +1458,7 @@ header {
 .sbl-al-titre { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(200,164,48,0.8); margin-bottom: 0.1rem; }
 .sbl-alerte p { font-size: 0.85rem; margin: 0; }
 
-/* ── Grille de cards ── */
+/* -- Grille de cards -- */
 .sbl-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1486,7 +1486,7 @@ header {
 .sbl-card-obs  { grid-column: 1 / -1; }
 .sbl-card-stocks { grid-column: 1 / -1; }
 
-/* ── Météo ── */
+/* -- Météo -- */
 .sbl-meteo-now { margin-bottom: 0.5rem; }
 .sbl-temp { font-size: 1.6rem; font-weight: 700; color: var(--cream, #f0e8d4); }
 .sbl-vent { font-size: 0.82rem; color: var(--mud-light); display: block; margin-top: 0.1rem; }
@@ -1497,7 +1497,7 @@ header {
 .sbl-prev-pluie, .sbl-prev-vent { font-size: 0.75rem; color: var(--mud-light); }
 .sbl-vent-alert { color: #e87a5a !important; font-weight: 700; }
 
-/* ── Astro ── */
+/* -- Astro -- */
 .sbl-astro { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.3rem; margin-bottom: 0.4rem; }
 .sbl-astro > div { text-align: center; }
 .sbl-a-val { display: block; font-family: monospace; font-size: 0.9rem; color: var(--cream); }
@@ -1505,13 +1505,13 @@ header {
 .sbl-lune  { font-size: 0.82rem; text-align: center; color: var(--mud-light); margin-bottom: 0.3rem; }
 .sbl-marees { display: flex; gap: 0.8rem; font-size: 0.8rem; justify-content: center; color: #7ba3b8; }
 
-/* ── Objectif ── */
+/* -- Objectif -- */
 .sbl-objectif { display: flex; align-items: center; gap: 0.8rem; }
 .sbl-obj-dist { font-size: 1.4rem; font-weight: 700; color: rgba(200,164,48,0.9); flex-shrink: 0; }
 .sbl-obj-nom  { font-size: 0.88rem; font-weight: 600; color: var(--cream); }
 .sbl-obj-coords { font-family: monospace; font-size: 0.75rem; color: var(--mud-light); margin-top: 0.1rem; }
 
-/* ── Kommoda ── */
+/* -- Kommoda -- */
 .sbl-kom-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 0.4rem; }
 .sbl-kom-val  { text-align: center; background: rgba(0,0,0,0.15); border-radius: 4px; padding: 0.4rem; }
 .sbl-kom-n    { display: block; font-family: monospace; font-size: 1.1rem; color: var(--cream); }
@@ -1521,7 +1521,7 @@ header {
 .sbl-warn .sbl-kom-n { color: #c8a430; }
 .sbl-crit .sbl-kom-n { color: #c44a2a; }
 
-/* ── Décisions ── */
+/* -- Décisions -- */
 .sbl-decisions { display: flex; flex-direction: column; gap: 0.35rem; }
 .sbl-dec {
   display: flex; gap: 0.6rem; align-items: flex-start;
@@ -1534,7 +1534,7 @@ header {
 .sbl-dec-info { border-color: #7ba3b8; background: rgba(123,163,184,0.08); }
 .sbl-dec-icon { font-size: 1rem; flex-shrink: 0; }
 
-/* ── Stocks ── */
+/* -- Stocks -- */
 .sbl-stock-global {
   margin-left: auto; font-size: 0.78rem; font-weight: 700;
   padding: 0.1rem 0.5rem; border-radius: 3px;
@@ -1553,7 +1553,7 @@ header {
 .sbl-stock-pct { font-family: monospace; font-size: 0.75rem; color: var(--mud-light); text-align: right; }
 .sbl-soudure { font-size: 0.8rem; color: #c8a430; text-align: center; margin-top: 0.4rem; padding: 0.3rem; background: rgba(200,164,48,0.08); border-radius: 4px; }
 
-/* ── Observations ── */
+/* -- Observations -- */
 .sbl-obs-list { display: flex; flex-direction: column; gap: 0.3rem; }
 .sbl-obs { display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.35rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.02); }
 .sbl-obs-saison { background: rgba(74,103,65,0.1); border-left: 2px solid #4a6741; }
@@ -1561,14 +1561,14 @@ header {
 .sbl-obs-meta { font-size: 0.72rem; color: var(--mud-light); }
 .sbl-offline  { color: var(--mud-light); font-style: italic; font-size: 0.85rem; }
 
-/* ── Footer ── */
+/* -- Footer -- */
 .sbl-footer {
   text-align: center; font-size: 0.7rem; color: var(--mud-light);
   margin-top: 0.8rem; padding-top: 0.5rem;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
 
-/* ── PRINT A4 ── */
+/* -- PRINT A4 -- */
 @media print {
   @page { margin: 10mm; size: A4 portrait; }
 
@@ -1659,9 +1659,9 @@ header {
   * { animation: none !important; }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    KOMMODA 3
-═══════════════════════════════════════════════ */
+=============================================== */
 .kommoda-form {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
@@ -1771,4 +1771,99 @@ header {
 @media (max-width: 400px) {
   .hdr-title small { display: none; }
   .xp-bar { max-width: 80px; }
+}
+
+/* -- Plan journée matin/après-midi -- */
+.sbl-plan-journee {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.sbl-créneau {
+  background: rgba(255,255,255,.04);
+  border-radius: 6px;
+  padding: .6rem .8rem;
+  border-left: 3px solid rgba(200,164,48,.4);
+}
+.sbl-créneau-titre {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent, #c8a430);
+  margin-bottom: .3rem;
+}
+.sbl-créneau-meteo {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .4rem;
+}
+.sbl-créneau-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+.sbl-tag {
+  font-size: .72rem;
+  padding: .2rem .5rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.sbl-tag:first-child {
+  font-weight: 700;
+}
+.sbl-créneau-note {
+  margin-top: .4rem;
+  font-size: .8rem;
+  color: var(--mud-light, #9a8a70);
+  font-style: italic;
+}
+.sbl-card-plan {
+  border-left: 3px solid rgba(200,164,48,.5);
+}
+
+/* -- Zones compactes dans onglet Quêtes -- */
+.zones-grid-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-bottom: .8rem;
+  padding: .5rem 0;
+}
+.zone-chip {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--zone-color, #4a7035);
+  border-radius: 20px;
+  padding: .25rem .55rem;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  min-width: 52px;
+}
+.zone-chip:hover { background: rgba(255,255,255,.12); transform: scale(1.05); }
+.zone-chip.locked { opacity: .35; cursor: default; filter: grayscale(1); }
+.zone-chip-num {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--zone-color, #4a7035);
+  min-width: 1rem;
+  text-align: center;
+}
+.zone-chip-bar {
+  width: 28px;
+  height: 4px;
+  background: rgba(255,255,255,.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.zone-chip-fill {
+  height: 100%;
+  background: var(--zone-color, #4a7035);
+  border-radius: 2px;
+}
+.zone-chip-pct {
+  font-size: .65rem;
+  color: var(--mud-light, #9a8a70);
 }
