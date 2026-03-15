@@ -228,10 +228,19 @@ const SBL = (() => {
   function getGPS() {
     return new Promise(resolve => {
       if (!navigator.geolocation) { resolve(null); return; }
+
+      // Tentative 1 : position récente (< 5 min) acceptée — rapide
       navigator.geolocation.getCurrentPosition(
         p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, precision_m: Math.round(p.coords.accuracy) }),
-        () => resolve(null),
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        () => {
+          // Tentative 2 : basse précision, timeout plus long
+          navigator.geolocation.getCurrentPosition(
+            p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, precision_m: Math.round(p.coords.accuracy) }),
+            () => resolve(null),
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+          );
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 300000 }
       );
     });
   }
@@ -933,19 +942,10 @@ const SBL = (() => {
     const gps = await getGPS();
 
     // Fallback position — priorité aux observations ajoutées par l'utilisateur
-    // Les waypoints préchargés ont un id entier (1-10), les obs utilisateur ont id = timestamp (grand nombre)
     let lastObs = null;
     if (window.BS) {
       const allObs = BS.getObservations().slice().reverse();
-      // 1. Obs utilisateur = id > 1000000000000 (timestamp ms)
       lastObs = allObs.find(o => o.lat && o.lng && o.id > 1000000000000);
-      // 2. Sinon n'importe quelle obs récente (< 30j)
-      if (!lastObs) {
-        const cutoff = Date.now() - 30 * 86400000;
-        lastObs = allObs.find(o => o.lat && o.lng && new Date(o.timestamp).getTime() > cutoff
-                                   && o.id > 1000000000000);
-      }
-      // 3. Fallback ultime — n'importe quelle obs (y compris préchargées)
       if (!lastObs) lastObs = allObs.find(o => o.lat && o.lng);
     }
 
@@ -955,7 +955,7 @@ const SBL = (() => {
       ? `GPS réel (±${gps.precision_m}m)`
       : lastObs ? `dernier waypoint: ${lastObs.nom} ⚠️` : 'défaut Artemps ⚠️';
 
-    container.innerHTML = '<div class="sbl-loading">⏳ Récupération météo…</div>';
+    container.innerHTML = `<div class="sbl-loading">⏳ Météo pour ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E…</div>`;
 
     // 2. Météo
     const meteo  = await getMeteo(lat, lng);
