@@ -217,6 +217,38 @@
 <!-- == PANEL 6BL == -->
 <div id="panel-sixbl" class="tab-panel">
   <div class="section-title">🌿 6BL — Briefing Terrain</div>
+
+  <!-- Config boucle -->
+  <div class="sbl-config" id="sbl-config">
+    <div class="sbl-config-title">⚙️ Configuration de la boucle</div>
+    <div class="sbl-config-grid">
+      <div class="kommoda-field">
+        <label>📅 Date de départ</label>
+        <div class="kommoda-input-row">
+          <input type="date" id="cfg-depart" class="k-input" style="font-size:.85rem">
+        </div>
+      </div>
+      <div class="kommoda-field">
+        <label>🗺️ Tracé actif</label>
+        <div class="kommoda-input-row">
+          <select id="cfg-trace" class="k-input" style="font-size:.85rem;background:#1e2a18;color:#f0e8d4">
+            <option value="A">Tracé A — Artemps → Lagos</option>
+            <option value="B">Tracé B — Artemps → Hendaye</option>
+          </select>
+        </div>
+      </div>
+      <div class="kommoda-field">
+        <label>🔁 Numéro de boucle</label>
+        <div class="kommoda-input-row">
+          <input type="number" id="cfg-boucle-num" min="1" max="10" value="1" class="k-input">
+          <span class="k-unit">ème</span>
+        </div>
+      </div>
+    </div>
+    <button class="kommoda-save-btn" onclick="saveConfigBoucle()">💾 Enregistrer</button>
+    <div id="cfg-status" style="font-size:.78rem;color:#9a8a70;margin-top:.4rem"></div>
+  </div>
+
   <div id="sbl-container">
     <div class="sbl-welcome">
       <p>Génère le briefing du jour : météo, décisions terrain, stocks, Kommoda.</p>
@@ -241,6 +273,10 @@ if (typeof onMapReady === 'undefined') {
 <script defer src="terrain.js"></script>
 <script defer src="zones.js"></script>
 <script defer src="quetes.js"></script>
+<script defer src="trajet-aller.js"></script>
+<script defer src="trajet-retour.js"></script>
+<script defer src="trajet-b.js"></script>
+<script defer src="trajet-inter.js"></script>
 <script defer src="6bl.js"></script>
 <script defer src="carnet.js"></script>
 </body>
