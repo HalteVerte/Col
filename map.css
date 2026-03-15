@@ -272,15 +272,7 @@
    LEAFLET LAYER CONTROL — Mobile
    Bouton toggle agrandi, panneau repositionné
 =========================================== */
-@media (max-width: 640px) {
-  /* Bouton toggle calques — plus grand, touch-friendly */
 
-  /* Panneau calques — compact, lisible */
-
-  /* Éviter que le panneau bottomright touche la bottom nav */
-
-  /* Zoom buttons — agrandis */
-}
 
 /* ===============================================
    FORMULAIRE RAPIDE 3 TAPS

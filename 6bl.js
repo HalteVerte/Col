@@ -164,9 +164,8 @@ const SBL = (() => {
     // 2. Fetch frais
     try {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current_weather=true&daily=precipitation_sum,windspeed_10m_max,temperature_2m_max,temperature_2m_min,weathercode&hourly=temperature_2m,windspeed_10m,precipitation,weathercode&timezone=auto&forecast_days=2`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
-      const r = await fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000));
+      const r = await Promise.race([fetch(url), timeout]);
       if (!r.ok) throw new Error('http ' + r.status);
       const d  = await r.json();
       const cw = d.current_weather;
@@ -677,10 +676,10 @@ const SBL = (() => {
       if (cr.pluieTot > 0) icones.push(`🌧 ${cr.pluieTot}mm`);
       if (cr.fenetreDebut !== null) icones.push(`✓ Fenêtre sèche ${cr.fenetreDebut}h–${cr.fenetreFin+1}h`);
 
-      return `<div class="sbl-créneau">
-        <div class="sbl-créneau-titre">${label}</div>
-        <div class="sbl-créneau-meteo">${cr.meteoLabel} · ${cr.tempMoy}°C</div>
-        <div class="sbl-créneau-tags">${icones.map(i => `<span class="sbl-tag">${i}</span>`).join('')}</div>
+      return `<div class="sbl-creneau">
+        <div class="sbl-creneau-titre">${label}</div>
+        <div class="sbl-creneau-meteo">${cr.meteoLabel} · ${cr.tempMoy}°C</div>
+        <div class="sbl-creneau-tags">${icones.map(i => `<span class="sbl-tag">${i}</span>`).join('')}</div>
       </div>`;
     }
 
@@ -688,7 +687,7 @@ const SBL = (() => {
     function conseilBatterie(cr) {
       if (!cr || cr.ventMoy <= 25) return '';
       const surcoût = cr.ventMoy > 40 ? 30 : cr.ventMoy > 30 ? 15 : 5;
-      return `<div class="sbl-créneau-note">⚡ Vent ${cr.ventMoy}km/h → surconsommation batterie estimée +${surcoût}%</div>`;
+      return `<div class="sbl-creneau-note">⚡ Vent ${cr.ventMoy}km/h → surconsommation batterie estimée +${surcoût}%</div>`;
     }
 
     // Conseil cueillette/pêche
@@ -698,7 +697,7 @@ const SBL = (() => {
       if (!obs.length) return '';
       const meilleur = obs[0];
       if (cr.pluieTot === 0 && cr.ventMoy < 25) {
-        return `<div class="sbl-créneau-note">🌿 ${label} — fenêtre favorable pour ${meilleur.nom.split('—')[0].trim()} (${meilleur.dist_km}km)</div>`;
+        return `<div class="sbl-creneau-note">🌿 ${label} — fenêtre favorable pour ${meilleur.nom.split('—')[0].trim()} (${meilleur.dist_km}km)</div>`;
       }
       return '';
     }

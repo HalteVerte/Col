@@ -1415,25 +1415,25 @@ header {
   flex-direction: column;
   gap: .6rem;
 }
-.sbl-créneau {
+.sbl-creneau {
   background: rgba(255,255,255,.04);
   border-radius: 6px;
   padding: .6rem .8rem;
   border-left: 3px solid rgba(200,164,48,.4);
 }
-.sbl-créneau-titre {
+.sbl-creneau-titre {
   font-size: .75rem;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--accent, #c8a430);
   margin-bottom: .3rem;
 }
-.sbl-créneau-meteo {
+.sbl-creneau-meteo {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: .4rem;
 }
-.sbl-créneau-tags {
+.sbl-creneau-tags {
   display: flex;
   flex-wrap: wrap;
   gap: .3rem;
@@ -1448,7 +1448,7 @@ header {
 .sbl-tag:first-child {
   font-weight: 700;
 }
-.sbl-créneau-note {
+.sbl-creneau-note {
   margin-top: .4rem;
   font-size: .8rem;
   color: var(--mud-light, #9a8a70);
