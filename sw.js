@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ====================================================== */
 
-const CACHE_APP   = 'boucle-app-v84';
+const CACHE_APP   = 'boucle-app-v85';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -390,6 +390,12 @@ self.addEventListener('fetch', event => {
 
   // PMTiles — laisser passer directement (Range requests nécessaires)
   if (url.pathname.endsWith('.pmtiles')) return;
+
+  // APIs externes — laisser passer directement sans cache
+  if (url.hostname.includes('open-meteo.com')
+   || url.hostname.includes('fonts.googleapis.com')
+   || url.hostname.includes('fonts.gstatic.com')
+   || url.hostname.includes('unpkg.com')) return;
 
   // Tuiles OSM raster — laisser passer directement (CORS, pas de cache opaque)
   if (url.hostname.includes('tile.openstreetmap.org')
