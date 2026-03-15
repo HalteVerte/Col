@@ -14,28 +14,7 @@
   display: flex; flex-wrap: wrap; gap: 0.5rem;
   margin-bottom: 1.2rem;
 }
-.legend-item {
-  display: flex; align-items: center; gap: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--mud-light);
-}
-.legend-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
 
-.toolbar {
-  display: flex; gap: 0.5rem; flex-wrap: wrap;
-  margin-bottom: 1rem;
-  padding: .6rem .8rem;
-  background: var(--paper2);
-  border-radius: var(--radius);
-  border: 1px solid rgba(122,92,58,.15);
-}
 .btn {
   display: inline-flex; align-items: center; gap: 0.4rem;
   border: none; cursor: pointer; border-radius: var(--radius);
@@ -106,7 +85,6 @@
   opacity: 0; transition: opacity .15s;
 }
 .point-card:hover .pt-delete { opacity: 1; }
-
 
 /* ======================================================
    TRAJET COMPLET — Phases & Étapes
@@ -215,7 +193,6 @@
   border-bottom: 1px dashed rgba(154,191,106,.07);
 }
 .tc-etape:last-child { border-bottom: none; }
-.tc-etape-final { background: rgba(200,136,42,.06); border-radius: 4px; padding: .5rem .7rem; }
 .tc-etape-head {
   display: flex; align-items: baseline; gap: .5rem;
   margin-bottom: .3rem;
@@ -244,17 +221,8 @@
   border-radius: 2rem; border: 1px solid rgba(154,191,106,.1);
   background: rgba(154,191,106,.05); color: rgba(154,191,106,.7);
 }
-.tc-res-top { background: rgba(200,136,42,.18); border-color: var(--mud-light); color: var(--ochre); }
-.tc-res-mid { background: rgba(74,112,53,.18); border-color: rgba(74,112,53,.3); color: #9abf6a; }
-.tc-res-base { color: rgba(154,191,106,.55); }
 
 /* Stocks note */
-.tc-stocks-note {
-  font-family: var(--font-mono); font-size: .65rem;
-  letter-spacing: .07em; color: rgba(154,191,106,.85);
-  background: rgba(0,0,0,.18); border: 1px solid rgba(154,191,106,.1);
-  border-radius: 2px; padding: .3rem .7rem; margin-bottom: .7rem;
-}
 
 /* ===========================================
    MAP — Mobile
@@ -266,7 +234,6 @@
     padding: .5rem .85rem;
     flex-wrap: wrap;
   }
-  .legend-dot { width: 9px; height: 9px; }
 
   .point-card {
     font-size: .78rem;
@@ -299,9 +266,7 @@
 }
 
 /* Containment Leaflet — empêche les contrôles de déborder hors de la section */
-.leaflet-container { z-index: 1; }
 .leaflet-control-container .leaflet-top,
-.leaflet-control-container .leaflet-bottom { z-index: 999; }
 
 /* ===========================================
    LEAFLET LAYER CONTROL — Mobile
@@ -309,32 +274,12 @@
 =========================================== */
 @media (max-width: 640px) {
   /* Bouton toggle calques — plus grand, touch-friendly */
-  .leaflet-control-layers-toggle {
-    width: 40px !important;
-    height: 40px !important;
-    background-size: 22px !important;
-  }
 
   /* Panneau calques — compact, lisible */
-  .leaflet-control-layers {
-    font-size: .78rem !important;
-    max-width: 180px !important;
-    max-height: calc(100svh - 160px) !important;
-    overflow-y: auto !important;
-  }
 
   /* Éviter que le panneau bottomright touche la bottom nav */
-  .leaflet-bottom.leaflet-right {
-    margin-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
-  }
 
   /* Zoom buttons — agrandis */
-  .leaflet-control-zoom a {
-    width: 36px !important;
-    height: 36px !important;
-    line-height: 36px !important;
-    font-size: 1.1rem !important;
-  }
 }
 
 /* ===============================================
@@ -504,23 +449,3 @@
 }
 
 /* -- CTA Observer (index.html) -- */
-.observe-cta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin: .75rem 0 .5rem;
-}
-.observe-link {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  min-height: 48px;
-}
-.observe-hint {
-  font-family: var(--font-mono);
-  font-size: .72rem;
-  color: var(--mud);
-  font-style: italic;
-}

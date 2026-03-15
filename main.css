@@ -105,7 +105,6 @@ body:not(.carnet-page) header {
 }
 .badge-year { background: var(--ochre); color: #1a0e00; }
 .badge-online { background: var(--moss); color: #c8f0b0; }
-.badge-offline { background: var(--rust); color: #ffe0d0; }
 
 /* ======================================================
    NAV TABS
@@ -179,14 +178,6 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 /* ======================================================
    CARDS — base
 ====================================================== */
-.card {
-  background: var(--cream);
-  border: 1px solid rgba(122,92,58,.22);
-  border-radius: var(--radius);
-  box-shadow: 2px 2px 0 rgba(122,92,58,.08), 0 1px 6px var(--shadow);
-  overflow: hidden;
-}
-.card:hover { box-shadow: 2px 2px 0 rgba(122,92,58,.12), 0 4px 14px var(--shadow); }
 
 /* ======================================================
    ACCUEIL / SYNOPSIS
@@ -591,36 +582,7 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 /* ======================================================
    ABOUT
 ====================================================== */
-.about-card {
-  background: var(--cream);
-  border: 1px solid rgba(122,92,58,.2);
-  border-radius: var(--radius);
-  padding: 2rem;
-  max-width: 680px;
-  box-shadow: 3px 3px 0 rgba(122,92,58,.12);
-}
-.about-card h2 { font-family: var(--font-h); font-size: 1.35rem; color: var(--forest); margin-bottom: 0.8rem; }
-.about-card p { font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--ink-light); line-height: 1.85; }
-.about-card code {
-  font-family: var(--font-mono);
-  background: var(--paper2);
-  padding: 1px 5px;
-  border-radius: 2px;
-  font-size: 0.82rem;
-  color: var(--forest);
-}
-.install-btn {
-  display: none; align-items: center; gap: 0.5rem;
-  background: var(--ochre); color: #1a0800;
-  border: none; border-radius: var(--radius);
-  padding: 0.65rem 1.3rem;
-  font-family: var(--font-mono); font-size: 0.75rem;
-  cursor: pointer; margin-top: 1.2rem;
-  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  box-shadow: 2px 2px 0 rgba(122,92,58,.3);
-}
 .install-btn.visible { display: flex; }
-.install-btn:hover { background: #d9962e; }
 
 /* ======================================================
    DIVIDER
@@ -705,7 +667,6 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   .add-form { padding: 1rem; }
 
   /* Toolbar carte */
-  .toolbar { display: flex; gap: .4rem; flex-wrap: wrap; }
   .toolbar .btn { font-size: .7rem; padding: .35rem .6rem; }
 }
 
@@ -858,12 +819,6 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 .ar-field:focus {
   outline: none;
   border-color: #c8a430;
-}
-.ar-emoji-field {
-  width: 3.5rem;
-  text-align: center;
-  font-size: 1.4rem;
-  padding: .2rem;
 }
 select.ar-field option { background: #1e2a18; color: #f0e8d4; }
 
