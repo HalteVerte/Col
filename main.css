@@ -976,3 +976,32 @@ select.ar-field option { background: #1e2a18; color: #f0e8d4; }
 .tb-biv   { font-size: .75rem; color: #7ab5bf; margin-bottom: .2rem; }
 .tb-warn  { font-size: .75rem; color: #c8882a; margin-top: .2rem; }
 .tb-prot  { font-size: .75rem; color: #7a9abf; margin-top: .2rem; }
+
+/* Header status — position + datetime + réseau */
+.hdr-status {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--font-mono, 'Courier Prime', monospace);
+  font-size: .72rem;
+}
+.hdr-pos {
+  color: var(--cream, #f0e8d4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+.hdr-datetime {
+  color: var(--mud-light, #9a8a70);
+  white-space: nowrap;
+}
+.hdr-net {
+  font-size: .6rem;
+  color: #7abf5a;
+  flex-shrink: 0;
+}
+@media (max-width: 380px) {
+  .hdr-pos { max-width: 90px; }
+  .hdr-datetime { display: none; }
+}

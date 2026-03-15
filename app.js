@@ -6,7 +6,67 @@
    PWA — Service Worker & Installation
 ====================================================== */
 let interMarkeurs = [];
-// Enregistrement du Service Worker
+
+/* ======================================================
+   HEADER — Position + Date/Heure + Réseau
+====================================================== */
+function updateHdrDatetime() {
+  const el = document.getElementById('hdrDatetime');
+  if (!el) return;
+  const now = new Date();
+  const jours = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const j = jours[now.getDay()];
+  const d = now.getDate().toString().padStart(2,'0');
+  const m = (now.getMonth()+1).toString().padStart(2,'0');
+  const h = now.getHours().toString().padStart(2,'0');
+  const min = now.getMinutes().toString().padStart(2,'0');
+  el.textContent = `${j} ${d}/${m} ${h}:${min}`;
+}
+
+function updateHdrPos() {
+  const el = document.getElementById('hdrPos');
+  if (!el) return;
+  // Utiliser le dernier waypoint de BS si disponible
+  if (window.BS) {
+    const obs = BS.getObservations().slice().reverse().find(o => o.lat && o.lng);
+    if (obs) {
+      const nom = obs.nom ? obs.nom.split('—')[0].split('(')[0].trim() : null;
+      el.textContent = nom ? `📍 ${nom}` : `📍 ${obs.lat.toFixed(2)}°N ${obs.lng.toFixed(2)}°E`;
+      return;
+    }
+  }
+  el.textContent = '📍 Artemps';
+}
+
+function updateHdrNet() {
+  const el = document.getElementById('netBadge');
+  if (!el) return;
+  const online = navigator.onLine;
+  el.textContent = '⬤';
+  el.style.color = online ? '#7abf5a' : '#c87820';
+  el.title = online ? 'En ligne' : 'Hors ligne';
+}
+
+function initHdrStatus() {
+  updateHdrDatetime();
+  updateHdrPos();
+  updateHdrNet();
+  // Mise à jour heure chaque minute
+  setInterval(updateHdrDatetime, 60000);
+  // Position : se rafraîchit si BS est prêt
+  if (!window.BS) {
+    const t = setInterval(() => {
+      if (window.BS) { updateHdrPos(); clearInterval(t); }
+    }, 200);
+  }
+  // Réseau
+  window.addEventListener('online',  updateHdrNet);
+  window.addEventListener('offline', updateHdrNet);
+}
+
+document.addEventListener('DOMContentLoaded', initHdrStatus);
+
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
