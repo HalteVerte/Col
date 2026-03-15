@@ -164,7 +164,9 @@ const SBL = (() => {
     // 2. Fetch frais
     try {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current_weather=true&daily=precipitation_sum,windspeed_10m_max,temperature_2m_max,temperature_2m_min,weathercode&hourly=temperature_2m,windspeed_10m,precipitation,weathercode&timezone=auto&forecast_days=2`;
-      const r = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      const r = await fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
       if (!r.ok) throw new Error('http ' + r.status);
       const d  = await r.json();
       const cw = d.current_weather;
@@ -930,15 +932,20 @@ const SBL = (() => {
     // 1. GPS
     const gps = await getGPS();
 
-    // Fallback position — priorité aux observations récentes de l'utilisateur
-    // (pas les waypoints préchargés de waypoints.json qui ont tous le même timestamp)
+    // Fallback position — priorité aux observations ajoutées par l'utilisateur
+    // Les waypoints préchargés ont un id entier (1-10), les obs utilisateur ont id = timestamp (grand nombre)
     let lastObs = null;
     if (window.BS) {
       const allObs = BS.getObservations().slice().reverse();
-      // 1. Obs ajoutée manuellement récemment (< 30 jours)
-      const cutoff = Date.now() - 30 * 86400000;
-      lastObs = allObs.find(o => o.lat && o.lng && new Date(o.timestamp).getTime() > cutoff);
-      // 2. N'importe quelle obs si rien de récent
+      // 1. Obs utilisateur = id > 1000000000000 (timestamp ms)
+      lastObs = allObs.find(o => o.lat && o.lng && o.id > 1000000000000);
+      // 2. Sinon n'importe quelle obs récente (< 30j)
+      if (!lastObs) {
+        const cutoff = Date.now() - 30 * 86400000;
+        lastObs = allObs.find(o => o.lat && o.lng && new Date(o.timestamp).getTime() > cutoff
+                                   && o.id > 1000000000000);
+      }
+      // 3. Fallback ultime — n'importe quelle obs (y compris préchargées)
       if (!lastObs) lastObs = allObs.find(o => o.lat && o.lng);
     }
 
