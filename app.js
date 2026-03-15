@@ -153,8 +153,9 @@ function renderRecipes() {
       : _allRecipes.filter(r => r.cat && r.cat.includes(currentFilter));
     grid.innerHTML = list.map((r, idx) => {
       const isUser = r.source === 'utilisateur';
+      const rid = r.id || idx;
       return `
-      <div class="recipe-card${isUser ? ' recipe-user' : ''}" onclick="openRecipe(${idx})">
+      <div class="recipe-card${isUser ? ' recipe-user' : ''}" onclick="openRecipeById('${rid}')">
         <div class="recipe-stripe" style="background:${r.color || '#4a7035'}"></div>
         <div class="recipe-body">
           <span class="recipe-emoji">${r.emoji || '🌿'}</span>
@@ -183,7 +184,22 @@ function openRecipe(i) {
   loadRecipes().then(() => {
     const r = _allRecipes[i];
     if (!r) return;
-    const isUser = r.source === 'utilisateur';
+    _openRecipeObj(r);
+  });
+}
+
+function openRecipeById(id) {
+  loadRecipes().then(() => {
+    const r = _allRecipes.find(x => String(x.id) === String(id))
+           || _allRecipes[parseInt(id)];
+    if (!r) return;
+    _openRecipeObj(r);
+  });
+}
+
+function _openRecipeObj(r) {
+  if (!r) return;
+  const isUser = r.source === 'utilisateur';
     document.getElementById('modalBody').innerHTML = `
       <div style="height:4px;background:${r.color || '#4a7035'};border-radius:2px;margin-bottom:1.2rem"></div>
       <h2>${r.emoji || '🌿'} ${r.name}</h2>
@@ -198,7 +214,6 @@ function openRecipe(i) {
       ${isUser ? `<button onclick="deleteUserRecipe('${r.id}')" style="margin-top:1rem;padding:.5rem 1rem;background:#9e3f20;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit">🗑 Supprimer</button>` : ''}
     `;
     document.getElementById('recipeModal').classList.add('open');
-  });
 }
 
 function deleteUserRecipe(id) {
@@ -290,6 +305,74 @@ function closeModal() { document.getElementById('recipeModal').classList.remove(
 /* ======================================================
    BOUCLE — onglets aller / retour / inter
 ====================================================== */
+/* ======================================================
+   BASCULE TRACÉ A / TRACÉ B
+====================================================== */
+let tracéActif = 'A';
+
+function switchTracé(t) {
+  tracéActif = t;
+  const btnA = document.getElementById('btn-trajet-a');
+  const btnB = document.getElementById('btn-trajet-b');
+  const panelB = document.getElementById('panel-trajet-b');
+  const tcControls = document.querySelector('.tc-controls');
+  const tcStatsA = document.querySelector('#boucle-aller .tc-stats-row:not(#tbStats)');
+  const tcMapEl = document.getElementById('tcMap');
+  const tcListEl = document.getElementById('tcList');
+
+  if (t === 'A') {
+    btnA.classList.add('active'); btnB.classList.remove('active');
+    if (panelB) panelB.style.display = 'none';
+    if (tcControls) tcControls.style.display = '';
+    if (tcStatsA) tcStatsA.style.display = '';
+    if (tcMapEl) tcMapEl.style.display = '';
+    if (tcListEl) tcListEl.style.display = '';
+    renderTrajComplet();
+  } else {
+    btnB.classList.add('active'); btnA.classList.remove('active');
+    if (panelB) panelB.style.display = '';
+    if (tcControls) tcControls.style.display = 'none';
+    if (tcStatsA) tcStatsA.style.display = 'none';
+    if (tcMapEl) tcMapEl.style.display = 'none';
+    if (tcListEl) tcListEl.style.display = 'none';
+    renderTrajB();
+  }
+}
+
+function renderTrajB() {
+  const tb = window.TRAJET_B;
+  if (!tb) return;
+  const el = document.getElementById('tbList');
+  if (!el) return;
+
+  el.innerHTML = tb.phases.map(phase => {
+    const etapesHTML = phase.etapes.map(e => `
+      <div class="tb-etape">
+        <div class="tb-etape-header">
+          <span class="tb-etape-nom">${e.nom}</span>
+          <span class="tb-etape-km">${e.km}</span>
+        </div>
+        <div class="tb-voies">${(e.voies||[]).map(v => `<span class="tb-voie-tag">${v}</span>`).join('')}</div>
+        <div class="tb-note">${e.note}</div>
+        <div class="tb-cueil">🌿 ${(e.cueil||[]).join(' · ')}</div>
+        <div class="tb-biv">🏕️ ${e.biv}</div>
+        ${e.warn ? `<div class="tb-warn">⚠️ ${e.warn}</div>` : ''}
+        ${e.prot ? `<div class="tb-prot">🦪 ${e.prot.join(' · ')}</div>` : ''}
+      </div>`).join('');
+
+    return `
+      <div class="tb-phase">
+        <div class="tb-phase-header" style="border-left:4px solid ${phase.color}">
+          <span class="tb-phase-num">Phase ${phase.num}</span>
+          <span class="tb-phase-label">${phase.label}</span>
+          <span class="tb-phase-meta">${phase.mois} · ${phase.km} · ${phase.jours}</span>
+        </div>
+        ${phase.note_bifurcation ? `<div class="tb-bifurcation-note">🔀 ${phase.note_bifurcation}</div>` : ''}
+        <div class="tb-etapes">${etapesHTML}</div>
+      </div>`;
+  }).join('');
+}
+
 function switchBoucle(which) {
   const panels = {
     aller:  document.getElementById('boucle-aller'),
@@ -339,10 +422,7 @@ function makeMlMap(containerId, center, zoom) {
 }
 
 // Déclenche cb immédiatement si la carte est déjà chargée, sinon attend load
-function onMapReady(map, cb) {
-  if (map.isStyleLoaded()) cb();
-  else map.on('load', cb);
-}
+// onMapReady défini dans map-style.js
 
 function addGpxLine(map, coords, color, sourceId) {
   if (!coords || !coords.length) return;

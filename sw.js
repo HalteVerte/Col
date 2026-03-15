@@ -3,7 +3,7 @@
    v5 — Précache tuiles zoom 5-8 + fallback offline
 ====================================================== */
 
-const CACHE_APP   = 'boucle-app-v67';
+const CACHE_APP   = 'boucle-app-v74';
 const CACHE_TILES = 'boucle-tiles-v2';
 const TILES_MAX   = 3000;  // limite LRU du cache tuiles
 
@@ -436,4 +436,15 @@ self.addEventListener('message', event => {
       if (event.ports[0]) event.ports[0].postMessage('tiles cleared');
     });
   }
+});
+
+// -- Notifications push ------------------------------------------
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then(list => {
+      if (list.length > 0) return list[0].focus();
+      return clients.openWindow('/Col/');
+    })
+  );
 });
