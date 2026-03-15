@@ -88,7 +88,7 @@ window.ZONES_RPG = [
     stocks:["Caroube","Algues Laminaria séchées","Percebes séchés","Asperges sauvages"],
     unlocked:false
   },
-  // ══ RETOUR ══
+  // == RETOUR ==
   {
     id:9, phase:"PHASE R1", pays:"🇵🇹",
     name:"Le Chemin du Retour",
@@ -155,7 +155,7 @@ window.ZONES_RPG = [
     stocks:["Fleurs de sureau","Aster maritime","Orties"],
     unlocked:false
   },
-  // ══ INTER-BOUCLES ══
+  // == INTER-BOUCLES ==
     {
     id:15, phase:"INTER", pays:"🇫🇷",
     name:"L'Inter-Boucles",

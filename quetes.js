@@ -106,7 +106,7 @@ window.QUETES_RPG = [
     lore:"Lagos, mi-janvier. La mi-boucle. C'est le moment de tout mesurer — pas pour se féliciter, mais pour ajuster la 2ème moitié. Ce qui a fonctionné, ce qui a manqué, ce que le corps dit.",
     objectives:["Bilan stocks : inventaire complet des sacoches — qu'est-ce qui manque pour le retour ?","Bilan corps : poids estimé, énergie, cycle hormonal depuis le départ — noter les changements","Bilan vélo : batterie (capacité réelle après 5 mois ?), freins, chaîne, pneus — prévoir pièces","Bilan budget : total dépensé depuis août — recalibrer si nécessaire","Bilan zones retour : identifier les 3 étapes les plus critiques pour les protéines sur les 4 mois à venir"],
     done:false },
-  // ══ RETOUR ══
+  // == RETOUR ==
   { id:29, zone:9, type:"collecte", title:"Les Asperges de l'Alentejo", reward:"+protéines végétales · vitamines printanières",
     lore:"Asparagus aphyllus pousse dans les garrigues d'Alentejo dès février. Fine, tendre, sauvage — rien à voir avec l'asperge cultivée.",
     objectives:["Reconnaître Asparagus aphyllus (tiges fines, buissonnant)","Récolter les jeunes pousses de 10-15cm (avant qu'elles durcissent)","Manger frais ou sécher pour stocks"], done:false },
@@ -152,7 +152,7 @@ window.QUETES_RPG = [
   { id:43, zone:14, type:"survie", title:"Le Retour à Artemps", reward:"🏆 ACCOMPLISSEMENT TOTAL — La Boucle est Bouclée",
     lore:"Les derniers kilomètres sur le Canal de la Somme. Les haies de Picardie en mai : fleurs de sureau, orties en fleurs, fraises des bois. Artemps au bout du chemin. ~10 000 km. La boucle est bouclée.",
     objectives:["Longer le Canal de la Somme depuis Abbeville","Récolter fleurs de sureau (Sambucus nigra — pic mai)","Premières fraises des bois dans les haies","Arriver à Artemps — fermer la boucle"], done:false },
-  // ══ INTER-BOUCLES — Protéines & Iode en continu ══
+  // == INTER-BOUCLES — Protéines & Iode en continu ==
   { id:44, zone:15, type:"terrain", title:"🛤️ Liaison Artemps → Creuse — Champagne & Berry",
     reward:"+axe Champagne connu · asperges · ail des ours · 13 jours",
     lore:"La clé : rester à l'est de 2.8°E pour contourner Paris par l'est. Laon → Reims → Épernay → Troyes → Auxerre → Nevers → Montluçon. Chaque vallée livre sa ressource.",
@@ -183,13 +183,13 @@ window.QUETES_RPG = [
     lore:"Règle fondamentale du nomadisme permanent : jamais à plus de 2 jours d'une côte ou rivière poissonneuse. Iode et protéines animales fraîches ne se stockent que sur 3-4 jours.",
     objectives:["Planifier les étapes en gardant cette contrainte visible sur la carte","En cas d'éloignement forcé : activer la poudre de Laminaria (1g/jour)","Eau douce : prioriser les rivières avec visibilité de fond (eau claire = poissons)"],
     done:false },
-  // ══ QUÊTE JOURNALIÈRE ══
+  // == QUÊTE JOURNALIÈRE ==
   { id:50, zone:0, type:"quotidienne", title:"⚡ Borne du Jour — Recharge Gratuite",
     reward:"+autonomie électrique · zéro dépense énergie",
     lore:"La contrainte silencieuse de tout le projet : le Cyrusher Kommoda 3 doit être rechargé. Chaque jour sans borne est un jour de range anxiety. Chaque borne trouvée gratuitement est une victoire.",
     objectives:["Identifier la prochaine borne gratuite sur l'itinéraire (OpenStreetMap, PlugShare, demande directe)","Types prioritaires : bibliothèques, mairies, offices de tourisme, aires camping-car, hôtels de ville","En zone rurale : demander directement (boulangerie, bar, ferme) — taux d'acceptation >80%","Documenter la borne dans le journal : lieu + type + remarques pour la prochaine boucle"],
     done:false },
-  // ══ ZONE 16 — ROUE DE L'ANNÉE ══
+  // == ZONE 16 — ROUE DE L'ANNÉE ==
   { id:51, zone:16, type:"witch", title:"🕯️ Imbolc — Le Feu qui Revient",
     reward:"1er-2 février · Galice · Rías Baixas · Première lumière",
     lore:"La Galice en février : l'air sent le varech et le feu de bois. La lumière revient d'un quart d'heure par jour. Les percebes sont au pic sur les rochers battus. Imbolc n'est pas une fête du chaud — c'est une fête du possible.",

@@ -1,6 +1,6 @@
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    DESIGN TOKENS — carnet de terrain
-══════════════════════════════════════════════════════ */
+====================================================== */
 :root {
   --ink:        #1c1408;
   --ink-light:  #3a2d18;
@@ -40,9 +40,9 @@
   --glow:        rgba(154,191,106,.15);
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    BASE
-══════════════════════════════════════════════════════ */
+====================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body:not(.carnet-page) {
@@ -61,9 +61,9 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    HEADER
-══════════════════════════════════════════════════════ */
+====================================================== */
 body:not(.carnet-page) header {
   background: var(--forest);
   color: #9abf6a;
@@ -107,9 +107,9 @@ body:not(.carnet-page) header {
 .badge-online { background: var(--moss); color: #c8f0b0; }
 .badge-offline { background: var(--rust); color: #ffe0d0; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    NAV TABS
-══════════════════════════════════════════════════════ */
+====================================================== */
 body:not(.carnet-page) nav {
   background: var(--paper2);
   border-bottom: 2px solid var(--forest);
@@ -137,17 +137,17 @@ body:not(.carnet-page) nav button {
 body:not(.carnet-page) nav button:hover { color: var(--forest); background: rgba(44,62,26,.06); }
 body:not(.carnet-page) nav button.active { color: var(--forest); border-bottom-color: var(--ochre); background: rgba(44,62,26,.06); }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    LAYOUT
-══════════════════════════════════════════════════════ */
+====================================================== */
 main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 .section { display: none; animation: fadeIn .22s ease; overflow-x: hidden; }
 .section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    PAGE HEADERS
-══════════════════════════════════════════════════════ */
+====================================================== */
 .page-head {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
@@ -176,9 +176,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   font-style: italic;
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    CARDS — base
-══════════════════════════════════════════════════════ */
+====================================================== */
 .card {
   background: var(--cream);
   border: 1px solid rgba(122,92,58,.22);
@@ -188,9 +188,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 }
 .card:hover { box-shadow: 2px 2px 0 rgba(122,92,58,.12), 0 4px 14px var(--shadow); }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    ACCUEIL / SYNOPSIS
-══════════════════════════════════════════════════════ */
+====================================================== */
 .synopsis-hero {
   background: var(--forest);
   color: var(--paper);
@@ -301,9 +301,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 }
 .quote-block .qt-icon { margin-right: 0.3rem; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    SECTIONS ACCORDION
-══════════════════════════════════════════════════════ */
+====================================================== */
 .acc-item {
   margin-bottom: 0.8rem;
   border: 1px solid rgba(122,92,58,.2);
@@ -346,9 +346,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 }
 .acc-item.open .acc-body { display: block; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TABLES
-══════════════════════════════════════════════════════ */
+====================================================== */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -475,9 +475,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 .combo-arrow { color: var(--ochre); font-weight: 700; flex-shrink: 0; }
 .combo-result { color: var(--forest); font-weight: 600; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    RECETTES
-══════════════════════════════════════════════════════ */
+====================================================== */
 .recipes-filter {
   display: flex; flex-wrap: wrap; gap: 0.5rem;
   margin-bottom: 1.5rem;
@@ -550,9 +550,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   color: var(--forest);
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    MODAL
-══════════════════════════════════════════════════════ */
+====================================================== */
 .modal-ov {
   display: none; position: fixed; inset: 0;
   background: rgba(28,20,8,.7);
@@ -588,9 +588,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 .modal .warn { background: rgba(158,63,32,.1); border-left: 3px solid var(--rust); padding: 0.6rem 0.9rem; font-size: 0.82rem; border-radius: 0 var(--radius) var(--radius) 0; margin-top: 1rem; font-style: italic; }
 .modal .ok { background: rgba(74,112,53,.1); border-left: 3px solid var(--fern); padding: 0.6rem 0.9rem; font-size: 0.82rem; border-radius: 0 var(--radius) var(--radius) 0; margin-top: 1rem; font-style: italic; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    ABOUT
-══════════════════════════════════════════════════════ */
+====================================================== */
 .about-card {
   background: var(--cream);
   border: 1px solid rgba(122,92,58,.2);
@@ -622,29 +622,29 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
 .install-btn.visible { display: flex; }
 .install-btn:hover { background: #d9962e; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    DIVIDER
-══════════════════════════════════════════════════════ */
+====================================================== */
 .divider {
   text-align: center; color: var(--mud-light); opacity: .5;
   font-size: 0.75rem; letter-spacing: 0.6em;
   margin: 2rem 0; font-family: var(--font-mono);
 }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    SCROLLBAR
-══════════════════════════════════════════════════════ */
+====================================================== */
 ::-webkit-scrollbar { width: 7px; }
 ::-webkit-scrollbar-track { background: var(--paper); }
 ::-webkit-scrollbar-thumb { background: var(--mud-light); border-radius: 3px; }
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    RESPONSIVE
-══════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════
+====================================================== */
+/* ===========================================
    MOBILE — ≤ 640px
    Bottom navigation bar — pattern app native
-═══════════════════════════════════════════ */
+=========================================== */
 @media (max-width: 640px) {
 
   /* Header compact */
@@ -709,19 +709,19 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   .toolbar .btn { font-size: .7rem; padding: .35rem .6rem; }
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    TRÈS PETIT — ≤ 380px  (SE, Moto G)
-═══════════════════════════════════════════ */
+=========================================== */
 @media (max-width: 380px) {
   body:not(.carnet-page) main { padding: .75rem .65rem calc(68px + env(safe-area-inset-bottom, 0px)); }
   .page-title { font-size: 1.35rem; }
   .bottom-nav-btn span { display: none; } /* icônes seules sur écrans mini */
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    BOTTOM NAV — masquée sur desktop
    Affichée uniquement via @media ≤640px
-═══════════════════════════════════════════ */
+=========================================== */
 .bottom-nav {
   display: none; /* masquée desktop — affichée en mobile via @media */
   position: fixed;
@@ -776,9 +776,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   transform: translateY(-2px) scale(1.1);
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    TERRAIN — Onglets internes
-═══════════════════════════════════════════ */
+=========================================== */
 .terrain-tabs {
   display: flex;
   gap: .4rem;
@@ -807,9 +807,9 @@ main { max-width: 920px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
   .terrain-tab  { font-size: .65rem; padding: .5rem .7rem; flex: 1; text-align: center; }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    RECETTES — ajout utilisateur
-═══════════════════════════════════════════════ */
+=============================================== */
 .recipe-user { opacity: .95; }
 .recipe-user-badge {
   display: inline-block;
@@ -904,3 +904,120 @@ select.ar-field option { background: #1e2a18; color: #f0e8d4; }
   border-radius: 8px;
   display: block;
 }
+
+/* =====================================================
+   BASCULE TRACÉ A / TRACÉ B
+===================================================== */
+.trajet-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+  margin-bottom: 1.5rem;
+}
+.trajet-toggle-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  padding: .8rem 1rem;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: var(--radius, 8px);
+  color: var(--mud-light, #9a8a70);
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+}
+.trajet-toggle-btn:hover { background: rgba(255,255,255,.08); }
+.trajet-toggle-btn.active {
+  background: rgba(74,112,53,.2);
+  border-color: var(--moss, #4a7035);
+  color: var(--cream, #f0e8d4);
+}
+.trajet-toggle-sub {
+  font-size: .72rem;
+  opacity: .7;
+  font-weight: 400;
+}
+
+/* Panel Tracé B */
+.tb-bifurcation {
+  background: rgba(200,164,48,.1);
+  border: 1px solid rgba(200,164,48,.3);
+  border-radius: 6px;
+  padding: .6rem 1rem;
+  font-size: .82rem;
+  color: var(--cream, #f0e8d4);
+  margin-bottom: 1.2rem;
+}
+.tb-phase {
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tb-phase-header {
+  padding: .8rem 1rem;
+  background: rgba(255,255,255,.04);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem .8rem;
+  align-items: baseline;
+}
+.tb-phase-num {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--mud-light, #9a8a70);
+}
+.tb-phase-label {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--cream, #f0e8d4);
+  flex: 1;
+}
+.tb-phase-meta {
+  font-size: .72rem;
+  color: var(--mud-light, #9a8a70);
+}
+.tb-bifurcation-note {
+  padding: .4rem 1rem;
+  font-size: .78rem;
+  background: rgba(45,124,92,.1);
+  color: #7abf9a;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.tb-etapes { padding: .5rem; display: flex; flex-direction: column; gap: .5rem; }
+.tb-etape {
+  background: rgba(255,255,255,.03);
+  border-radius: 6px;
+  padding: .7rem .9rem;
+  border-left: 3px solid rgba(255,255,255,.1);
+}
+.tb-etape-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .5rem;
+  margin-bottom: .4rem;
+  flex-wrap: wrap;
+}
+.tb-etape-nom { font-size: .88rem; font-weight: 600; color: var(--cream, #f0e8d4); }
+.tb-etape-km  { font-size: .72rem; color: var(--mud-light, #9a8a70); white-space: nowrap; }
+.tb-voies { display: flex; flex-wrap: wrap; gap: .25rem; margin-bottom: .4rem; }
+.tb-voie-tag {
+  font-size: .68rem;
+  padding: .15rem .5rem;
+  border-radius: 99px;
+  background: rgba(74,112,53,.2);
+  color: #9abf6a;
+  border: 1px solid rgba(154,191,106,.2);
+}
+.tb-note  { font-size: .78rem; color: var(--mud-light, #9a8a70); margin-bottom: .35rem; line-height: 1.5; }
+.tb-cueil { font-size: .75rem; color: #7abf5a; margin-bottom: .2rem; }
+.tb-biv   { font-size: .75rem; color: #7ab5bf; margin-bottom: .2rem; }
+.tb-warn  { font-size: .75rem; color: #c8882a; margin-top: .2rem; }
+.tb-prot  { font-size: .75rem; color: #7a9abf; margin-top: .2rem; }

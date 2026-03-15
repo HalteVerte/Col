@@ -8,8 +8,8 @@
   <title>La Boucle Sauvage — Alimentation Sauvage & Nomadisme</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════ HEADER -->
+<!-- ====================================== HEADER -->
 <header>
   <div class="hdr-left">
     <span class="hdr-leaf">🌿</span>
@@ -33,7 +33,7 @@
   </div>
 </header>
 
-<!-- ══════════════════════════════════════ BOTTOM NAV MOBILE -->
+<!-- ====================================== BOTTOM NAV MOBILE -->
 <nav class="bottom-nav" id="bottomNav" aria-label="Navigation mobile">
   <div class="bottom-nav-inner">
     <button class="bottom-nav-btn active" id="bn-accueil"   onclick="showSection('accueil')">
@@ -55,7 +55,7 @@
 
 <main>
 
-<!-- ══════════════════════════════════════ ACCUEIL -->
+<!-- ====================================== ACCUEIL -->
 <section id="accueil" class="section active">
   <div class="page-head">
     <h1 class="page-title">La Boucle Sauvage</h1>
@@ -176,7 +176,7 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════ NUTRITION -->
+<!-- ====================================== NUTRITION -->
 <section id="terrain" class="section">
   <div class="page-head">
     <h1 class="page-title">🌿 Terrain & Ressources</h1>
@@ -321,7 +321,7 @@
   </div>
   </div><!-- fin tpanel-nutrition -->
 
-<!-- ══════════════════════════════════════ TECHNIQUES -->
+<!-- ====================================== TECHNIQUES -->
 
   <!-- Panneau Techniques -->
   <div id="tpanel-techniques" class="terrain-panel" style="display:none">
@@ -489,7 +489,7 @@
 
 </section><!-- fin terrain -->
 
-<!-- ══════════════════════════════════════ TRAJET COMPLET -->
+<!-- ====================================== TRAJET COMPLET -->
 <section id="laboucle" class="section">
   <div class="page-head">
     <h1 class="page-title">🔁 La Boucle</h1>
@@ -511,7 +511,19 @@
   <!-- ALLER -->
   <div id="boucle-aller">
   <div class="page-head" style="padding-top:.5rem">
-    <p class="page-subtitle">Vélo chargé · Mi-août → Janvier · ~5 400 km · 8 phases · Constitution de stocks</p>
+    <p class="page-subtitle" id="aller-subtitle">Vélo chargé · Mi-août → Janvier · ~5 400 km · 8 phases · Constitution de stocks</p>
+  </div>
+
+  <!-- Bascule Tracé A / Tracé B -->
+  <div class="trajet-toggle">
+    <button class="trajet-toggle-btn active" id="btn-trajet-a" onclick="switchTracé('A')">
+      🗺️ Tracé A — Artemps → Lagos
+      <span class="trajet-toggle-sub">~5 400 km · Espagne · Portugal</span>
+    </button>
+    <button class="trajet-toggle-btn" id="btn-trajet-b" onclick="switchTracé('B')">
+      🌰 Tracé B — Artemps → Hendaye
+      <span class="trajet-toggle-sub">~1 790 km · Ardèche · Corbières · Ariège</span>
+    </button>
   </div>
 
   <div class="tc-stats-row">
@@ -543,6 +555,22 @@
   <div id="tcMap" style="height:560px;border-radius:var(--radius);border:2px solid var(--forest);box-shadow:3px 3px 0 var(--ochre);margin-bottom:2rem;"></div>
 
   <div id="tcList"></div>
+
+  <!-- TRACÉ B — Artemps → Hendaye -->
+  <div id="panel-trajet-b" style="display:none">
+    <div id="tbStats" class="tc-stats-row">
+      <div class="tc-stat"><div class="tc-stat-val">~1 790</div><div class="tc-stat-label">KM TOTAL</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">6</div><div class="tc-stat-label">PHASES</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">68–74 j</div><div class="tc-stat-label">DURÉE</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">82 %</div><div class="tc-stat-label">VOIES SÉPARÉES</div></div>
+      <div class="tc-stat"><div class="tc-stat-val">Mi-août → Nov</div><div class="tc-stat-label">PÉRIODE</div></div>
+    </div>
+    <div class="tb-bifurcation">
+      🔀 <strong>Bifurcation après Lyon</strong> — Tracé A continue vers Espagne/Portugal · Tracé B bifurque vers Ardèche à Tournon
+    </div>
+    <div id="tbList"></div>
+  </div>
+
   </div><!-- fin boucle-aller -->
 
   <!-- RETOUR -->
@@ -599,7 +627,7 @@
 
 </section>
 
-<!-- ══════════════════════════════════════ CARNET RPG -->
+<!-- ====================================== CARNET RPG -->
 <section id="carnet" class="section">
   <div class="page-head">
     <h1 class="page-title">Carnet du Voyageur</h1>
@@ -611,7 +639,7 @@
   </iframe>
 </section>
 
-<!-- ══════════════════════════════════════ A PROPOS -->
+<!-- ====================================== A PROPOS -->
 
 </main>
 

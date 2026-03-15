@@ -1,8 +1,8 @@
-/* ══════════════════════════════════════════
+/* ==========================================
    TERRAIN — La Boucle Sauvage
    POINTS : chargés depuis waypoints.json
    Données itinéraire inter-boucle -> trajets.js
-══════════════════════════════════════════ */
+========================================== */
 
 // Initialiser les points par défaut depuis waypoints.json si localStorage vide
 (function initPointsDefaut() {

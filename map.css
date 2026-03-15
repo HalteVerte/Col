@@ -1,6 +1,6 @@
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TRAJETS / CARTE
-══════════════════════════════════════════════════════ */
+====================================================== */
 #map {
   height: 440px;
   border-radius: var(--radius);
@@ -108,9 +108,9 @@
 .point-card:hover .pt-delete { opacity: 1; }
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TRAJET COMPLET — Phases & Étapes
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 /* Onglets Aller / Retour */
 .boucle-tabs {
@@ -256,9 +256,9 @@
   border-radius: 2px; padding: .3rem .7rem; margin-bottom: .7rem;
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    MAP — Mobile
-═══════════════════════════════════════════ */
+=========================================== */
 @media (max-width: 640px) {
   .map-legend {
     gap: .4rem .7rem;
@@ -303,10 +303,10 @@
 .leaflet-control-container .leaflet-top,
 .leaflet-control-container .leaflet-bottom { z-index: 999; }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    LEAFLET LAYER CONTROL — Mobile
    Bouton toggle agrandi, panneau repositionné
-═══════════════════════════════════════════ */
+=========================================== */
 @media (max-width: 640px) {
   /* Bouton toggle calques — plus grand, touch-friendly */
   .leaflet-control-layers-toggle {
@@ -337,9 +337,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════
+/* ===============================================
    FORMULAIRE RAPIDE 3 TAPS
-═══════════════════════════════════════════════ */
+=============================================== */
 .quick-obs {
   margin: .75rem 0 .5rem;
   display: flex;
@@ -503,7 +503,7 @@
   .quick-types { gap: .3rem; }
 }
 
-/* ── CTA Observer (index.html) ── */
+/* -- CTA Observer (index.html) -- */
 .observe-cta {
   display: flex;
   align-items: center;

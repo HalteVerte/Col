@@ -1,8 +1,8 @@
-/* ══════════════════════════════════════════
+/* ==========================================
    TRAJETS — La Boucle Sauvage
    TRAJET_COMPLET : 8 phases aller (Artemps → Lagos)
    TRAJET_RETOUR  : 6 phases retour (Lagos → Artemps)
-══════════════════════════════════════════ */
+========================================== */
 
 
 window.TRAJET_COMPLET = {
@@ -12,12 +12,12 @@ window.TRAJET_COMPLET = {
   logique: 'Fil de l\'eau + forêts sauvages + zéro trafic + constitution de stocks hivernaux progressifs',
   phases: [
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 1 — ARDENNES → MEUSE → MOSELLE → SAÔNE
        Mi-août → fin août · ~480 km · 10-12 jours
        Fil : Oise → Canal des Ardennes → Meuse → Moselle → Voie Bleue
        Zéro trafic, forêts immenses, cueillette exceptionnelle
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 1,
       label: 'PHASE 1 — ARDENNES & VALLÉES DE LA MEUSE ET MOSELLE',
@@ -60,12 +60,12 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 2 — DÉTOUR MORVAN (2 jours)
        Début septembre · ~160 km · 4-5 jours
        Fil : Canal de Bourgogne → Morvan → retour Saône
        PRIORITÉ : constitution stocks hivernaux
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 2,
       label: 'PHASE 2 — DÉTOUR MORVAN ⭐ STOCKS HIVERNAUX',
@@ -96,11 +96,11 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 3 — SAÔNE & BEAUJOLAIS
        Septembre (fin) → début octobre · ~240 km · 6 jours
        Fil : Saône (voie verte) → Beaujolais → Lyon
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 3,
       label: 'PHASE 3 — SAÔNE & BEAUJOLAIS',
@@ -131,12 +131,12 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 4 — CÉVENNES & PÉRIGORD NOIR
        Octobre · ~420 km · 10-12 jours
        Fil : Rhône → Ardèche (gorges) → Lot → Dordogne
        PRIORITÉ : châtaignes + noix + stocks lourds
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 4,
       label: 'PHASE 4 — CÉVENNES & PÉRIGORD NOIR ⭐ STOCKS LOURDS',
@@ -176,12 +176,12 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 5 — GASCOGNE, ARCACHON & PYRÉNÉES
        Fin octobre → début novembre · ~320 km · 8-9 jours
        Fil : Garonne → Bassin d'Arcachon → Adour → Pyrénées
        PRIORITÉ : protéines côtières avant l'Espagne
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 5,
       label: 'PHASE 5 — GASCOGNE & ARCACHON 🦪 PROTÉINES',
@@ -218,12 +218,12 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 6 — CÔTE CANTABRIQUE & GALICE
        Novembre · ~750 km · 16-18 jours
        Fil : Côte basque → Cantabrie → Asturies → Galice → Portugal nord
        Protéines animales continues · Température clémente · EuroVelo 1
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 6,
       label: 'PHASE 6 — CÔTE CANTABRIQUE & GALICE 🌊',
@@ -276,12 +276,12 @@ window.TRAJET_COMPLET = {
     },
 
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 7 — PORTUGAL : CÔTE + DÉTOUR SERRA DA GARDUNHA
        Fin novembre → mi-décembre · ~590 km · 14-16 jours
        Fil : Porto → côte atlantique → détour est Serra da Gardunha
              → retour Tomar → Nazaré → Peniche → Lisbonne → Sado
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 7,
       label: 'PHASE 7 — PORTUGAL CÔTE & SERRA DA GARDUNHA',
@@ -333,11 +333,11 @@ window.TRAJET_COMPLET = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE 8 — PORTUGAL SUD : ALENTEJO & ALGARVE
        Mi-décembre → mi-janvier · ~260 km · mode slow
        Fil : Sado → Côte Vicentine → Lagos
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 8,
       label: 'PHASE 8 — ALENTEJO & ALGARVE 🌸 ARRIVÉE',
@@ -371,14 +371,14 @@ window.TRAJET_COMPLET = {
   ] // fin phases
 }; // fin TRAJET_COMPLET
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    TRAJET RETOUR — Lagos → Artemps
    Côte Atlantique · Janvier → Mai · ~4 600 km
    Logique : frais au fil de l'eau et des côtes
    5 must stockés en permanence :
      faînes torréfiées · champignons séchés · cynorrhodons séchés
      farine de gland · algues séchées
-══════════════════════════════════════════════════════ */
+====================================================== */
 /* ⚠️  GPX RETOUR — 2 SEGMENTS À AMÉLIORER SUR BROUTER
    1. Île de Ré / La Rochelle (lng≈-1.15) → éviter stations balnéaires
       Alternative : Marais Poitevin (intérieur) puis retour côte Vendée nord
@@ -396,11 +396,11 @@ window.TRAJET_RETOUR = {
   must: ['Faînes torréfiées', 'Champignons séchés', 'Cynorrhodons séchés', 'Farine de gland', 'Algues séchées (iode)'],
   phases: [
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R1 — ALGARVE → LISBONNE → PORTO
        Mi-janvier → mi-février · ~520 km · mode slow
        Fil : Côte Vicentine → Tage → Douro
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 1,
       label: 'PHASE R1 — ALGARVE & CÔTE VICENTINE',
@@ -439,12 +439,12 @@ window.TRAJET_RETOUR = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R2 — GALICE (ESPAGNE)
        Mi-février → mi-mars · ~400 km
        Fil : Côte Cantabrique → Rias Baixas → Vigo → Pontevedra
        Zone souvent oubliée — exceptionnelle
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 2,
       label: 'PHASE R2 — GALICE 🦪 RIAS BAIXAS',
@@ -486,11 +486,11 @@ window.TRAJET_RETOUR = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R3 — CÔTE BASQUE & LANDES
        Mi-mars → début avril · ~300 km
        Fil : Adour → côte landaise → Bassin d'Arcachon
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 3,
       label: 'PHASE R3 — CÔTE BASQUE & LANDES',
@@ -523,11 +523,11 @@ window.TRAJET_RETOUR = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R4 — VENDÉE & LOIRE-ATLANTIQUE
        Avril · ~280 km
        Fil : Côte vendéenne → Marais poitevin → Loire
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 4,
       label: 'PHASE R4 — VENDÉE & MARAIS POITEVIN',
@@ -563,11 +563,11 @@ window.TRAJET_RETOUR = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R5 — BRETAGNE
        Avril (fin) → début mai · ~500 km
        Fil : Côte sauvage bretonne — la plus belle du retour
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 5,
       label: 'PHASE R5 — BRETAGNE 🌊 APOGÉE',
@@ -603,11 +603,11 @@ window.TRAJET_RETOUR = {
       ]
     },
 
-    /* ─────────────────────────────────────────────
+    /* ---------------------------------------------
        PHASE R6 — NORMANDIE → BAIE DE SOMME → ARTEMPS
        Mai · ~400 km
        Fil : Manche → Somme → Oise → Artemps
-    ───────────────────────────────────────────── */
+    --------------------------------------------- */
     {
       num: 6,
       label: 'PHASE R6 — NORMANDIE & BAIE DE SOMME 🏁',
@@ -650,13 +650,13 @@ window.TRAJET_RETOUR = {
 }; // fin TRAJET_RETOUR
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    INTER-BOUCLE — Waypoints & Segments
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 window.INTER_BOUCLE_POINTS = [
 
-  // ── LIAISON ALLER — Artemps → Creuse (mi-mai, ~13 jours) ──────
+  // -- LIAISON ALLER — Artemps → Creuse (mi-mai, ~13 jours) ------
   { id:'ib_01', nom:"Laon — collines du Laonnois", type:'bivouac', lat:49.576, lng:3.622, mois:[5], segment:'liaison_aller',
     desc:"Première étape depuis Artemps. Collines calcaires, forêts peu fréquentées. Bivouac en lisière. Asperges sauvages sur les coteaux exposés sud dès mi-mai.", alerte:null },
   { id:'ib_02', nom:"Épernay — bords de Marne", type:'ravitaillement', lat:48.973, lng:4.364, mois:[5], segment:'liaison_aller',
@@ -670,7 +670,7 @@ window.INTER_BOUCLE_POINTS = [
   { id:'ib_06', nom:"Montluçon — entrée Creuse", type:'ravitaillement', lat:46.341, lng:2.601, mois:[5,6], segment:'liaison_aller',
     desc:"Dernier grand ravitaillement avant la Creuse. Supermarché, pharmacie, borne de recharge vélo électrique. Forêt de Tronçais à 30 km au nord-est — noter pour le retour.", alerte:null },
 
-  // ── CREUSE / MILLEVACHES (fin mai → début août, ~70 jours) ────
+  // -- CREUSE / MILLEVACHES (fin mai → début août, ~70 jours) ----
   { id:'ib_07', nom:"Guéret — ravitaillement & eau", type:'ravitaillement', lat:46.168, lng:1.871, mois:[6,7,8], segment:'creuse',
     desc:"Préfecture de la Creuse. Supermarché, pharmacie, fontaines publiques. Borne de recharge à la médiathèque. Point de base pour rayonner sur le plateau.", alerte:null },
   { id:'ib_08', nom:"Rivière Creuse — écrevisses signal", type:'peche', lat:46.120, lng:1.870, mois:[6,7], segment:'creuse',
@@ -686,7 +686,7 @@ window.INTER_BOUCLE_POINTS = [
   { id:'ib_13', nom:"Aubusson — recharge & passage", type:'recharge', lat:45.957, lng:2.170, mois:[6,7,8], segment:'creuse',
     desc:"Borne de recharge vélo électrique en centre-ville (vérifier OpenChargeMap). Marché le mercredi. Axe de passage vers Millevaches par la D982.", alerte:null },
 
-  // ── REMONTÉE — Tronçais → Artemps (début août, ~12 jours) ─────
+  // -- REMONTÉE — Tronçais → Artemps (début août, ~12 jours) -----
   { id:'ib_14', nom:"Forêt de Tronçais — noisettes & pêche", type:'cueillette', lat:46.637, lng:2.975, mois:[8], segment:'remontee',
     desc:"La plus belle chênaie de France — 10 600 ha. Premières noisettes mi-août en lisière. Étangs avec pêche autorisée (carpes, brèmes). Bivouac forêt domaniale sans restriction.", alerte:null },
   { id:'ib_15', nom:"Decize — canal du Nivernais", type:'bivouac', lat:47.382, lng:3.288, mois:[8], segment:'remontee',
@@ -700,9 +700,9 @@ window.INTER_BOUCLE_POINTS = [
 ];
 
 
-/* ══════════════════════════════════════════════════════
+/* ======================================================
    INTER-BOUCLES — Segments
-══════════════════════════════════════════════════════ */
+====================================================== */
 
 window.INTER_BOUCLE_SEGMENTS = [
   {
@@ -727,3 +727,357 @@ window.INTER_BOUCLE_SEGMENTS = [
     alerte:"Être à Artemps avant le 20 août — fenêtre de re-départ boucle 2.",
   },
 ];
+
+/* =====================================================
+   TRAJET B — Artemps -> Hendaye (variante Ardèche/Corbières)
+   26 étapes · ~1 790 km · Mi-août -> ~10 novembre
+   Bifurcation après Lyon (étape 14) vs Tracé A (Lagos)
+===================================================== */
+window.TRAJET_B = {
+  titre: 'Artemps → Hendaye',
+  sous_titre: 'Variante Ardèche · Corbières · Ariège · ~1 790 km · Mi-août → ~10 novembre',
+  km_total: 1790,
+  jours: '68–74 j',
+  voies_sep_pct: 82,
+  nat_pct: 3.5,
+  bifurcation: 'Après Lyon — Tracé A continue vers Lagos, Tracé B bifurque vers Ardèche',
+  phases: [
+    {
+      num: 1, label: 'PHASE 1 — ARDENNES & CANAUX DU NORD',
+      mois: 'Mi-août', color: '#5a8a3a', km: '~530 km', jours: '~17 j',
+      etapes: [
+        { nom: 'Artemps → Chauny → Noyon', km: '~55 km / 2 j',
+          voies: ['Chemins agricoles','Berge Oise','VV Oise'],
+          note: "Quitter Artemps par chemins agricoles vers Ognes. Longer l'Oise rive gauche sur halage jusqu'à Chauny. Voie verte jusqu'à Noyon. Plat total, bocage picard.",
+          cueil: ['Mûres — pic absolu','Sureau noir — baies mûres','Orties jeunes','Framboises sauvages'],
+          biv: "Berges de l'Oise entre Chauny et Noyon." },
+        { nom: 'Noyon → Berry-au-Bac (canal Oise–Aisne)', km: '~60 km / 2 j',
+          voies: ['Canal Oise–Aisne halage','VV Chemin des Dames'],
+          note: "Halage canal depuis Noyon. VV Chemin des Dames — ancienne voie ferrée, asphalte lisse, zéro voiture.",
+          cueil: ['Mûres — haies en lisière','Noisettes — début maturité','Sureau noir'],
+          biv: "Écluses du canal — eau potable garantie." },
+        { nom: 'Berry-au-Bac → Rethel (canal Aisne–Marne)', km: '~65 km / 2 j',
+          voies: ['Canal Aisne–Marne halage','Pistes ONF Argonne'],
+          note: "Halage canal de Berry à Vouziers. Option forêt de l'Argonne depuis Vouziers.",
+          cueil: ['Chanterelles — Forêt Argonne si pluies','Russules comestibles','Bolet bai'],
+          biv: "Forêt de l'Argonne entre Binarville et Florent." },
+        { nom: 'Rethel → Monthermé (Ardennes profondes)', km: '~65 km / 2 j',
+          voies: ['Canal Ardennes halage','Pistes ONF Ardennes'],
+          note: "Canal des Ardennes jusqu'au Chesne. Pistes ONF vers Bogny et Monthermé — zéro voiture.",
+          cueil: ['Chanterelles — versants Ardennes','Bolet bai','Mûres — lisières de pistes'],
+          biv: "Forêt de la Pointe entre Bogny et Monthermé." },
+        { nom: 'Monthermé → Givet (EuroVelo 19)', km: '~50 km / 2 j',
+          voies: ['EuroVelo 19','Berge Meuse'],
+          note: "EV19 rive française — méandres de la Meuse, falaises calcaires.",
+          cueil: ['Sureau noir — baies : pic absolu','Menthe aquatique','Bolets bais'],
+          biv: "Sous la Citadelle de Givet." },
+        { nom: 'Givet → Verdun (Trans-Ardennes + Meuse)', km: '~110 km / 3 j',
+          voies: ['Trans-Ardennes gravier','Halage Meuse','Chemins militaires WW1'],
+          note: "Longer la Meuse rive française. Secteur Stenay–Dun-sur-Meuse : chemins militaires WW1.",
+          cueil: ['Mûres — berges Meuse : très abondantes','Cèpes — versants boisés','Noisettes'],
+          biv: "Rives Meuse secteur Stenay.",
+          warn: "~8 % D-routes — rive belge recommandée pour l'éviter." },
+        { nom: 'Verdun → Épinal (VV Moselle)', km: '~145 km / 4 j',
+          voies: ['VV Moselle 100 % séparée','Canal Marne-au-Rhin'],
+          note: "VV Moselle — 100 % séparée de Toul à Épinal.",
+          cueil: ['Noisettes — mûres sur berges Moselle','Pommes sauvages','Cresson de fontaine'],
+          biv: "Berges Moselle entre Toul et Charmes." },
+        { nom: 'Épinal → Corre → Vesoul (Canal des Vosges)', km: '~115 km / 3 j',
+          voies: ['Canal des Vosges halage intégral'],
+          note: "Halage désert, une écluse tous les 3–4 km — eau potable garantie à chaque écluse.",
+          cueil: ['Cèpes des Vosges','Chanterelles — hêtraies','Cornouilles — début'],
+          biv: "Écluses entre Fontenoy-le-Château et Corre." },
+      ]
+    },
+    {
+      num: 2, label: 'PHASE 2 — SAÔNE & MORVAN',
+      mois: 'Début septembre', color: '#7a4a20', km: '~355 km', jours: '~11 j',
+      etapes: [
+        { nom: 'Vesoul → Gray (berge Saône)', km: '~45 km / 2 j',
+          voies: ['Halage Saône gravier','Chemins ruraux'],
+          note: "Longer la Saône rive droite sur halage.",
+          cueil: ['Mûres — fin de pic','Sureau noir','Noisettes — chute naturelle'],
+          biv: "Berges Saône entre Scey et Gray." },
+        { nom: 'Gray → Dole (Forêt de Chaux + Loue)', km: '~70 km / 2 j',
+          voies: ['Pistes ONF Forêt de Chaux','VV de la Loue'],
+          note: "Traverser la Forêt de Chaux (20 000 ha) par pistes ONF — GPS indispensable.",
+          cueil: ['Cèpes de Bordeaux — pic si pluies','Cèpe bronzé','Girolles'],
+          biv: "Forêt de Chaux secteur Fraisans." },
+        { nom: 'Dole → Is-sur-Tille', km: '~55 km / 2 j',
+          voies: ['Canal Rhône-au-Rhin','Berge Saône aval'],
+          note: "Canal Rhône-au-Rhin jusqu'à Auxonne, berges Saône vers Pontailler.",
+          cueil: ['Cornouilles sauvages — pic septembre','Pommes et poires sauvages','Bolet bai'],
+          biv: "Écluses Canal Rhône-au-Rhin.",
+          warn: "~10 % D-routes sur Dole–Pontailler." },
+        { nom: 'Is-sur-Tille → Autun (VV Ouche + Morvan)', km: '~85 km / 3 j',
+          voies: ['VV Ouche asphalte 40 km','Canal Bourgogne','Pistes ONF Morvan'],
+          note: "VV de l'Ouche — 40 km en forêt sans voiture. Tunnel de Blaisy-Bas (4 km) : lampe frontale obligatoire.",
+          cueil: ['Cèpes — Morvan : meilleure zone','Lactaires délicieux','Trompettes de la mort','Noisettes — abondantes'],
+          biv: "Forêt autour tunnel Blaisy-Bas." },
+      ]
+    },
+    {
+      num: 3, label: 'PHASE 3 — RHÔNE & BIFURCATION LYON',
+      mois: 'Début octobre', color: '#9e3f20', km: '~253 km', jours: '~8 j',
+      note_bifurcation: 'Étapes 1-2 communes avec Tracé A. Bifurcation à Tournon vers Ardèche.',
+      etapes: [
+        { nom: 'Autun → Chalon-sur-Saône (Canal du Centre)', km: '~80 km / 3 j',
+          voies: ['Pistes Morvan sud','Canal du Centre halage'],
+          note: "Pistes forestières Morvan sud vers Montcenis, rejoindre le canal à Montceau.",
+          cueil: ['Châtaignes Morvan — objectif 3–4 kg frais','Cèpes','Trompettes de la mort'],
+          biv: "Forêts Morvan sud." },
+        { nom: 'Chalon → Lyon (ViaRhôna rive gauche)', km: '~130 km / 4 j',
+          voies: ['ViaRhôna piste cyclable'],
+          note: "ViaRhôna à Tournus, quasi-continue jusqu'à Lyon. Contournement Lyon sud rive gauche.",
+          cueil: ['Noix — vergers entre Mâcon et Lyon','Pommes sauvages'],
+          biv: "Berges Saône entre Tournus et Mâcon." },
+        { nom: '⑁ Lyon → Vienne (rive droite ardéchoise)', km: '~43 km / 1 j',
+          voies: ['Berge Rhône rive droite','D4 viticole très calme'],
+          note: "Traverser au pont de la Mulatière. Rive droite via Givors. D4 Côte-Rôtie quasi déserte.",
+          cueil: ['Noix — vergers Condrieu','Raisins sauvages'],
+          biv: "Berges Rhône rive droite entre Givors et Condrieu.",
+          warn: "GPS obligatoire — rive droite non balisée sur 15 km." },
+      ]
+    },
+    {
+      num: 4, label: 'PHASE 4 — ARDÈCHE & CÉVENNES (ZONE CHÂTAIGNES)',
+      mois: 'Début–mi octobre', color: '#c84a2a', km: '~235 km', jours: '~11 j',
+      etapes: [
+        { nom: 'Vienne → Valence (ViaRhôna)', km: '~100 km / 3 j',
+          voies: ['ViaRhôna piste séparée'],
+          note: "Reprendre ViaRhôna rive gauche à Vienne. Quasi-continue : Condrieu, Tournon, Tain-l'Hermitage.",
+          cueil: ['Noix — abondantes','Cornouilles — rouges et mûres'],
+          biv: "Berges Rhône entre Tournon et Valence." },
+        { nom: '🌰 Tournon → Lamastre → Le Cheylard (Ardèche)', km: '~55 km / 3 j',
+          voies: ['D9 vallée du Doux (calme)','Pistes ONF Monts d\'Ardèche'],
+          note: "Traverser le Rhône à Tournon. Monter D9 vallée du Doux. ZONE CHÂTAIGNES 1 — prévoir 2 jours stationnaires.",
+          cueil: ['Châtaignes abandonnées 150–300 ans : objectif 6–8 kg frais','Glands chêne sessile — lancer trempage','Cèpes — excellents en octobre','Trompettes de la mort'],
+          biv: "Forêt domaniale ONF entre Le Cheylard et Valgorge.",
+          warn: "~5 % nationales D9 — trafic très faible en semaine." },
+        { nom: '🌰 Le Cheylard → Valgorge → Les Vans', km: '~60 km / 2 j',
+          voies: ['Pistes forestières ONF','D5 vallée Beaume (calme)'],
+          note: "Descendre vers Largentière par la vallée du Beaume. ZONE CHÂTAIGNES 2.",
+          cueil: ['Châtaignes forêts communales Joyeuse/Les Vans','Pied-de-mouton — pic octobre'],
+          biv: "Vallée du Chassezac aux Vans." },
+        { nom: '🌰 Les Vans → Alès → Ganges (Cévennes)', km: '~80 km / 3 j',
+          voies: ['Pistes ONF Parc national','GR7 praticable VAE','Gorge Hérault'],
+          note: "Pistes forestières Parc national. GR7 crêtes cévenoles. ZONE CHÂTAIGNES 3.",
+          cueil: ['Châtaigniers spontanés — vrais sauvages','Chêne pubescent — glands doux','Coulemelles — pic octobre'],
+          biv: "Col de l'Asclier — Parc national." },
+      ]
+    },
+    {
+      num: 5, label: 'PHASE 5 — LANGUEDOC · CORBIÈRES · ARIÈGE · PIÉMONT',
+      mois: 'Mi-octobre → début novembre', color: '#2d5c7a', km: '~490 km', jours: '~21 j',
+      etapes: [
+        { nom: 'Ganges → Montpellier → Béziers', km: '~110 km / 3 j',
+          voies: ['VV Hérault partielle','Pistes agricoles Languedoc'],
+          note: "Descendre vallée Hérault. Contourner Montpellier par le nord.",
+          cueil: ['Chêne pubescent — objectif 4–6 kg frais','Chêne vert','Figues sauvages','Olives sauvages'],
+          biv: "Garrigue entre Clermont-l'Hérault et Béziers." },
+        { nom: 'Béziers → Lézignan → Quillan (Corbières)', km: '~100 km / 3–4 j',
+          voies: ['D-routes Corbières calmes','Vallée Aude encaissée'],
+          note: "Évite Canal du Midi venteux. D118 jusqu'à Quillan — naturellement abrité de la Tramontane.",
+          cueil: ['Glands chêne pubescent','Truffes noires — début saison','Cèpes sous chênes'],
+          biv: "Gorges de l'Aude entre Couiza et Quillan.",
+          warn: "Quelques D-routes inévitables (~5 %). Trafic très faible." },
+        { nom: 'Quillan → Foix (vallée Ariège)', km: '~80 km / 3 j',
+          voies: ['D-routes Pays de Sault','Vallée Ariège piste partielle'],
+          note: "Monter vers le Pays de Sault (col ~800 m). Descendre vers Ax-les-Thermes puis Foix.",
+          cueil: ['Châtaignes pyrénéennes tardives','Cèpes sous hêtres et sapins','Myrtilles séchées'],
+          biv: "Vallée de l'Ariège entre Ax et Foix.",
+          warn: "Col ~800 m : vérifier météo neige. Repli possible par vallée Aude." },
+        { nom: 'Foix → Saint-Girons → Saint-Gaudens', km: '~90 km / 3 j',
+          voies: ['Vallée Hers et Arize','Pistes agricoles piémont'],
+          note: "Vallée du Hers depuis Foix. Traverser vers Saint-Girons. Remonter par vallée du Salat.",
+          cueil: ['Noix — vergers piémont','Châtaignes piémont','Cèpes de pins'],
+          biv: "Berges du Salat entre Saint-Girons et Saint-Gaudens." },
+        { nom: 'Saint-Gaudens → Tarbes → Pau', km: '~100 km / 3 j',
+          voies: ['VV Gave de Pau partielle','D-routes agricoles piémont'],
+          note: "Longer la chaîne pyrénéenne. VV du Gave de Pau depuis Lourdes jusqu'à Pau.",
+          cueil: ['Noix — Bigorre : vergers nombreux','Prunelles — après gelées','Cèpes'],
+          biv: "Berges Gave de Pau entre Lourdes et Pau." },
+      ]
+    },
+    {
+      num: 6, label: 'PHASE 6 — CÔTE BASQUE & HENDAYE',
+      mois: '~10 novembre', color: '#2d7a5c', km: '~110 km', jours: '~4 j',
+      etapes: [
+        { nom: 'Pau → Bayonne → Saint-Jean-de-Luz → Hendaye', km: '~110 km / 3–4 j',
+          voies: ['VV Gave de Pau → Bayonne','EuroVelo 1 côte basque'],
+          note: "VV du Gave de Pau de Pau à Bayonne. EV1 côte basque jusqu'à Hendaye. Arrivée pont international Bidassoa ~10 novembre.",
+          cueil: ['Moules de roche — rochers Socoa/Hendaye','Coques — plages sableuses','Bigorneaux','Crevettes grises'],
+          biv: "Dunes et pins entre Hossegor et Bayonne.",
+          prot: ['Moules de roche — 5 kg/j max, usage personnel','Coques — 2–3 cm de sable humide','Pêche en mer sans permis — bar, mulet'] },
+      ]
+    },
+  ]
+};
+
+/* ==========================================
+   TRAJET B — Variante sud-ouest
+   Artemps → Hendaye via Ardèche, Corbières, Ariège
+   26 étapes · ~1 790 km · Mi-août → ~10 novembre
+   Bifurcation depuis Tracé A : Tournon/Rhône
+========================================== */
+window.TRAJET_B = {
+  titre: 'Artemps → Hendaye — Variante B',
+  sous_titre: 'Ardèche · Corbières · Ariège · ~1 790 km · 68–74 jours',
+  km_total: 1790,
+  logique: '82% voies séparées · Ardèche châtaignes · Corbières glands · Pyrénées piémont',
+  phases: [
+    {
+      num: 1, label: 'PARTIE 1 — MI-AOÛT — Artemps → Vesoul',
+      mois: 'Mi-août', color: '#2d5c8a', km: '~550 km', jours: '~17 j',
+      intro: 'Traversée du nord via canaux et voies vertes. Ardennes, Meuse, Moselle, Canal des Vosges. 82% de voies séparées.',
+      etapes: [
+        { nom: 'Artemps → Chauny → Noyon', km: '~55 km / 2 j',
+          voies: ['Chemins agricoles','Berge Oise','VV Oise'],
+          note: 'Quitter Artemps par chemins agricoles vers Ognes. Longer l\'Oise rive gauche sur halage non goudronné. Voie verte jusqu\'à Noyon.',
+          cueil: ['Mûres — haies et lisières : pic absolu','Sureau noir — baies mûres','Orties jeunes','Framboises sauvages — fin de saison'],
+          biv: 'Berges de l\'Oise entre Chauny et Noyon.' },
+        { nom: 'Noyon → Berry-au-Bac (Canal Oise–Aisne)', km: '~60 km / 2 j',
+          voies: ['Canal Oise–Aisne halage','VV Chemin des Dames'],
+          note: 'Halage canal depuis Noyon. VV Chemin des Dames — ancienne voie ferrée, asphalte lisse, zéro voiture.',
+          cueil: ['Mûres — haies en lisière : abondantes','Noisettes — début de maturité','Sureau noir'],
+          biv: 'Écluses du canal — eau potable garantie.' },
+        { nom: 'Berry-au-Bac → Rethel (Canal Aisne–Marne)', km: '~65 km / 2 j',
+          voies: ['Canal Aisne–Marne halage','Pistes ONF Argonne'],
+          note: 'Halage canal de Berry à Vouziers. Option forêt de l\'Argonne — pistes ONF non balisées, GPS indispensable.',
+          cueil: ['Chanterelles — Forêt Argonne si pluies','Russules comestibles','Bolet bai'],
+          biv: 'Forêt de l\'Argonne entre Binarville et Florent.' },
+        { nom: 'Rethel → Monthermé (Ardennes)', km: '~65 km / 2 j',
+          voies: ['Canal Ardennes halage','Pistes ONF Ardennes'],
+          note: 'Canal des Ardennes jusqu\'au Chesne. Pistes ONF vers Bogny et Monthermé — tronçon le plus sauvage du nord.',
+          cueil: ['Chanterelles — versants Ardennes','Bolet bai','Mûres — lisières'],
+          biv: 'Forêt de la Pointe entre Bogny et Monthermé.' },
+        { nom: 'Monthermé → Givet (EuroVelo 19)', km: '~50 km / 2 j',
+          voies: ['EuroVelo 19','Berge Meuse'],
+          note: 'EV19 rive française — méandres de la Meuse, falaises calcaires. Option Belgique (Dinant) si météo mauvaise.',
+          cueil: ['Sureau noir — pic absolu','Menthe aquatique','Bolets bais'],
+          biv: 'Sous la Citadelle de Givet.' },
+        { nom: 'Givet → Verdun (Trans-Ardennes + Meuse)', km: '~110 km / 3 j',
+          voies: ['Trans-Ardennes gravier','Halage Meuse','Chemins militaires WW1'],
+          note: 'Longer la Meuse sur halage gravier. Secteur Stenay–Dun-sur-Meuse : chemins militaires WW1, grandiose et désert.',
+          cueil: ['Mûres — berges Meuse : très abondantes','Cèpes si pluies récentes','Noisettes'],
+          biv: 'Rives Meuse secteur Stenay.',
+          warn: '~8% D-routes — rive belge recommandée pour l\'éviter.' },
+        { nom: 'Verdun → Épinal (VV Moselle)', km: '~145 km / 4 j',
+          voies: ['VV Moselle 100% séparée','Canal Marne-au-Rhin'],
+          note: 'VV Moselle — meilleur tronçon du nord. 100% séparée de Toul à Épinal.',
+          cueil: ['Noisettes — mûres sur berges Moselle','Pommes sauvages','Cresson de fontaine'],
+          biv: 'Berges Moselle entre Toul et Charmes.' },
+        { nom: 'Épinal → Corre → Vesoul (Canal des Vosges)', km: '~115 km / 3 j',
+          voies: ['Canal des Vosges halage intégral'],
+          note: 'Halage désert, écluse tous les 3–4 km — eau potable garantie, recharge VAE aux maisons éclusières.',
+          cueil: ['Cèpes des Vosges — sous pins','Chanterelles — hêtraies','Cornouilles'],
+          biv: 'Écluses entre Fontenoy-le-Château et Corre.' },
+      ]
+    },
+    {
+      num: 2, label: 'PARTIE 2 — DÉBUT SEPTEMBRE — Vesoul → Autun',
+      mois: 'Début septembre', color: '#5a3a8a', km: '~255 km', jours: '~9 j',
+      intro: 'Saône, Forêt de Chaux, Morvan. Cèpes et trompettes au pic. Transition vers le grand sud.',
+      etapes: [
+        { nom: 'Vesoul → Gray (berge Saône)', km: '~45 km / 2 j',
+          voies: ['Halage Saône gravier','Chemins ruraux'],
+          note: 'Chemin rural vers Scey-sur-Saône. Longer la Saône rive droite.',
+          cueil: ['Mûres — fin de pic','Sureau noir','Noisettes — chute naturelle'],
+          biv: 'Berges Saône entre Scey et Gray.' },
+        { nom: 'Gray → Dole (Forêt de Chaux + Loue)', km: '~70 km / 2 j',
+          voies: ['Pistes ONF Forêt de Chaux','VV de la Loue'],
+          note: 'Traverser la Forêt de Chaux (20 000 ha) par pistes ONF — GPS indispensable. VV de la Loue jusqu\'à Dole.',
+          cueil: ['Cèpes de Bordeaux — sous chênes : pic si pluies','Cèpe bronzé','Girolles','Cresson'],
+          biv: 'Forêt de Chaux secteur Fraisans.' },
+        { nom: 'Dole → Is-sur-Tille (canaux + pistes)', km: '~55 km / 2 j',
+          voies: ['Canal Rhône-au-Rhin','Berge Saône aval'],
+          note: 'Canal Rhône-au-Rhin jusqu\'à Auxonne, berges Saône vers Pontailler.',
+          cueil: ['Cornouilles — rouge vif : pic septembre','Pommes et poires sauvages','Bolet bai'],
+          biv: 'Écluses Canal Rhône-au-Rhin.',
+          warn: '~10% D-routes Dole–Pontailler — traverser en semaine tôt le matin.' },
+        { nom: 'Is-sur-Tille → Autun (VV Ouche + Morvan)', km: '~85 km / 3 j',
+          voies: ['VV Ouche asphalte 40 km','Canal Bourgogne','Pistes ONF Morvan'],
+          note: 'VV de l\'Ouche — 40 km en forêt sans voiture. Tunnel de Blaisy-Bas (4 km) : lampe frontale obligatoire.',
+          cueil: ['Cèpes — Morvan : meilleure zone','Lactaires délicieux — sous pins','Trompettes de la mort','Noisettes'],
+          biv: 'Forêt autour tunnel Blaisy-Bas.' },
+      ]
+    },
+    {
+      num: 3, label: 'PARTIE 3 — DÉBUT OCTOBRE → 10 NOVEMBRE — Autun → Hendaye',
+      mois: 'Octobre → début novembre', color: '#3a6e28', km: '~985 km', jours: '~42 j',
+      intro: 'Le grand sud. Rhône, Ardèche châtaignes, Corbières glands, Ariège, Piémont pyrénéen, Hendaye.',
+      etapes: [
+        { nom: 'Autun → Chalon (Canal du Centre)', km: '~80 km / 3 j',
+          voies: ['Pistes Morvan sud','Canal du Centre halage'],
+          note: 'Pistes forestières Morvan sud vers Montcenis, rejoindre le canal à Montceau-les-Mines.',
+          cueil: ['Châtaignes Morvan — début récolte : objectif 3–4 kg','Cèpes — sous chênes et hêtres','Trompettes de la mort'],
+          biv: 'Forêts Morvan sud entre Autun et Montcenis.' },
+        { nom: 'Chalon → Lyon (ViaRhôna rive gauche)', km: '~130 km / 4 j',
+          voies: ['ViaRhôna piste cyclable','Berge Saône / Rhône'],
+          note: 'ViaRhôna quasi-continue jusqu\'à Lyon. Arrêt Lyon : ravitaillement, recharge VAE.',
+          cueil: ['Noix — vergers en lisière','Pommes sauvages — haies bord Saône'],
+          biv: 'Berges Saône entre Tournus et Mâcon.' },
+        { nom: 'Lyon → Vienne — rive droite ardéchoise', km: '~43 km / 1 j',
+          voies: ['Berge Rhône rive droite','D4 viticole très calme'],
+          note: '⚡ BIFURCATION TRACÉ B. Traverser au pont de la Mulatière. Rive droite via Givors, chemin de berge vers Condrieu. Évite Feyzin/Solaize/Pierre-Bénite.',
+          cueil: ['Noix — vergers Condrieu','Raisins sauvages — vignes abandonnées'],
+          biv: 'Berges Rhône rive droite entre Givors et Condrieu.',
+          warn: 'GPS chargé obligatoire — rive droite non balisée ViaRhôna sur 15 km.' },
+        { nom: 'Vienne → Valence (ViaRhôna rive gauche)', km: '~100 km / 3 j',
+          voies: ['ViaRhôna piste séparée'],
+          note: 'Reprendre ViaRhôna rive gauche à Vienne. Piste séparée quasi-continue : Tournon, Tain-l\'Hermitage.',
+          cueil: ['Noix — abondantes en lisière','Cornouilles — rouges et mûres'],
+          biv: 'Berges Rhône entre Tournon et Valence.' },
+        { nom: 'Tournon → Lamastre → Le Cheylard (Ardèche)', km: '~55 km / 3 j',
+          voies: ['D9 vallée du Doux (calme)','Pistes ONF Monts d\'Ardèche'],
+          note: 'Traverser le Rhône à Tournon. Monter D9 vallée du Doux. Zone la plus isolée du projet. Prévoir 2 jours stationnaires pour la récolte.',
+          cueil: ['⭐ ZONE CHÂTAIGNES 1 — objectif 6–8 kg frais','Glands chêne sessile : lancer premier trempage','Cèpes — sous chênes','Trompettes — hêtraies d\'altitude'],
+          biv: 'Forêt domaniale ONF entre Le Cheylard et Valgorge — 2 j stationnaires.',
+          warn: '~5% nationales sur D9 — trafic très faible en semaine d\'octobre.' },
+        { nom: 'Le Cheylard → Valgorge → Les Vans', km: '~60 km / 2 j',
+          voies: ['Pistes forestières ONF','D5 vallée Beaume (calme)'],
+          note: 'Descendre vers Largentière par la vallée du Beaume. Cœur des châtaigneraies communales abandonnées.',
+          cueil: ['⭐ ZONE CHÂTAIGNES 2 — forêts communales Joyeuse/Les Vans','Arbres monumentaux 150–300 ans','Pied-de-mouton — sous châtaigniers'],
+          biv: 'Vallée du Chassezac aux Vans.' },
+        { nom: 'Les Vans → Alès → Ganges (Cévennes)', km: '~80 km / 3 j',
+          voies: ['Pistes ONF Parc national','GR7 praticable VAE','Gorge Hérault'],
+          note: 'Pistes forestières Parc national. Cueillette personnelle autorisée par charte du Parc national.',
+          cueil: ['⭐ ZONE CHÂTAIGNES 3 — châtaigniers spontanés sauvages','Chêne pubescent — glands doux : 1–2 trempages','Coulemelles — prairies'],
+          biv: 'Col de l\'Asclier — hêtraie-châtaigneraie, Parc national.' },
+        { nom: 'Ganges → Montpellier → Béziers', km: '~110 km / 3 j',
+          voies: ['VV Hérault partielle','Pistes agricoles Languedoc'],
+          note: 'Descendre vallée Hérault. Contourner Montpellier par le nord. Garrigue — chêne pubescent et vert omniprésents.',
+          cueil: ['Chêne pubescent — objectif 4–6 kg frais','Chêne vert — petits glands','Figues sauvages','Olives sauvages — à saumurer'],
+          biv: 'Garrigue entre Clermont-l\'Hérault et Béziers.' },
+        { nom: 'Béziers → Lézignan → Quillan (Corbières)', km: '~100 km / 3–4 j',
+          voies: ['D-routes Corbières calmes','Vallée Aude encaissée'],
+          note: '⚡ VARIANTE B — évite Canal du Midi venteux. Rejoindre la vallée de l\'Aude à Couiza. D118 jusqu\'à Quillan — route encaissée, abritée de la Tramontane.',
+          cueil: ['Chêne pubescent — glands doux','Truffes noires — début saison sous chênes truffiers','Cèpes si pluies'],
+          biv: 'Gorges de l\'Aude entre Couiza et Quillan.',
+          warn: '~5% D-routes Corbières — trafic très faible.' },
+        { nom: 'Quillan → Foix (vallée Ariège)', km: '~80 km / 3 j',
+          voies: ['D-routes Pays de Sault','Vallée Ariège piste partielle'],
+          note: 'Monter vers le Pays de Sault (col ~800 m). Descendre vers Ax-les-Thermes puis Foix. Vallées encaissées = abri contre Tramontane.',
+          cueil: ['Châtaignes — versants pyrénéens : saison tardive','Cèpes — sous hêtres et sapins','Myrtilles séchées — fin de saison'],
+          biv: 'Vallée de l\'Ariège entre Ax et Foix.',
+          warn: 'Col Pays de Sault ~800 m : vérifier météo neige. Repli possible vallée Aude (+15 km).' },
+        { nom: 'Foix → Saint-Girons → Saint-Gaudens (piémont)', km: '~90 km / 3 j',
+          voies: ['Vallée Hers et Arize','Pistes agricoles piémont'],
+          note: 'Vallée du Hers depuis Foix vers Pamiers. Traverser vers Saint-Girons. Remonter vers Saint-Gaudens par vallée du Salat.',
+          cueil: ['Noix — vergers piémont','Châtaignes piémont','Cèpes de pins'],
+          biv: 'Berges du Salat entre Saint-Girons et Saint-Gaudens.' },
+        { nom: 'Saint-Gaudens → Tarbes → Pau', km: '~100 km / 3 j',
+          voies: ['VV Gave de Pau partielle','D-routes agricoles piémont'],
+          note: 'Longer la chaîne pyrénéenne par le piémont. VV du Gave de Pau depuis Lourdes. Vue sur les Pyrénées enneigées.',
+          cueil: ['Noix — Bigorre : vergers nombreux','Prunelles — après premières gelées','Cèpes'],
+          biv: 'Berges Gave de Pau entre Lourdes et Pau.' },
+        { nom: 'Pau → Bayonne → Hendaye', km: '~110 km / 3–4 j',
+          voies: ['VV Gave de Pau → Bayonne','EuroVelo 1 côte basque'],
+          note: 'VV du Gave de Pau de Pau à Bayonne. EV1 côte basque jusqu\'à Hendaye. Arrivée ~10 novembre.',
+          cueil: ['Moules de roche — rochers Socoa/Hendaye','Coques — plages sableuses','Bigorneaux','Crevettes grises'],
+          biv: 'Dunes et pins entre Hossegor et Bayonne.',
+          prot: ['Moules de roche — 5 kg/j max, usage personnel','Coques — 2–3 cm de sable humide','Pêche en mer sans permis — bar, mulet'] },
+      ]
+    }
+  ]
+};

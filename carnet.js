@@ -35,7 +35,7 @@ function switchTab(tab, btn) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("panel-" + tab).classList.add("active");
   if (btn) btn.classList.add("active");
-  else document.querySelectorAll(".tab-btn")[["carte","zones","quetes","observer","inventaire","journal","sixbl"].indexOf(tab)]?.classList.add("active");
+  else document.querySelectorAll(".tab-btn")[["carte","quetes","observer","inventaire","journal","sixbl"].indexOf(tab)]?.classList.add("active");
   if (tab === 'carte') {
     setTimeout(buildCarteMap, 80);
   }
@@ -297,27 +297,24 @@ function renderCycleSaisons() {
 =============================================== */
 function renderZones() {
   const grid = document.getElementById("zonesGrid");
+  if (!grid) return;
   grid.innerHTML = ZONES_RPG.map(z => {
     const unlocked = state.zones_visited.includes(z.id);
-    const zQuests = QUETES_RPG.filter(q => q.zone === z.id);
-    const doneCnt = zQuests.filter(q => state.quests_done.includes(q.id)).length;
-    const pct = zQuests.length ? Math.round(doneCnt / zQuests.length * 100) : 0;
+    const zQuests  = QUETES_RPG.filter(q => q.zone === z.id);
+    const doneCnt  = zQuests.filter(q => state.quests_done.includes(q.id)).length;
+    const pct      = zQuests.length ? Math.round(doneCnt / zQuests.length * 100) : 0;
     return `
-    <div class="zone-card parch ${unlocked ? '' : 'locked'}" onclick="${unlocked ? 'focusZone('+z.id+')' : ''}">
-      ${!unlocked ? '<span class="zone-lock-icon">🔒</span>' : ''}
-      <span class="zone-num">${z.id}</span>
-      <div class="zone-label">${z.pays} ${z.phase}</div>
-      <div class="zone-name">${z.name}</div>
-      <div class="zone-period">${z.period}</div>
-      <div class="zone-quests-count" style="color:${z.color||'#9a8a70'}">${doneCnt}/${zQuests.length} quêtes · ${pct}%</div>
-      <div class="zone-progress"><div class="zone-progress-fill" style="width:${pct}%;background:${z.color}"></div></div>
+    <div class="zone-chip ${unlocked ? '' : 'locked'}" onclick="${unlocked ? 'focusZone('+z.id+')' : ''}"
+         title="${z.name} — ${z.period}" style="--zone-color:${z.color||'#4a7035'}">
+      <span class="zone-chip-num">${z.id}</span>
+      <div class="zone-chip-bar"><div class="zone-chip-fill" style="width:${pct}%"></div></div>
+      <span class="zone-chip-pct">${pct}%</span>
     </div>`;
   }).join("");
 }
 
 function focusZone(id) {
   switchTab("quetes");
-  document.querySelectorAll(".tab-btn").forEach((b,i) => { if(i===2) b.classList.add("active"); else b.classList.remove("active"); });
   filterQuestsByZone(id);
 }
 
@@ -618,7 +615,7 @@ function renderJournal() {
   }
   container.innerHTML = [...state.journal].reverse().map((e, i) => `
     <div class="journal-entry">
-      <button class="journal-entry-delete" onclick="deleteJournalEntry(${state.journal.length - 1 - i})">✕</button>
+      <button class="journal-entry-delete" onclick="deleteJournalEntryUI(${state.journal.length - 1 - i})">✕</button>
       <div class="journal-entry-date">${e.date}</div>
       <div class="journal-entry-zone">${e.zone || 'En route'}</div>
       <div class="journal-entry-text">${e.text}</div>
@@ -635,7 +632,7 @@ function saveJournalEntry() {
   renderJournal();
 }
 
-function deleteJournalEntry(idx) {
+function deleteJournalEntryUI(idx) {
   if (confirm("Supprimer cette entrée ?")) {
     BS.deleteJournalEntry(idx);
     renderJournal();
