@@ -89,6 +89,68 @@ function handleImport(event) {
   reader.readAsText(file);
 }
 
+function toggleSblConfig() {
+  const body  = document.getElementById('sbl-config-body');
+  const arrow = document.getElementById('sbl-config-arrow');
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display  = open ? 'none' : '';
+  if (arrow) arrow.textContent = open ? '▶' : '▼';
+}
+
+function saveConfigBoucle() {
+  const depart = document.getElementById('cfg-depart')?.value;
+  const trace  = document.getElementById('cfg-trace')?.value;
+  const num    = parseInt(document.getElementById('cfg-boucle-num')?.value) || 1;
+  if (!depart) { alert('Date de départ obligatoire.'); return; }
+
+  BS.setConfigBoucle({ date_depart: depart, trace_actif: trace, boucle_num: num });
+
+  const today = new Date();
+  const jourJ = Math.floor((today - new Date(depart)) / 86400000);
+  const status = document.getElementById('cfg-status');
+  if (status) {
+    status.textContent = jourJ >= 0
+      ? `✅ Sauvegardé — J+${jourJ} depuis le départ · Tracé ${trace} · Boucle ${num}`
+      : `✅ Sauvegardé — Départ dans ${Math.abs(jourJ)} jours`;
+  }
+  // Rétracter après sauvegarde
+  setTimeout(() => {
+    const body = document.getElementById('sbl-config-body');
+    const arrow = document.getElementById('sbl-config-arrow');
+    if (body) body.style.display = 'none';
+    if (arrow) arrow.textContent = '▶';
+  }, 1200);
+}
+
+function loadConfigBoucle() {
+  if (!window.BS) return;
+  const cfg = BS.getConfigBoucle();
+  const dep = document.getElementById('cfg-depart');
+  const tr  = document.getElementById('cfg-trace');
+  const num = document.getElementById('cfg-boucle-num');
+  const status = document.getElementById('cfg-status');
+
+  if (dep && cfg.date_depart) dep.value = cfg.date_depart;
+  if (tr  && cfg.trace_actif) tr.value  = cfg.trace_actif;
+  if (num && cfg.boucle_num)  num.value = cfg.boucle_num;
+
+  if (status && cfg.date_depart) {
+    const jourJ = Math.floor((new Date() - new Date(cfg.date_depart)) / 86400000);
+    status.textContent = jourJ >= 0
+      ? `J+${jourJ} depuis le départ · Tracé ${cfg.trace_actif} · Boucle ${cfg.boucle_num}`
+      : `Départ dans ${Math.abs(jourJ)} jours`;
+  }
+
+  // Auto-rétracter si config déjà sauvegardée
+  if (cfg.date_depart) {
+    const body  = document.getElementById('sbl-config-body');
+    const arrow = document.getElementById('sbl-config-arrow');
+    if (body)  body.style.display  = 'none';
+    if (arrow) arrow.textContent = '▶';
+  }
+}
+
 function lancerBriefing() {
   const container = document.getElementById('sbl-container');
   const printBtn  = document.getElementById('sbl-print-btn');

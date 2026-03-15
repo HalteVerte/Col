@@ -218,35 +218,40 @@
 <div id="panel-sixbl" class="tab-panel">
   <div class="section-title">🌿 6BL — Briefing Terrain</div>
 
-  <!-- Config boucle -->
+  <!-- Config boucle — rétractable -->
   <div class="sbl-config" id="sbl-config">
-    <div class="sbl-config-title">⚙️ Configuration de la boucle</div>
-    <div class="sbl-config-grid">
-      <div class="kommoda-field">
-        <label>📅 Date de départ</label>
-        <div class="kommoda-input-row">
-          <input type="date" id="cfg-depart" class="k-input" style="font-size:.85rem">
-        </div>
-      </div>
-      <div class="kommoda-field">
-        <label>🗺️ Tracé actif</label>
-        <div class="kommoda-input-row">
-          <select id="cfg-trace" class="k-input" style="font-size:.85rem;background:#1e2a18;color:#f0e8d4">
-            <option value="A">Tracé A — Artemps → Lagos</option>
-            <option value="B">Tracé B — Artemps → Hendaye</option>
-          </select>
-        </div>
-      </div>
-      <div class="kommoda-field">
-        <label>🔁 Numéro de boucle</label>
-        <div class="kommoda-input-row">
-          <input type="number" id="cfg-boucle-num" min="1" max="10" value="1" class="k-input">
-          <span class="k-unit">ème</span>
-        </div>
-      </div>
+    <div class="sbl-config-title" onclick="toggleSblConfig()" style="cursor:pointer;-webkit-user-select:none;user-select:none">
+      ⚙️ Configuration de la boucle
+      <span id="sbl-config-arrow" style="float:right;font-size:.8rem">▼</span>
     </div>
-    <button class="kommoda-save-btn" onclick="saveConfigBoucle()">💾 Enregistrer</button>
-    <div id="cfg-status" style="font-size:.78rem;color:#9a8a70;margin-top:.4rem"></div>
+    <div id="sbl-config-body">
+      <div class="sbl-config-grid">
+        <div class="kommoda-field">
+          <label>📅 Date de départ</label>
+          <div class="kommoda-input-row">
+            <input type="date" id="cfg-depart" class="k-input" style="font-size:.85rem">
+          </div>
+        </div>
+        <div class="kommoda-field">
+          <label>🗺️ Tracé actif</label>
+          <div class="kommoda-input-row">
+            <select id="cfg-trace" class="k-input" style="font-size:.85rem;background:#1e2a18;color:#f0e8d4">
+              <option value="A">Tracé A — Artemps → Lagos</option>
+              <option value="B">Tracé B — Artemps → Hendaye</option>
+            </select>
+          </div>
+        </div>
+        <div class="kommoda-field">
+          <label>🔁 Numéro de boucle</label>
+          <div class="kommoda-input-row">
+            <input type="number" id="cfg-boucle-num" min="1" max="10" value="1" class="k-input">
+            <span class="k-unit">ème</span>
+          </div>
+        </div>
+      </div>
+      <button class="kommoda-save-btn" onclick="saveConfigBoucle()">💾 Enregistrer</button>
+      <div id="cfg-status" style="font-size:.78rem;color:#9a8a70;margin-top:.4rem"></div>
+    </div>
   </div>
 
   <div id="sbl-container">
