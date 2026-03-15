@@ -929,7 +929,19 @@ const SBL = (() => {
 
     // 1. GPS
     const gps = await getGPS();
-    const lastObs = window.BS ? BS.getObservations().slice().reverse().find(o => o.lat && o.lng) : null;
+
+    // Fallback position — priorité aux observations récentes de l'utilisateur
+    // (pas les waypoints préchargés de waypoints.json qui ont tous le même timestamp)
+    let lastObs = null;
+    if (window.BS) {
+      const allObs = BS.getObservations().slice().reverse();
+      // 1. Obs ajoutée manuellement récemment (< 30 jours)
+      const cutoff = Date.now() - 30 * 86400000;
+      lastObs = allObs.find(o => o.lat && o.lng && new Date(o.timestamp).getTime() > cutoff);
+      // 2. N'importe quelle obs si rien de récent
+      if (!lastObs) lastObs = allObs.find(o => o.lat && o.lng);
+    }
+
     const lat = gps?.lat ?? lastObs?.lat ?? 49.65;
     const lng = gps?.lng ?? lastObs?.lng ?? 3.27;
     const posSource = gps
