@@ -392,10 +392,20 @@ self.addEventListener('fetch', event => {
   if (url.pathname.endsWith('.pmtiles')) return;
 
   // APIs externes — laisser passer directement sans cache
+  // if (url.hostname.includes('open-meteo.com')
+  // || url.hostname.includes('fonts.googleapis.com')
+  //  || url.hostname.includes('fonts.gstatic.com')
+  // || url.hostname.includes('unpkg.com')) return;
   if (url.hostname.includes('open-meteo.com')
-   || url.hostname.includes('fonts.googleapis.com')
-   || url.hostname.includes('fonts.gstatic.com')
-   || url.hostname.includes('unpkg.com')) return;
+    || url.hostname.includes('fonts.googleapis.com')
+    || url.hostname.includes('fonts.gstatic.com')
+    || url.hostname.includes('unpkg.com')) {
+  event.respondWith(fetch(event.request));
+  return;
+}
+
+
+
 
   // Tuiles OSM raster — laisser passer directement (CORS, pas de cache opaque)
   if (url.hostname.includes('tile.openstreetmap.org')
