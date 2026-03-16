@@ -77,12 +77,19 @@ if ('serviceWorker' in navigator) {
           const newSW = reg.installing;
           newSW.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Nouvelle version disponible');
+              console.log('Nouvelle version disponible — activation forcée');
+              newSW.postMessage({ type: 'SKIP_WAITING' });
             }
           });
         });
       })
       .catch(err => console.warn('SW échec :', err));
+
+  // Recharger quand le nouveau SW prend le contrôle
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('Nouveau SW actif — rechargement');
+    location.reload();
+  });
   });
 }
 
