@@ -37,6 +37,10 @@ function _defaultState() {
     stocks:        { ...STOCKS_DEFAUT },
     kommoda:       { ...KOMMODA_DEFAUT },
     recettes_user: [],  // recettes ajoutées par l'utilisateur
+    // Stats & méta
+    config_boucle: {
+      distance_km: 30
+    },
     meta: {
       created_at:    new Date().toISOString(),
       last_modified: new Date().toISOString(),
@@ -119,6 +123,16 @@ function getZonesVisited()  { return [..._state.zones_visited]; }
 function getStocks()        { return { ..._state.stocks }; }
 function getMeta()          { return { ..._state.meta }; }
 function getKommoda()       { return { ...(_state.kommoda || KOMMODA_DEFAUT) }; }
+
+//ajout config boucle
+function getConfigBoucle() {
+  return { ...(_state.config_boucle || { distance_km: 30 }) };
+}
+
+function setConfigBoucle(cfg) {
+  _state.config_boucle = { ..._state.config_boucle, ...cfg };
+  _save();
+}
 
 function setKommoda(vals) {
   _state.kommoda = { ...KOMMODA_DEFAUT, ..._state.kommoda, ...vals, timestamp: new Date().toISOString() };
@@ -507,4 +521,6 @@ window.BS = {
   importFromJSON,
   // Reset (dev/debug)
   _raw: () => ({ ..._state }),
+  // Config boucle
+  getConfigBoucle, setConfigBoucle,
 };
