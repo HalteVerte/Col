@@ -26,7 +26,9 @@ function switchTab(tab, btn) {
   document.getElementById("panel-" + tab).classList.add("active");
   if (btn) btn.classList.add("active");
   else document.querySelectorAll(".tab-btn")[["carte","quetes","observer","inventaire","journal","sixbl"].indexOf(tab)]?.classList.add("active");
-  if (tab === 'carte') setTimeout(buildCarteMap, 80);
+  if (tab === 'carte') {
+    if (!carnetMap) setTimeout(buildCarteMap, 80);
+  }
   if (tab === 'observer') renderObsGrid();
 }
 
@@ -849,6 +851,7 @@ function initCarnet() {
   if (hash && document.getElementById('panel-' + hash)) {
     switchTab(hash);
   } else {
-    requestAnimationFrame(() => requestAnimationFrame(buildCarteMap));
+    // Carte active par défaut — construire une seule fois
+    if (!carnetMap) setTimeout(buildCarteMap, 100);
   }
 }
