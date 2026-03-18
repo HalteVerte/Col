@@ -8,6 +8,14 @@ const STORAGE_KEY   = 'boucle_sauvage_v1';
 const OLD_KEY_MAP   = 'sauvage_points_v2';
 const OLD_KEY_RPG   = 'boucle_rpg_v1';
 
+/* -- UUID compatible HTTP + HTTPS (pas de dépendance crypto) -- */
+function _uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
 /* -- Stocks par défaut -- */
 const STOCKS_DEFAUT = {
   myrtilles:   0, faines:     0, noisettes:  0, champignons: 0,
@@ -61,7 +69,7 @@ function _migrate() {
     const oldPoints = JSON.parse(localStorage.getItem(OLD_KEY_MAP) || '[]');
     if (oldPoints.length) {
       state.observations = oldPoints.map(p => ({
-        id:        p.id || Date.now(),
+        id:        p.id || _uuid(),
         timestamp: p.timestamp || new Date().toISOString(),
         lat:       p.lat,
         lng:       p.lng,
@@ -145,15 +153,15 @@ function setKommoda(vals) {
 function addObservation({ lat, lng, type, quantite, saison, mois, note, nom }) {
   const now = new Date();
   const obs = {
-    id:        Date.now(),
+    id:        _uuid(),
     timestamp: now.toISOString(),
     lat, lng,
-    nom:       nom || '',
-    type:      type      || 'cueillette',
-    quantite:  quantite  || 'moyen',
-    saison:    saison    || _getSaison(now.getMonth() + 1),
-    mois:      mois      || now.getMonth() + 1,
-    note:      note      || '',
+    nom:       nom      || '',
+    type:      type     || 'cueillette',
+    quantite:  quantite || 'moyen',
+    saison:    saison   || _getSaison(now.getMonth() + 1),
+    mois:      mois     || now.getMonth() + 1,
+    note:      note     || '',
   };
   _state.observations.push(obs);
   _save();
@@ -176,10 +184,10 @@ function _getSaison(mois) {
 --------------------------------------------- */
 function addJournalEntry({ date, zone, zone_id, text }) {
   const entry = {
-    date:      date     || new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
-    zone:      zone     || '',
-    zone_id:   zone_id  || null,
-    text:      text     || '',
+    date:      date    || new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }),
+    zone:      zone    || '',
+    zone_id:   zone_id || null,
+    text:      text    || '',
     timestamp: new Date().toISOString(),
   };
   _state.journal.push(entry);
@@ -234,7 +242,6 @@ function getStock(id) {
 --------------------------------------------- */
 // -- Calculs astronomiques locaux (sans API) ------------------
 function _sunTimes(lat, lng, date) {
-  // Algorithme simplifié lever/coucher soleil
   const rad = Math.PI / 180;
   const d = new Date(date);
   const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
@@ -252,7 +259,7 @@ function _sunTimes(lat, lng, date) {
 
 function _moonPhase(date) {
   const d = new Date(date);
-  const known = new Date('2000-01-06'); // nouvelle lune connue
+  const known = new Date('2000-01-06');
   const diff = (d - known) / (1000 * 60 * 60 * 24);
   const cycle = 29.53058867;
   const phase = ((diff % cycle) + cycle) % cycle;
@@ -261,22 +268,21 @@ function _moonPhase(date) {
 }
 
 function _tideSimple(lat, lng, date) {
-  // Calcul harmonique simplifié — cycle semi-diurne M2 (12h25)
   const d = new Date(date);
-  const t = d.getTime() / (1000 * 60 * 60); // heures depuis epoch
-  const M2 = 12.4206; // période M2 en heures
+  const t = d.getTime() / (1000 * 60 * 60);
+  const M2 = 12.4206;
   const phase = (t % M2) / M2;
   const height = Math.cos(phase * 2 * Math.PI);
-  const isCostal = Math.abs(lat) < 60 && (lng < 3 || lng > 8); // côte atlantique/manche/méditerranée
+  const isCostal = Math.abs(lat) < 60 && (lng < 3 || lng > 8);
   if (!isCostal) return null;
   const nextHigh = M2 * (1 - phase);
   const nextLow  = M2 * (0.5 - phase > 0 ? 0.5 - phase : 1.5 - phase);
   return {
-    hauteur_relative: Math.round(height * 100) / 100,
-    etat: height > 0.3 ? 'montante' : height < -0.3 ? 'descendante' : 'étale',
+    hauteur_relative:  Math.round(height * 100) / 100,
+    etat:              height > 0.3 ? 'montante' : height < -0.3 ? 'descendante' : 'étale',
     prochaine_haute_h: Math.round(nextHigh * 10) / 10,
     prochaine_basse_h: Math.round(Math.min(nextLow, nextHigh) * 10) / 10,
-    note: 'calcul harmonique M2 simplifié — confirmer avec SHOM'
+    note:              'calcul harmonique M2 simplifié — confirmer avec SHOM'
   };
 }
 
@@ -289,13 +295,13 @@ async function _fetchMeteo(lat, lng) {
     const cw = data.current_weather;
     const wmo = {0:'☀️ Dégagé',1:'🌤 Peu nuageux',2:'⛅ Partiellement nuageux',3:'☁️ Couvert',51:'🌦 Bruine',61:'🌧 Pluie légère',63:'🌧 Pluie modérée',65:'🌧 Pluie forte',71:'❄️ Neige légère',80:'🌦 Averses',95:'⛈ Orage',96:'⛈ Orage grêle'};
     return {
-      source: 'open-meteo.com',
+      source:        'open-meteo.com',
       temperature_c: cw.temperature,
-      vent_kmh: Math.round(cw.windspeed),
-      direction_vent: cw.winddirection,
-      meteo: wmo[cw.weathercode] || `Code ${cw.weathercode}`,
+      vent_kmh:      Math.round(cw.windspeed),
+      direction_vent:cw.winddirection,
+      meteo:         wmo[cw.weathercode] || `Code ${cw.weathercode}`,
       previsions_3j: data.daily ? {
-        dates: data.daily.time,
+        dates:    data.daily.time,
         temp_max: data.daily.temperature_2m_max,
         temp_min: data.daily.temperature_2m_min,
         pluie_mm: data.daily.precipitation_sum,
@@ -309,10 +315,7 @@ async function _fetchMeteo(lat, lng) {
 
 function _getGPSPosition() {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      resolve(null);
-      return;
-    }
+    if (!navigator.geolocation) { resolve(null); return; }
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, precision_m: Math.round(pos.coords.accuracy), source: 'gps' }),
       _err => resolve(null),
@@ -325,10 +328,9 @@ async function exportForAgent() {
   _state.meta.export_count++;
   _save();
 
-  const now = new Date();
+  const now     = new Date();
   const dateStr = now.toISOString().slice(0, 10);
 
-  // Position : GPS réel en priorité, fallback dernier waypoint
   const gpsPos  = await _getGPSPosition();
   const lastObs = _state.observations.slice().reverse().find(o => o.lat && o.lng);
   const lat = gpsPos?.lat ?? (lastObs?.lat ?? 49.65);
@@ -339,13 +341,11 @@ async function exportForAgent() {
       ? `dernier waypoint: ${lastObs.nom} ⚠️ position approximative`
       : 'défaut Artemps ⚠️ GPS indisponible';
 
-  // Calculs locaux offline
   const soleil = _sunTimes(lat, lng, now);
   const lune   = _moonPhase(now);
   const marees = _tideSimple(lat, lng, now);
   const meteo  = await _fetchMeteo(lat, lng);
 
-  // Observations proches (rayon ~100km)
   const proches = _state.observations.filter(o => {
     if (!o.lat || !o.lng) return false;
     const dlat = (o.lat - lat) * 111;
@@ -354,36 +354,18 @@ async function exportForAgent() {
   });
 
   const payload = {
-    export_date:  now.toISOString(),
-    version:      DATA_VERSION,
-    agent:        '6BL-v1',
-
-    // Contexte position
-    position: {
-      lat, lng,
-      source: posSource,
-      gps_brut: gpsPos ?? null,
-      date: dateStr,
-    },
-
-    // Contexte astronomique & météo (offline-first)
-    environnement: {
-      soleil,
-      lune,
-      marees,
-      meteo,
-    },
-
-    // Données terrain
-    observations:      _state.observations,
+    export_date: now.toISOString(),
+    version:     DATA_VERSION,
+    agent:       '6BL-v1',
+    position: { lat, lng, source: posSource, gps_brut: gpsPos ?? null, date: dateStr },
+    environnement: { soleil, lune, marees, meteo },
+    observations:         _state.observations,
     observations_proches: proches,
-    stocks:            _state.stocks,
-    kommoda:           _state.kommoda || KOMMODA_DEFAUT,
-    zones_visited:     _state.zones_visited,
-    quetes_done:       _state.quetes_done,
-    journal:           _state.journal.slice(-10), // 10 dernières entrées
-
-    // Stats
+    stocks:        _state.stocks,
+    kommoda:       _state.kommoda || KOMMODA_DEFAUT,
+    zones_visited: _state.zones_visited,
+    quetes_done:   _state.quetes_done,
+    journal:       _state.journal.slice(-10),
     meta: {
       total_observations: _state.observations.length,
       total_journal:      _state.journal.length,
@@ -413,8 +395,8 @@ function addRecetteUser(recette) {
   if (!_state.recettes_user) _state.recettes_user = [];
   const r = {
     ...recette,
-    id: `user_${Date.now()}`,
-    source: 'utilisateur',
+    id:        _uuid(),
+    source:    'utilisateur',
     timestamp: new Date().toISOString(),
   };
   _state.recettes_user.push(r);
@@ -435,29 +417,24 @@ function importFromJSON(data) {
   const report = { added: {}, skipped: {}, errors: [] };
 
   try {
-    // -- Journal : union par timestamp
     const journalIds = new Set(_state.journal.map(e => e.timestamp));
     const newJournal = (data.journal || []).filter(e => !journalIds.has(e.timestamp));
     _state.journal.push(...newJournal);
     report.added.journal = newJournal.length;
 
-    // -- Observations : union par id
     const obsIds = new Set(_state.observations.map(o => o.id));
     const newObs = (data.observations || []).filter(o => !obsIds.has(o.id));
     _state.observations.push(...newObs);
     report.added.observations = newObs.length;
 
-    // -- Quêtes accomplies : union
     const before = _state.quetes_done.length;
     const merged = new Set([..._state.quetes_done, ...(data.quetes_done || [])]);
     _state.quetes_done = [...merged];
     report.added.quetes = _state.quetes_done.length - before;
 
-    // -- Zones visitées : union
     const mergedZones = new Set([..._state.zones_visited, ...(data.zones_visited || [])]);
     _state.zones_visited = [...mergedZones];
 
-    // -- Stocks : prendre l'import si Kommoda plus récent
     if (data.stocks) {
       const localTs  = _state.kommoda?.timestamp || '1970';
       const importTs = data.kommoda?.timestamp   || '1970';
@@ -470,7 +447,6 @@ function importFromJSON(data) {
       }
     }
 
-    // -- Recettes utilisateur : union par id
     if (!_state.recettes_user) _state.recettes_user = [];
     const recIds = new Set(_state.recettes_user.map(r => r.id));
     const newRec = (data.recettes_user || []).filter(r => !recIds.has(r.id));
@@ -488,7 +464,6 @@ function importFromJSON(data) {
   return report;
 }
 
-
 /* --------------------------------------------- */
 function resetAllData() {
   if (!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
@@ -501,26 +476,15 @@ function resetAllData() {
    EXPOSITION GLOBALE
 --------------------------------------------- */
 window.BS = {
-  // Lecture
   getObservations, getJournal, getQuetesDone, getZonesVisited, getStocks, getMeta,
-  // Observations
   addObservation, deleteObservation,
-  // Journal
   addJournalEntry, deleteJournalEntry,
-  // Quêtes
   completeQuete, uncompleteQuete,
-  // Zones
   visitZone,
-  // Stocks
   updateStock, getStock,
-  // Recettes utilisateur
   getRecettesUser, addRecetteUser, deleteRecetteUser,
-  // Export
   getKommoda, setKommoda, exportForAgent,
-  // Import synchro
   importFromJSON,
-  // Reset (dev/debug)
   _raw: () => ({ ..._state }),
-  // Config boucle
   getConfigBoucle, setConfigBoucle,
 };
