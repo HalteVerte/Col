@@ -1,21 +1,11 @@
 /* carnet.js — Logique du Carnet du Voyageur
-   Extrait de carnet.html (session 17)
    Dépendances : data.js, stocks.js, zones.js, quetes.js, 6bl.js
 */
-
-
-/* ===============================================
-   DONNÉES RPG — générées depuis les phases du trajet
-=============================================== */
-
-
 
 /* ===============================================
    STATE — proxy sur data.js (BS)
 =============================================== */
 
-// Proxy state pour compatibilité avec le code existant
-// Toutes les lectures/écritures passent par BS
 const state = {
   get quests_done()   { return window.BS ? BS.getQuetesDone()   : []; },
   get journal()       { return window.BS ? BS.getJournal()       : []; },
@@ -36,9 +26,7 @@ function switchTab(tab, btn) {
   document.getElementById("panel-" + tab).classList.add("active");
   if (btn) btn.classList.add("active");
   else document.querySelectorAll(".tab-btn")[["carte","quetes","observer","inventaire","journal","sixbl"].indexOf(tab)]?.classList.add("active");
-  if (tab === 'carte') {
-    setTimeout(buildCarteMap, 80);
-  }
+  if (tab === 'carte') setTimeout(buildCarteMap, 80);
   if (tab === 'observer') renderObsGrid();
 }
 
@@ -55,7 +43,6 @@ function handleImport(event) {
     try {
       const data = JSON.parse(e.target.result);
 
-      // Vérifier que c'est bien un export 6BL
       if (!data.version || !data.agent) {
         alert('❌ Fichier non reconnu — utilise un export 6BL valide.');
         return;
@@ -73,8 +60,6 @@ function handleImport(event) {
           report.added.stocks ? `📦 Stocks : ${report.added.stocks}` : `📦 Stocks : ${report.skipped.stocks}`,
         ].join('\n');
         alert(msg);
-
-        // Recharger l'interface
         location.reload();
       } else {
         alert('❌ Erreur import : ' + report.errors.join(', '));
@@ -82,8 +67,6 @@ function handleImport(event) {
     } catch(err) {
       alert('❌ JSON invalide : ' + err.message);
     }
-
-    // Reset input pour permettre re-import du même fichier
     event.target.value = '';
   };
   reader.readAsText(file);
@@ -114,7 +97,6 @@ function saveConfigBoucle() {
       ? `✅ Sauvegardé — J+${jourJ} depuis le départ · Tracé ${trace} · Boucle ${num}`
       : `✅ Sauvegardé — Départ dans ${Math.abs(jourJ)} jours`;
   }
-  // Rétracter après sauvegarde
   setTimeout(() => {
     const body = document.getElementById('sbl-config-body');
     const arrow = document.getElementById('sbl-config-arrow');
@@ -142,7 +124,6 @@ function loadConfigBoucle() {
       : `Départ dans ${Math.abs(jourJ)} jours`;
   }
 
-  // Auto-rétracter si config déjà sauvegardée
   if (cfg.date_depart) {
     const body  = document.getElementById('sbl-config-body');
     const arrow = document.getElementById('sbl-config-arrow');
@@ -290,11 +271,16 @@ function deleteObs(id) {
 function renderObsGrid() {
   const grid = document.getElementById('obsGrid');
   if (!grid) return;
+
+  // ✅ Fix — vider avant de remplir
+  grid.innerHTML = '';
+
   const obs = BS.getObservations().slice().reverse();
   if (!obs.length) {
     grid.innerHTML = '<p style="font-style:italic;color:var(--ink-soft);font-size:.9rem">Aucune observation. Touche 📍 pour commencer.</p>';
     return;
   }
+
   const QTY_COLOR = { absent:'#c84a2a', rare:'#c8882a', moyen:'#c8c040', abondant:'#6abf4a' };
   grid.innerHTML = obs.map(p => {
     const cfg  = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
@@ -302,7 +288,7 @@ function renderObsGrid() {
     const qty  = p.quantite || '';
     return `
     <div class="point-card parch">
-      <button class="pt-delete" onclick="deleteObs(${p.id})">✕</button>
+      <button class="pt-delete" onclick="deleteObs('${p.id}')">✕</button>
       <div class="pt-hdr">
         <span class="pt-icon">${cfg.icon}</span>
         <div>
@@ -320,16 +306,14 @@ function renderObsGrid() {
   }).join('');
 }
 
-
 function updateXP() {
-  const done = state.quests_done.length;
+  const done  = state.quests_done.length;
   const total = QUETES_RPG.length;
-  const pct = Math.round(done / total * 100);
+  const pct   = Math.round(done / total * 100);
   document.getElementById("xpFill").style.width = pct + "%";
   document.getElementById("globalXpVal").textContent = done + " / " + total + " quêtes · cycle complet";
   renderCycleSaisons();
 }
-
 
 /* ===============================================
    CYCLE DES SAISONS
@@ -354,6 +338,7 @@ function renderCycleSaisons() {
     </div>`;
   }).join('');
 }
+
 /* ===============================================
    ZONES
 =============================================== */
@@ -385,29 +370,22 @@ function focusZone(id) {
 =============================================== */
 let currentFilter = "all";
 
-
-
-/* == CYCLE DES SAISONS — correspondance zone → saison == */
 const ZONE_SAISON = {
-  // Zones 1-2  : Août–septembre  → Été
   1:'ete', 2:'ete',
-  // Zones 3-6  : Octobre–novembre → Automne
   3:'automne', 4:'automne', 5:'automne', 6:'automne',
-  // Zones 7-9  : Décembre–février → Hiver
   7:'hiver', 8:'hiver', 9:'hiver',
-  // Zones 10-15 : Mars–mai        → Printemps
   10:'printemps', 11:'printemps', 12:'printemps',
   13:'printemps', 14:'printemps', 15:'printemps',
-  // Zone 16 : Cycle witch — toute l'année (non compté par saison)
   16: null,
 };
+
 const SAISONS_CONFIG = [
   { id:'printemps', label:'Printemps', emoji:'🌸', color:'#7abf6a', zones:[10,11,12,13,14,15] },
   { id:'ete',       label:'Été',       emoji:'☀️', color:'#c8a820', zones:[1,2] },
   { id:'automne',   label:'Automne',   emoji:'🍂', color:'#c87820', zones:[3,4,5,6] },
   { id:'hiver',     label:'Hiver',     emoji:'❄️', color:'#6aaabf', zones:[7,8,9] },
 ];
-/* == QUÊTES WITCH 2.0 — Calendrier des sorcières == */
+
 const WITCH_CALENDAR = {
   "Imbolc":     { month:2,  day:1,  color:"#e8d4f0", saison:"hiver",    zone:"Zone 9 · Galice · Rías Baixas" },
   "Ostara":     { month:3,  day:20, color:"#a8e8a0", saison:"printemps", zone:"Zone 11-12 · Côte Basque · Landes" },
@@ -429,36 +407,35 @@ function getWitchInfo(title) {
 function isWitchActive(info) {
   if (!info) return false;
   const today = new Date();
-  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
+  const fete  = new Date(today.getFullYear(), info.month - 1, info.day);
   return Math.abs(today - fete) / (1000*60*60*24) <= 7;
 }
 
 function isWitchPast(info) {
   if (!info) return false;
   const today = new Date();
-  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
+  const fete  = new Date(today.getFullYear(), info.month - 1, info.day);
   return (today - fete) > 7*24*60*60*1000;
 }
 
 function daysUntilWitch(info) {
   if (!info) return null;
   const today = new Date();
-  const fete = new Date(today.getFullYear(), info.month - 1, info.day);
-  const diff = Math.round((fete - today) / (1000*60*60*24));
-  return diff;
+  const fete  = new Date(today.getFullYear(), info.month - 1, info.day);
+  return Math.round((fete - today) / (1000*60*60*24));
 }
 
 function renderQuests(filter) {
   const list = document.getElementById("questList");
   let quests = [...QUETES_RPG];
 
-  if (filter === "done")        quests = quests.filter(q => state.quests_done.includes(q.id));
-  else if (filter === "collecte")   quests = quests.filter(q => q.type === "collecte");
-  else if (filter === "survie")     quests = quests.filter(q => q.type === "survie");
+  if (filter === "done")         quests = quests.filter(q => state.quests_done.includes(q.id));
+  else if (filter === "collecte")    quests = quests.filter(q => q.type === "collecte");
+  else if (filter === "survie")      quests = quests.filter(q => q.type === "survie");
   else if (filter === "exploration") quests = quests.filter(q => q.type === "exploration");
   else if (filter === "quotidienne") quests = quests.filter(q => q.type === "quotidienne");
-  else if (filter === "witch")      quests = quests.filter(q => q.type === "witch");
-  else if (filter && filter.startsWith("saison-")) {
+  else if (filter === "witch")       quests = quests.filter(q => q.type === "witch");
+  else if (filter?.startsWith("saison-")) {
     const sid = filter.replace("saison-", "");
     quests = quests.filter(q => ZONE_SAISON[q.zone] === sid);
   }
@@ -471,11 +448,10 @@ function renderQuests(filter) {
     const done = state.quests_done.includes(q.id);
     const zone = ZONES_RPG.find(z => z.id === q.zone);
 
-    // Rendu spécial pour les quêtes witch
     if (q.type === "witch") {
-      const witch = getWitchInfo(q.title);
-      const active = isWitchActive(witch);
-      const past = isWitchPast(witch);
+      const witch    = getWitchInfo(q.title);
+      const active   = isWitchActive(witch);
+      const past     = isWitchPast(witch);
       const daysLeft = witch ? daysUntilWitch(witch) : null;
       const witchColor = witch ? witch.color : "#8840c8";
 
@@ -521,7 +497,6 @@ function renderQuests(filter) {
       </div>`;
     }
 
-    // Rendu standard
     return `
     <div class="quest-card parch${done ? " quest-done" : ""}">
       <div class="quest-header" onclick="toggleQuest(${q.id})">
@@ -561,21 +536,19 @@ function filterQuests(type, btn) {
 }
 
 function filterQuestsByZone(zoneId) {
-  const list = document.getElementById("questList");
   const quests = QUETES_RPG.filter(q => q.zone === zoneId);
+  // Affichage filtré par zone — à étendre si besoin
 }
-
 
 function completeQuest(id, e) {
   if (e && e.stopPropagation) e.stopPropagation();
   const done = BS.getQuetesDone();
   if (!done.includes(id)) {
     BS.completeQuete(id);
-    // Débloquer zone suivante si toutes les quêtes de la zone sont faites
     const quest = QUETES_RPG.find(q => q.id === id);
     if (quest) {
       const zoneQuests = QUETES_RPG.filter(q => q.zone === quest.zone);
-      const nowDone = BS.getQuetesDone();
+      const nowDone    = BS.getQuetesDone();
       if (zoneQuests.every(q => nowDone.includes(q.id))) {
         const nextZone = quest.zone + 1;
         if (nextZone <= 16) BS.visitZone(nextZone);
@@ -594,6 +567,7 @@ function completeQuest(id, e) {
 =============================================== */
 function renderInventory() {
   const grid = document.getElementById("inventoryGrid");
+  if (!grid) return;
   grid.innerHTML = STOCKS_INITIAUX.map(s => {
     const qty = state.stocks[s.id] || 0;
     const pct = Math.min(100, Math.round(qty / s.max * 100));
@@ -616,9 +590,7 @@ function renderInventory() {
 function adjustStock(id, delta) {
   BS.updateStock(id, (BS.getStock(id) || 0) + delta);
   renderInventory();
-
 }
-
 
 /* ===============================================
    KOMMODA 3
@@ -632,7 +604,6 @@ function saveKommoda() {
   };
   BS.setKommoda(vals);
   loadKommoda();
-  // Feedback visuel
   const btn = document.querySelector('.kommoda-save-btn');
   btn.textContent = '✓ Enregistré';
   setTimeout(() => btn.textContent = '💾 Enregistrer Kommoda', 1500);
@@ -642,8 +613,8 @@ function loadKommoda() {
   const k = BS.getKommoda();
   if (!k || !k.timestamp) return;
   const last = document.getElementById('kommoda-last');
-  const d = new Date(k.timestamp);
-  const fmt = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+  const d    = new Date(k.timestamp);
+  const fmt  = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
   last.innerHTML = `<span style="color:var(--accent);font-size:0.85rem">
     Dernière saisie ${fmt} — 
     🔋 ${k.batterie_pct ?? '—'}% · 
@@ -651,23 +622,19 @@ function loadKommoda() {
     📍 ${k.distance_jour ?? '—'}km aujourd'hui · 
     🛣️ ${k.distance_total ?? '—'}km total
   </span>`;
-  // Remplir les inputs avec les dernières valeurs
   if (k.batterie_pct   != null) document.getElementById('k-batterie').value   = k.batterie_pct;
   if (k.assistance     != null) document.getElementById('k-assistance').value = k.assistance;
   if (k.distance_jour  != null) document.getElementById('k-dist-jour').value  = k.distance_jour;
   if (k.distance_total != null) document.getElementById('k-dist-total').value = k.distance_total;
 }
 
-// updateStock remplacée par adjustStock
-
 /* ===============================================
    JOURNAL
 =============================================== */
 function renderJournal() {
   const container = document.getElementById("journalList");
-  const sel = document.getElementById("journalZone");
+  const sel       = document.getElementById("journalZone");
 
-  // Remplir le select des zones
   sel.innerHTML = "<option value=\"\">— Zone / Étape —</option>" +
     ZONES_RPG.map(z => `<option value="${z.name}">${z.pays} Zone ${z.id} — ${z.name}</option>`).join("");
 
@@ -702,48 +669,9 @@ function deleteJournalEntryUI(idx) {
 }
 
 /* ===============================================
-   INIT
+   CARTE
 =============================================== */
-renderZones();
-renderQuests("all");
-renderInventory();
-renderJournal();
-updateXP();
-
-
-/* === INIT === */
-document.addEventListener("DOMContentLoaded", initCarnet);
-
-function initCarnet() {
-  if (!window.BS) {
-    // BS pas encore prêt — réessayer dans 50ms
-    setTimeout(initCarnet, 50);
-    return;
-  }
-  updateXP();
-  renderZones();
-  renderQuests("all");
-  renderInventory();
-  renderJournal();
-  loadKommoda();
-  document.getElementById("journalDate").value = new Date().toISOString().slice(0,10);
-  const sel = document.getElementById("journalZone");
-  ZONES_RPG.forEach(z => {
-    const opt = document.createElement("option");
-    opt.value = z.id; opt.textContent = z.name;
-    sel.appendChild(opt);
-  });
-  // Hash routing — ouvre directement l'onglet demandé
-  const hash = location.hash.replace('#','');
-  if (hash && document.getElementById('panel-' + hash)) {
-    switchTab(hash);
-  } else {
-    // Attendre que le layout soit calculé avant d'injecter le SVG
-    requestAnimationFrame(() => requestAnimationFrame(buildCarteMap));
-  }
-}
-
-let carnetMap = null;
+let carnetMap     = null;
 let carnetMarkers = [];
 
 function buildCarteMap() {
@@ -765,17 +693,14 @@ function buildCarteMap() {
   carnetMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
   onMapReady(carnetMap, () => {
-    // Points par défaut chargés par terrain.js depuis waypoints.json
-    // Placer les observations
     const obs = BS.getObservations();
-
     obs.forEach(p => {
       if (!p.lat || !p.lng) return;
       const cfg = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
-      const el = document.createElement('div');
+      const el  = document.createElement('div');
       el.innerHTML = cfg.icon;
       el.style.cssText = `width:28px;height:28px;border-radius:50%;background:${cfg.color||'#888'};border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:.85rem;box-shadow:0 1px 6px rgba(0,0,0,.4);cursor:pointer`;
-      const qtyLabel = {absent:'vide',rare:'rare',moyen:'moyen',abondant:'abondant'}[p.quantite]||'';
+      const qtyLabel  = {absent:'vide',rare:'rare',moyen:'moyen',abondant:'abondant'}[p.quantite]||'';
       const popupHtml = `<div style="font-family:'DM Sans',sans-serif;min-width:180px;padding:.2rem">
         <div style="font-weight:700;font-size:.95rem;margin-bottom:.3rem">${cfg.icon} ${p.nom||cfg.label}</div>
         ${qtyLabel?`<div style="font-size:.78rem;color:#666;margin-bottom:.25rem">Abondance : <b>${qtyLabel}</b></div>`:''}
@@ -787,25 +712,25 @@ function buildCarteMap() {
       carnetMarkers.push(m);
     });
 
-    // Zoomer sur les observations si présentes
     if (carnetMarkers.length > 0) {
-      const coords = obs.filter(p=>p.lat&&p.lng);
+      const coords = obs.filter(p => p.lat && p.lng);
       if (coords.length === 1) {
         carnetMap.flyTo({ center:[coords[0].lng, coords[0].lat], zoom:13 });
       } else {
-        const lngs = coords.map(p=>p.lng), lats = coords.map(p=>p.lat);
-        carnetMap.fitBounds([[Math.min(...lngs),Math.min(...lats)],[Math.max(...lngs),Math.max(...lats)]],
-          { padding:40, duration:500 });
+        const lngs = coords.map(p => p.lng), lats = coords.map(p => p.lat);
+        carnetMap.fitBounds(
+          [[Math.min(...lngs),Math.min(...lats)],[Math.max(...lngs),Math.max(...lats)]],
+          { padding:40, duration:500 }
+        );
       }
     }
   });
 
-  // Clic sur la carte → popup création de point
   carnetMap.on('click', function(e) {
-    const lat = e.lngLat.lat.toFixed(5);
-    const lng = e.lngLat.lng.toFixed(5);
+    const lat   = e.lngLat.lat.toFixed(5);
+    const lng   = e.lngLat.lng.toFixed(5);
     const types = Object.entries(OBS_TYPE_CFG).filter(([k]) => k !== 'autre');
-    const btns = types.map(([k,v]) =>
+    const btns  = types.map(([k,v]) =>
       `<button onclick="mapPopupSetType(this,'${k}')" data-type="${k}"
         style="width:36px;height:36px;border-radius:8px;border:2px solid transparent;
                background:rgba(0,0,0,.06);font-size:1.05rem;cursor:pointer"
@@ -846,12 +771,8 @@ function mapPopupSetType(btn, type) {
   mapPopupType = type;
   document.querySelectorAll('#mapNewPoint button[data-type]').forEach(b => {
     const cfg = OBS_TYPE_CFG[b.dataset.type] || OBS_TYPE_CFG.autre;
-    b.style.border = b.dataset.type === type
-      ? `2px solid ${cfg.color}`
-      : '2px solid transparent';
-    b.style.background = b.dataset.type === type
-      ? `${cfg.color}33`
-      : 'rgba(0,0,0,.06)';
+    b.style.border     = b.dataset.type === type ? `2px solid ${cfg.color}` : '2px solid transparent';
+    b.style.background = b.dataset.type === type ? `${cfg.color}33` : 'rgba(0,0,0,.06)';
   });
 }
 
@@ -861,11 +782,10 @@ function mapPopupSave(lat, lng) {
   const cfg  = OBS_TYPE_CFG[mapPopupType] || OBS_TYPE_CFG.autre;
   BS.addObservation({
     lat: parseFloat(lat), lng: parseFloat(lng),
-    type: mapPopupType,
-    nom: nom || cfg.label,
+    type:     mapPopupType,
+    nom:      nom || cfg.label,
     note,
     quantite: 'moyen',
-    timestamp: new Date().toISOString()
   });
   document.querySelectorAll('.maplibregl-popup').forEach(p => p.remove());
   buildCarteMap();
@@ -880,10 +800,10 @@ function renderSpotsGrid() {
     return;
   }
   grid.innerHTML = obs.map(p => {
-    const cfg = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
-    const qty = { absent:'vide', rare:'rare', moyen:'moyen', abondant:'abondant' }[p.quantite] || '';
+    const cfg  = OBS_TYPE_CFG[p.type] || OBS_TYPE_CFG.autre;
+    const qty  = { absent:'vide', rare:'rare', moyen:'moyen', abondant:'abondant' }[p.quantite] || '';
     const date = p.timestamp ? new Date(p.timestamp).toLocaleDateString('fr', { day:'numeric', month:'short' }) : '';
-    return `<div class="spot-card" onclick="carnetMap && carnetMap.setView([${p.lat},${p.lng}],13)">
+    return `<div class="spot-card" onclick="carnetMap && carnetMap.flyTo({center:[${p.lng},${p.lat}],zoom:13})">
       <div class="spot-hdr">
         <span class="spot-icon" style="background:${cfg.color||'#888'}">${cfg.icon}</span>
         <div class="spot-meta">
@@ -895,4 +815,40 @@ function renderSpotsGrid() {
       ${p.note ? `<div class="spot-note">${p.note}</div>` : ''}
     </div>`;
   }).join('');
+}
+
+/* ===============================================
+   INIT — une seule fois via DOMContentLoaded
+=============================================== */
+document.addEventListener("DOMContentLoaded", initCarnet);
+
+function initCarnet() {
+  if (!window.BS) {
+    setTimeout(initCarnet, 50);
+    return;
+  }
+  updateXP();
+  renderZones();
+  renderQuests("all");
+  renderInventory();
+  renderJournal();
+  loadKommoda();
+  loadConfigBoucle();
+
+  document.getElementById("journalDate").value = new Date().toISOString().slice(0,10);
+
+  const sel = document.getElementById("journalZone");
+  ZONES_RPG.forEach(z => {
+    const opt = document.createElement("option");
+    opt.value = z.id;
+    opt.textContent = z.name;
+    sel.appendChild(opt);
+  });
+
+  const hash = location.hash.replace('#','');
+  if (hash && document.getElementById('panel-' + hash)) {
+    switchTab(hash);
+  } else {
+    requestAnimationFrame(() => requestAnimationFrame(buildCarteMap));
+  }
 }
